@@ -40,6 +40,7 @@ function Invoke-ExecAddMultiTenantApp {
                     AppId                     = $Request.Body.AppId
                     applicationResourceAccess = $ApplicationResourceAccess
                     delegateResourceAccess    = $DelegateResourceAccess
+                    AdminRoles                = $Request.Body.AdminRoles
                     QueueId                   = $Queue.RowKey
                 }
             }

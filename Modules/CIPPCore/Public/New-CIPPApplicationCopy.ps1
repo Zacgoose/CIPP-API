@@ -20,6 +20,8 @@ function New-CIPPApplicationCopy {
         } catch {
             $ExistingApp = New-GraphGETRequest -uri "https://graph.microsoft.com/beta/servicePrincipals(appId='$($app)')/oauth2PermissionGrants" -tenantid $env:TenantID -NoAuthCheck $true -AsApp $true
             $ExistingAppRoleAssignments = New-GraphGETRequest -uri "https://graph.microsoft.com/beta/servicePrincipals(appId='$($app)')/appRoleAssignments" -tenantid $env:TenantID -NoAuthCheck $true -AsApp $true
+            $ExistingServicePrincipal = New-GraphGETRequest -uri "https://graph.microsoft.com/beta/servicePrincipals(appId='$($app)')" -tenantid $env:TenantID -NoAuthCheck $true -AsApp $true
+            $ExistingAdminRoles = New-GraphGETRequest -uri "https://graph.microsoft.com/beta/servicePrincipals/$($ExistingServicePrincipal.id)/memberOf" -tenantid $env:TenantID -NoAuthCheck $true -AsApp $true
             $Type = 'ServicePrincipal'
         }
         if (!$ExistingApp -and !$ExistingAppRoleAssignments) {
@@ -31,6 +33,7 @@ function New-CIPPApplicationCopy {
             $DelegateResourceAccess = $Existingapp.requiredResourceAccess
             $ApplicationResourceAccess = $Existingapp.requiredResourceAccess
             $NoTranslateRequired = $false
+            $AdminRoles = @()
         } else {
             Write-Information 'App type: ServicePrincipal'
             $DelegateResourceAccess = $ExistingApp | Group-Object -Property resourceId | ForEach-Object {
@@ -40,6 +43,20 @@ function New-CIPPApplicationCopy {
             $ApplicationResourceAccess = $ExistingappRoleAssignments | Group-Object -Property ResourceId | ForEach-Object {
                 [pscustomobject]@{ resourceAppId = ($CurrentInfo | Where-Object -Property id -EQ $_.Name).appId; resourceAccess = @($_.Group | ForEach-Object { [pscustomobject]@{ id = $_.appRoleId; type = 'Role' } } )
                 }
+            }
+            $AdminRoles = $ExistingAdminRoles | Where-Object {
+                $_.'@odata.type' -eq '#microsoft.graph.directoryRole'
+            } | ForEach-Object {
+                [pscustomobject]@{
+                    id = $_.roleTemplateId
+                    displayName = $_.displayName
+                    description = $_.description
+                }
+            }
+            if ($AdminRoles -and $AdminRoles.Count -gt 0) {
+                Write-Information "Found $($AdminRoles.Count) admin role(s) to copy: $($AdminRoles.displayName -join ', ')"
+            } else {
+                Write-Information "No admin roles found for application $App"
             }
             $NoTranslateRequired = $true
         }
@@ -60,12 +77,16 @@ function New-CIPPApplicationCopy {
         }
 
         if ($DelegateResourceAccess) {
-            Add-CIPPDelegatedPermission -RequiredResourceAccess $ApplicationResourceAccess -ApplicationId $App -Tenantfilter $Tenant
+            Add-CIPPDelegatedPermission -RequiredResourceAccess $DelegateResourceAccess -ApplicationId $App -Tenantfilter $Tenant
         }
         if ($ApplicationResourceAccess) {
             Add-CIPPApplicationPermission -RequiredResourceAccess $ApplicationResourceAccess -ApplicationId $App -Tenantfilter $Tenant
         }
-        Write-LogMessage -message "Added permissions to $app" -tenant $tenant -API 'Application Copy' -sev Info
+        if ($AdminRoles -and $AdminRoles.Count -gt 0) {
+            Write-Information "Copying $($AdminRoles.Count) admin role(s) for application $App to tenant $Tenant"
+            Add-CIPPAdminRoles -AdminRoles $AdminRoles -ApplicationId $App -Tenantfilter $Tenant
+        }
+        Write-LogMessage -message "Added permissions and roles to $app" -tenant $tenant -API 'Application Copy' -sev Info
 
         return $Results
     } catch {

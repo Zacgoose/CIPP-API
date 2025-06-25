@@ -23,11 +23,14 @@ function Invoke-ExecAppPermissionTemplate {
             try {
                 $RowKey = $Request.Body.TemplateId ?? [guid]::NewGuid().ToString()
                 $Permissions = $Request.Body.Permissions
+                $AdminRoles = $Request.Body.AdminRoles ?? @()
+
                 $Entity = @{
                     'PartitionKey' = 'Templates'
                     'RowKey'       = [string]$RowKey
                     'TemplateName' = [string]$Request.Body.TemplateName
                     'Permissions'  = [string]($Permissions | ConvertTo-Json -Depth 10 -Compress)
+                    'AdminRoles'   = [string]($AdminRoles | ConvertTo-Json -Depth 10 -Compress)
                     'UpdatedBy'    = $User.UserDetails ?? 'CIPP-API'
                 }
                 $null = Add-CIPPAzDataTableEntity @Table -Entity $Entity -Force
@@ -38,7 +41,10 @@ function Invoke-ExecAppPermissionTemplate {
                         'TemplateId'   = $RowKey
                     }
                 }
-                Write-LogMessage -headers $Headers -API 'ExecAppPermissionTemplate' -message "Permissions Saved for template: $($Request.Body.TemplateName)" -Sev 'Info' -LogData $Permissions
+                Write-LogMessage -headers $Headers -API 'ExecAppPermissionTemplate' -message "Permissions and admin roles saved for template: $($Request.Body.TemplateName)" -Sev 'Info' -LogData @{
+                    Permissions = $Permissions
+                    AdminRoles = $AdminRoles
+                }
             } catch {
                 Write-Information "Failed to save template: $($_.Exception.Message) - $($_.InvocationInfo.PositionMessage)"
                 $Body = @{
@@ -79,10 +85,31 @@ function Invoke-ExecAppPermissionTemplate {
             }
 
             $Body = Get-CIPPAzDataTableEntity @Table -Filter $filter | ForEach-Object {
+                # Parse AdminRoles JSON if it exists, otherwise default to empty array
+                $AdminRoles = @()
+                if ($_.AdminRoles) {
+                    try {
+                        $ParsedRoles = $_.AdminRoles | ConvertFrom-Json -ErrorAction SilentlyContinue
+                        if ($null -eq $ParsedRoles) {
+                            $AdminRoles = @()
+                        } elseif ($ParsedRoles -is [System.Array]) {
+                            # Already an array
+                            $AdminRoles = $ParsedRoles
+                        } else {
+                            # Single object, wrap in array to ensure consistency
+                            $AdminRoles = @($ParsedRoles)
+                        }
+                    } catch {
+                        Write-Warning "Failed to parse AdminRoles for template $($_.RowKey): $($_.Exception.Message)"
+                        $AdminRoles = @()
+                    }
+                }
+
                 [PSCustomObject]@{
                     TemplateId   = $_.RowKey
                     TemplateName = $_.TemplateName
                     Permissions  = $_.Permissions | ConvertFrom-Json
+                    AdminRoles   = $AdminRoles
                     UpdatedBy    = $_.UpdatedBy
                     Timestamp    = $_.Timestamp.DateTime.ToString('yyyy-MM-ddTHH:mm:ssZ')
                 }

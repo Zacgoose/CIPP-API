@@ -17,6 +17,9 @@ function Push-ExecAddMultiTenantApp {
         }
         Add-CIPPApplicationPermission -RequiredResourceAccess ($Item.applicationResourceAccess) -ApplicationId $Item.AppId -Tenantfilter $Item.Tenant
         Add-CIPPDelegatedPermission -RequiredResourceAccess ($Item.DelegateResourceAccess) -ApplicationId $Item.AppId -Tenantfilter $Item.Tenant
+        if ($Item.AdminRoles -and $Item.AdminRoles.Count -gt 0) {
+            Add-CIPPAdminRoles -AdminRoles $Item.AdminRoles -ApplicationId $Item.AppId -Tenantfilter $Item.Tenant
+        }
     } catch {
         Write-LogMessage -message "Error adding application to tenant $($Item.Tenant) - $($_.Exception.Message)" -tenant $Item.Tenant -API 'Add Multitenant App' -sev Error
     }

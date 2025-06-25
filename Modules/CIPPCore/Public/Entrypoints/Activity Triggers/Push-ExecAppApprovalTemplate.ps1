@@ -23,6 +23,7 @@ function Push-ExecAppApprovalTemplate {
         }
         Add-CIPPApplicationPermission -TemplateId $TemplateId -Tenantfilter $Item.Tenant
         Add-CIPPDelegatedPermission -TemplateId $TemplateId -Tenantfilter $Item.Tenant
+        Add-CIPPAdminRoles -TemplateId $TemplateId -Tenantfilter $Item.Tenant
     } catch {
         Write-LogMessage -message "Error adding application to tenant $($Item.Tenant) - $($_.Exception.Message)" -tenant $Item.Tenant -API 'Add Multitenant App' -sev Error
         Write-Error $_.Exception.Message
