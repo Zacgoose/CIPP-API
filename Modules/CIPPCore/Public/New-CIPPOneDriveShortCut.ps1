@@ -1,10 +1,10 @@
-
 function New-CIPPOneDriveShortCut {
     [CmdletBinding()]
     param (
         $Username,
         $UserId,
         $URL,
+        $LibraryId,  # Add this parameter
         $TenantFilter,
         $APIName = 'Create OneDrive shortcut',
         $Headers
@@ -12,9 +12,23 @@ function New-CIPPOneDriveShortCut {
     Write-Host "Received $Username and $UserId. We're using $URL and $TenantFilter"
     try {
         $SiteInfo = New-GraphGetRequest -uri 'https://graph.microsoft.com/beta/sites/' -tenantid $TenantFilter -asapp $true | Where-Object -Property weburl -EQ $URL
-        $ListItemUniqueId = (New-GraphGetRequest -uri "https://graph.microsoft.com/beta/sites/$($SiteInfo.id)/drive?`$select=SharepointIds" -tenantid $TenantFilter -asapp $true).SharePointIds
+
+        if ($LibraryId) {
+            # Get specific document library
+            Write-Host "Getting specific library: $LibraryId"
+            $DriveInfo = New-GraphGetRequest -uri "https://graph.microsoft.com/beta/sites/$($SiteInfo.id)/drive/$LibraryId" -tenantid $TenantFilter -asapp $true
+            $ListItemUniqueId = $DriveInfo.SharePointIds
+            $LibraryName = $DriveInfo.name
+        } else {
+            # Fallback to default Documents library
+            Write-Host "Using default Documents library"
+            $DriveInfo = New-GraphGetRequest -uri "https://graph.microsoft.com/beta/sites/$($SiteInfo.id)/drive?`$select=SharepointIds" -tenantid $TenantFilter -asapp $true
+            $ListItemUniqueId = $DriveInfo.SharePointIds
+            $LibraryName = 'Documents'
+        }
+
         $body = [PSCustomObject]@{
-            name                                = 'Documents'
+            name                                = $LibraryName
             remoteItem                          = @{
                 sharepointIds = @{
                     listId           = $($ListItemUniqueId.listid)
@@ -26,9 +40,10 @@ function New-CIPPOneDriveShortCut {
             }
             '@microsoft.graph.conflictBehavior' = 'rename'
         } | ConvertTo-Json -Depth 10
+
         New-GraphPOSTRequest -method POST "https://graph.microsoft.com/beta/users/$Username/drive/root/children" -body $Body -tenantid $TenantFilter -asapp $true
-        Write-LogMessage -API $APIName -headers $Headers -message "Created OneDrive shortcut called $($SiteInfo.displayName) for $($Username)" -Sev 'info'
-        return "Successfully created OneDrive Shortcut for $Username called $($SiteInfo.displayName) "
+        Write-LogMessage -API $APIName -headers $Headers -message "Created OneDrive shortcut called $LibraryName for $($Username)" -Sev 'info'
+        return "Successfully created OneDrive Shortcut for $Username called $LibraryName"
     } catch {
         $ErrorMessage = Get-CippException -Exception $_
         $Result = "Could not add Onedrive shortcut to $Username : $($ErrorMessage.NormalizedError)"
@@ -36,5 +51,3 @@ function New-CIPPOneDriveShortCut {
         throw $Result
     }
 }
-
-
