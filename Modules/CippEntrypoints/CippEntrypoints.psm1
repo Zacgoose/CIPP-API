@@ -1,11 +1,16 @@
 using namespace System.Net
 
+# Supported API versions - update this list when creating new versions
+$SupportedAPIVersions = @("latest", "v1")
+
 function Receive-CippHttpTrigger {
     <#
     .SYNOPSIS
-        Execute HTTP trigger function
+        Execute HTTP trigger function with version-aware function naming
     .DESCRIPTION
-        Execute HTTP trigger function from an azure function app
+        Execute HTTP trigger function from an azure function app with version routing.
+        Unversioned endpoints (/api/endpoint) use latest version functions.
+        Versioned endpoints (/api/v1/endpoint) use version-suffixed functions (e.g., Invoke-ListUsers_v1).
     .PARAMETER Request
         The request object from the function app
     .PARAMETER TriggerMetadata
@@ -39,8 +44,54 @@ function Receive-CippHttpTrigger {
     # Convert the request to a PSCustomObject because the httpContext is case sensitive since 7.3
     $Request = $Request | ConvertTo-Json -Depth 100 | ConvertFrom-Json
     Set-Location (Get-Item $PSScriptRoot).Parent.Parent.FullName
-    $FunctionName = 'Invoke-{0}' -f $Request.Params.CIPPEndpoint
-    Write-Information "Function: $($Request.Params.CIPPEndpoint)"
+
+    # Extract version and endpoint from route parameters
+    $Version = $Request.Params.version
+    $Endpoint = $Request.Params.CIPPEndpoint
+
+    # Handle version routing: unversioned = latest, versioned = specific version
+    if (-not $Endpoint) {
+        # URL pattern: /api/endpoint (no version specified)
+        $Endpoint = $Version  # version actually contains the endpoint name
+        $Version = "latest"  # Unversioned = latest
+        
+        # Add CIPPEndpoint property so Test-CIPPAccess works correctly
+        $Request.Params | Add-Member -NotePropertyName 'CIPPEndpoint' -NotePropertyValue $Endpoint -Force
+    }
+
+    # Validate version format (if versioned)
+    if ($Version -ne "latest" -and $Version -notmatch '^v\d+$') {
+        Push-OutputBinding -Name Response -Value ([HttpResponseContext]@{
+                StatusCode = [HttpStatusCode]::BadRequest
+                Body       = @{
+                    error = "Invalid API version format. Use 'v1', 'v2', etc."
+                    message = "For latest version, use /api/endpoint without version prefix"
+                } | ConvertTo-Json
+            })
+        return
+    }
+
+    # Check if version is supported
+    if ($SupportedAPIVersions -notcontains $Version) {
+        Push-OutputBinding -Name Response -Value ([HttpResponseContext]@{
+                StatusCode = [HttpStatusCode]::BadRequest
+                Body       = @{
+                    error = "API version '$Version' not supported"
+                    supportedVersions = $SupportedAPIVersions
+                    message = "Use /api/$Endpoint for latest version"
+                } | ConvertTo-Json
+            })
+        return
+    }
+
+    # Construct function name based on version
+    if ($Version -eq "latest") {
+        $FunctionName = 'Invoke-{0}' -f $Endpoint
+    } else {
+        $FunctionName = 'Invoke-{0}_{1}' -f $Endpoint, $Version
+    }
+
+    Write-Information "Function: $FunctionName"
 
     $HttpTrigger = @{
         Request         = [pscustomobject]($Request)
