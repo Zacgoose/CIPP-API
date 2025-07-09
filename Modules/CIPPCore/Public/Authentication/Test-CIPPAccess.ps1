@@ -54,6 +54,10 @@ function Test-CIPPAccess {
                             $_
                         }
                     }
+                    # Minimal fix: Ensure CustomRoles is never null/empty
+                    if (!$CustomRoles) {
+                        $CustomRoles = @('cipp-api')
+                    }
                     $BaseRole = $null
                     foreach ($Role in $BaseRoles.PSObject.Properties) {
                         foreach ($ClientRole in $Client.Role) {
@@ -91,7 +95,40 @@ function Test-CIPPAccess {
 
     } else {
         $Type = 'User'
-        $User = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($Request.Headers.'x-ms-client-principal')) | ConvertFrom-Json
+
+        # Minimal fix: Check if header exists and handle null user
+        if ([string]::IsNullOrWhiteSpace($Request.Headers.'x-ms-client-principal')) {
+            # Create fallback user when header is missing
+            $User = [PSCustomObject]@{
+                userDetails = 'unknown'
+                userRoles = @('authenticated', 'anonymous')
+            }
+            Write-Warning "x-ms-client-principal header missing, using fallback user"
+        } else {
+            try {
+                $User = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($Request.Headers.'x-ms-client-principal')) | ConvertFrom-Json
+
+                # Ensure user object is valid
+                if (!$User) {
+                    $User = [PSCustomObject]@{
+                        userDetails = 'unknown'
+                        userRoles = @('authenticated', 'anonymous')
+                    }
+                    Write-Warning "JWT decoding returned null, using fallback user"
+                }
+            } catch {
+                $User = [PSCustomObject]@{
+                    userDetails = 'unknown'
+                    userRoles = @('authenticated', 'anonymous')
+                }
+                Write-Warning "JWT decoding failed: $($_.Exception.Message), using fallback user"
+            }
+        }
+
+        # Ensure userRoles always exists
+        if (!$User.userRoles) {
+            $User | Add-Member -MemberType NoteProperty -Name userRoles -Value @('authenticated', 'anonymous') -Force
+        }
 
         # Check for roles granted via group membership
         if (($User.userRoles | Measure-Object).Count -eq 2 -and $User.userRoles -contains 'authenticated' -and $User.userRoles -contains 'anonymous') {
