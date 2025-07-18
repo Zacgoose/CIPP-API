@@ -11,184 +11,257 @@ Function Invoke-ExecModifyMBPerms {
     param($Request, $TriggerMetadata)
 
     $APIName = $Request.Params.CIPPEndpoint
-    Write-LogMessage -headers $Request.Headers -API $APINAME-message 'Accessed this API' -Sev 'Debug'
+    Write-LogMessage -headers $Request.Headers -API $APINAME -message 'Accessed this API' -Sev 'Debug'
 
-    $Username = $request.body.userID
-    $Tenantfilter = $request.body.tenantfilter
-    $Permissions = $request.body.permissions
-
-    if ($username -eq $null) { exit }
-
-    $userid = (New-GraphGetRequest -uri "https://graph.microsoft.com/beta/users/$($username)" -tenantid $Tenantfilter).id
+    # Extract the mailbox requests - handle both bulk and single formats
+    $MailboxRequests = $null
     $Results = [System.Collections.ArrayList]::new()
 
-    # Convert permissions to array format if it's an object with numeric keys
-    if ($Permissions -is [PSCustomObject]) {
-        if ($Permissions.PSObject.Properties.Name -match '^\d+$') {
-            $Permissions = $Permissions.PSObject.Properties.Value
-        }
-        else {
-            $Permissions = @($Permissions)
-        }
+    # Check if this is the new bulk format
+    if ($request.body.mailboxRequests) {
+        $MailboxRequests = $request.body.mailboxRequests
+        Write-LogMessage -headers $Request.Headers -API $APINAME -message "Processing bulk format with $($MailboxRequests.Count) mailboxes" -Sev 'Debug'
+    }
+    # Check if this is the legacy single mailbox format
+    elseif ($request.body.userID -and $request.body.permissions) {
+        # Convert single request to array format for unified processing
+        $MailboxRequests = @([PSCustomObject]@{
+            userID = $request.body.userID
+            tenantFilter = $request.body.tenantFilter
+            permissions = $request.body.permissions
+        })
+        Write-LogMessage -headers $Request.Headers -API $APINAME -message "Processing legacy single mailbox format for $($request.body.userID)" -Sev 'Debug'
     }
 
-    foreach ($Permission in $Permissions) {
-        $PermissionLevels = $Permission.PermissionLevel
-        $Modification = $Permission.Modification
-        $AutoMap = if ($Permission.PSObject.Properties.Name -contains 'AutoMap') { $Permission.AutoMap } else { $true }
+    # Debug logging
+    Write-LogMessage -headers $Request.Headers -API $APINAME -message "Request body keys: $($request.body.PSObject.Properties.Name -join ', ')" -Sev 'Debug'
 
-        # Handle multiple permission levels separated by commas
-        if ($PermissionLevels -like "*,*") {
-            $PermissionLevelArray = $PermissionLevels -split ',' | ForEach-Object { $_.Trim() }
-        }
-        else {
-            $PermissionLevelArray = @($PermissionLevels.Trim())
+    if (-not $MailboxRequests -or $MailboxRequests.Count -eq 0) {
+        Write-LogMessage -headers $Request.Headers -API $APINAME -message 'No mailbox requests provided in either format' -Sev 'Error'
+        Write-LogMessage -headers $Request.Headers -API $APINAME -message "Full request body: $($request.body | ConvertTo-Json -Depth 5)" -Sev 'Debug'
+        $body = [pscustomobject]@{'Results' = @("No mailbox requests provided. Request body keys: $($request.body.PSObject.Properties.Name -join ', ')") }
+        Push-OutputBinding -Name Response -Value ([HttpResponseContext]@{
+            StatusCode = [HttpStatusCode]::BadRequest
+            Body       = $Body
+        })
+        return
+    }
+
+    # Get the tenant from the first request (assuming all are same tenant)
+    $TenantFilter = $MailboxRequests[0].tenantFilter
+
+    Write-LogMessage -headers $Request.Headers -API $APINAME -message "Processing bulk permission changes for $($MailboxRequests.Count) mailboxes" -Sev 'Info' -tenant $TenantFilter
+
+    # Build cmdlet array for bulk processing
+    $CmdletArray = [System.Collections.ArrayList]::new()
+    $UserLookupCache = @{}
+
+    foreach ($MailboxRequest in $MailboxRequests) {
+        $Username = $MailboxRequest.userID
+        $Permissions = $MailboxRequest.permissions
+
+        if ([string]::IsNullOrEmpty($Username)) {
+            $null = $Results.Add("Skipped mailbox with missing userID")
+            continue
         }
 
-        # Handle UserID as array of objects or single value
-        $TargetUsers = if ($Permission.UserID -is [array]) {
-            $Permission.UserID | ForEach-Object { $_.value }
+        # Cache user lookups to avoid repeated API calls
+        if (-not $UserLookupCache.ContainsKey($Username)) {
+            try {
+                $UserLookupCache[$Username] = (New-GraphGetRequest -uri "https://graph.microsoft.com/beta/users/$($Username)" -tenantid $TenantFilter).id
+            }
+            catch {
+                Write-LogMessage -headers $Request.Headers -API $APINAME -message "Could not find user $($Username): $($_.Exception.Message)" -Sev 'Error' -tenant $TenantFilter
+                $null = $Results.Add("Could not find user $($Username): $($_.Exception.Message)")
+                continue
+            }
         }
-        else {
-            @($Permission.UserID)
+        $UserId = $UserLookupCache[$Username]
+
+        # Convert permissions to array format if needed
+        if ($Permissions -is [PSCustomObject]) {
+            if ($Permissions.PSObject.Properties.Name -match '^\d+$') {
+                $Permissions = $Permissions.PSObject.Properties.Value
+            }
+            else {
+                $Permissions = @($Permissions)
+            }
         }
 
-        foreach ($TargetUser in $TargetUsers) {
-            foreach ($PermissionLevel in $PermissionLevelArray) {
-                try {
+        foreach ($Permission in $Permissions) {
+            $PermissionLevels = $Permission.PermissionLevel
+            $Modification = $Permission.Modification
+            $AutoMap = if ($Permission.PSObject.Properties.Name -contains 'AutoMap') { $Permission.AutoMap } else { $true }
+
+            # Handle multiple permission levels separated by commas
+            if ($PermissionLevels -like "*,*") {
+                $PermissionLevelArray = $PermissionLevels -split ',' | ForEach-Object { $_.Trim() }
+            }
+            else {
+                $PermissionLevelArray = @($PermissionLevels.Trim())
+            }
+
+            # Handle UserID as array of objects or single value
+            $TargetUsers = if ($Permission.UserID -is [array]) {
+                $Permission.UserID | ForEach-Object {
+                    if ($_ -is [PSCustomObject] -and $_.value) {
+                        $_.value
+                    }
+                    elseif ($_ -is [string]) {
+                        $_
+                    }
+                    else {
+                        $_.ToString()
+                    }
+                }
+            }
+            else {
+                if ($Permission.UserID -is [PSCustomObject] -and $Permission.UserID.value) {
+                    @($Permission.UserID.value)
+                }
+                else {
+                    @($Permission.UserID)
+                }
+            }
+
+            foreach ($TargetUser in $TargetUsers) {
+                foreach ($PermissionLevel in $PermissionLevelArray) {
+
+                    # Create cmdlet object for bulk processing
+                    $CmdletParams = @{}
+                    $CmdletName = ""
+
                     switch ($PermissionLevel) {
                         'FullAccess' {
                             if ($Modification -eq 'Remove') {
-                                $MailboxPerms = New-ExoRequest -Anchor $username -tenantid $Tenantfilter -cmdlet 'Remove-mailboxpermission' -cmdParams @{
-                                    Identity     = $userid
+                                $CmdletName = 'Remove-MailboxPermission'
+                                $CmdletParams = @{
+                                    Identity     = $UserId
                                     user         = $TargetUser
                                     accessRights = @('FullAccess')
                                     Confirm      = $false
                                 }
-                                $null = $results.Add("Removed $($TargetUser) from $($username) Shared Mailbox permissions (FullAccess)")
                             }
                             else {
-                                $MailboxPerms = New-ExoRequest -Anchor $username -tenantid $Tenantfilter -cmdlet 'Add-MailboxPermission' -cmdParams @{
-                                    Identity     = $userid
+                                $CmdletName = 'Add-MailboxPermission'
+                                $CmdletParams = @{
+                                    Identity     = $UserId
                                     user         = $TargetUser
                                     accessRights = @('FullAccess')
                                     automapping  = $AutoMap
                                     Confirm      = $false
                                 }
-                                $null = $results.Add("Granted $($TargetUser) access to $($username) Mailbox (FullAccess) with automapping set to $($AutoMap)")
                             }
                         }
                         'SendAs' {
                             if ($Modification -eq 'Remove') {
-                                $MailboxPerms = New-ExoRequest -Anchor $username -tenantid $Tenantfilter -cmdlet 'Remove-RecipientPermission' -cmdParams @{
-                                    Identity     = $userid
+                                $CmdletName = 'Remove-RecipientPermission'
+                                $CmdletParams = @{
+                                    Identity     = $UserId
                                     Trustee      = $TargetUser
                                     accessRights = @('SendAs')
                                     Confirm      = $false
                                 }
-                                $null = $results.Add("Removed $($TargetUser) from $($username) with Send As permissions")
                             }
                             else {
-                                $MailboxPerms = New-ExoRequest -Anchor $username -tenantid $Tenantfilter -cmdlet 'Add-RecipientPermission' -cmdParams @{
-                                    Identity     = $userid
+                                $CmdletName = 'Add-RecipientPermission'
+                                $CmdletParams = @{
+                                    Identity     = $UserId
                                     Trustee      = $TargetUser
                                     accessRights = @('SendAs')
                                     Confirm      = $false
                                 }
-                                $null = $results.Add("Granted $($TargetUser) access to $($username) with Send As permissions")
                             }
                         }
                         'SendOnBehalf' {
+                            $CmdletName = 'Set-Mailbox'
                             if ($Modification -eq 'Remove') {
-                                $MailboxPerms = New-ExoRequest -Anchor $username -tenantid $Tenantfilter -cmdlet 'Set-Mailbox' -cmdParams @{
-                                    Identity            = $userid
+                                $CmdletParams = @{
+                                    Identity            = $UserId
                                     GrantSendonBehalfTo = @{
                                         '@odata.type' = '#Exchange.GenericHashTable'
                                         remove        = $TargetUser
                                     }
                                     Confirm             = $false
                                 }
-                                $null = $results.Add("Removed $($TargetUser) from $($username) Send on Behalf Permissions")
                             }
                             else {
-                                $MailboxPerms = New-ExoRequest -Anchor $username -tenantid $Tenantfilter -cmdlet 'Set-Mailbox' -cmdParams @{
-                                    Identity            = $userid
+                                $CmdletParams = @{
+                                    Identity            = $UserId
                                     GrantSendonBehalfTo = @{
                                         '@odata.type' = '#Exchange.GenericHashTable'
                                         add           = $TargetUser
                                     }
                                     Confirm             = $false
                                 }
-                                $null = $results.Add("Granted $($TargetUser) access to $($username) with Send On Behalf Permissions")
-                            }
-                        }
-                        'ReadPermission' {
-                            if ($Modification -eq 'Remove') {
-                                $MailboxPerms = New-ExoRequest -Anchor $username -tenantid $Tenantfilter -cmdlet 'Remove-MailboxPermission' -cmdParams @{
-                                    Identity     = $userid
-                                    user         = $TargetUser
-                                    accessRights = @('ReadPermission')
-                                    Confirm      = $false
-                                }
-                                $null = $results.Add("Removed $($TargetUser) from $($username) Read Permissions")
-                            }
-                        }
-                        'ExternalAccount' {
-                            if ($Modification -eq 'Remove') {
-                                $MailboxPerms = New-ExoRequest -Anchor $username -tenantid $Tenantfilter -cmdlet 'Remove-MailboxPermission' -cmdParams @{
-                                    Identity     = $userid
-                                    user         = $TargetUser
-                                    accessRights = @('ExternalAccount')
-                                    Confirm      = $false
-                                }
-                                $null = $results.Add("Removed $($TargetUser) from $($username) Read Permissions")
-                            }
-                        }
-                        'DeleteItem' {
-                            if ($Modification -eq 'Remove') {
-                                $MailboxPerms = New-ExoRequest -Anchor $username -tenantid $Tenantfilter -cmdlet 'Remove-MailboxPermission' -cmdParams @{
-                                    Identity     = $userid
-                                    user         = $TargetUser
-                                    accessRights = @('DeleteItem')
-                                    Confirm      = $false
-                                }
-                                $null = $results.Add("Removed $($TargetUser) from $($username) Read Permissions")
-                            }
-                        }
-                        'ChangePermission' {
-                            if ($Modification -eq 'Remove') {
-                                $MailboxPerms = New-ExoRequest -Anchor $username -tenantid $Tenantfilter -cmdlet 'Remove-MailboxPermission' -cmdParams @{
-                                    Identity     = $userid
-                                    user         = $TargetUser
-                                    accessRights = @('ChangePermission')
-                                    Confirm      = $false
-                                }
-                                $null = $results.Add("Removed $($TargetUser) from $($username) Read Permissions")
-                            }
-                        }
-                        'ChangeOwner' {
-                            if ($Modification -eq 'Remove') {
-                                $MailboxPerms = New-ExoRequest -Anchor $username -tenantid $Tenantfilter -cmdlet 'Remove-MailboxPermission' -cmdParams @{
-                                    Identity     = $userid
-                                    user         = $TargetUser
-                                    accessRights = @('ChangeOwner')
-                                    Confirm      = $false
-                                }
-                                $null = $results.Add("Removed $($TargetUser) from $($username) Read Permissions")
                             }
                         }
                     }
-                    Write-LogMessage -headers $Request.Headers -API $APINAME-message "Executed $($PermissionLevel) permission modification for $($TargetUser) on $($username)" -Sev 'Info' -tenant $TenantFilter
-                }
-                catch {
-                    Write-LogMessage -headers $Request.Headers -API $APINAME-message "Could not execute $($PermissionLevel) permission modification for $($TargetUser) on $($username)" -Sev 'Error' -tenant $TenantFilter
-                    $null = $results.Add("Could not execute $($PermissionLevel) permission modification for $($TargetUser) on $($username). Error: $($_.Exception.Message)")
+
+                    if ($CmdletName) {
+                        # Create cmdlet object for bulk request
+                        $CmdletObj = [PSCustomObject]@{
+                            CmdletInput = [PSCustomObject]@{
+                                CmdletName = $CmdletName
+                                Parameters = $CmdletParams
+                            }
+                            Mailbox = $Username
+                            TargetUser = $TargetUser
+                            Permission = $PermissionLevel
+                            Action = $Modification
+                        }
+                        $null = $CmdletArray.Add($CmdletObj)
+                    }
                 }
             }
         }
     }
 
-    $body = [pscustomobject]@{'Results' = @($results) }
+    if ($CmdletArray.Count -eq 0) {
+        Write-LogMessage -headers $Request.Headers -API $APINAME -message 'No valid cmdlets to process' -Sev 'Warning' -tenant $TenantFilter
+        $body = [pscustomobject]@{'Results' = @("No valid permission changes to process") }
+        Push-OutputBinding -Name Response -Value ([HttpResponseContext]@{
+            StatusCode = [HttpStatusCode]::OK
+            Body       = $Body
+        })
+        return
+    }
+
+    try {
+        Write-LogMessage -headers $Request.Headers -API $APINAME -message "Executing bulk request with $($CmdletArray.Count) cmdlets" -Sev 'Info' -tenant $TenantFilter
+
+        # Execute bulk request
+        $BulkResults = New-ExoBulkRequest -tenantid $TenantFilter -cmdletArray $CmdletArray
+
+        # Process results
+        foreach ($CmdletObj in $CmdletArray) {
+            $mailbox = $CmdletObj.Mailbox
+            $targetUser = $CmdletObj.TargetUser
+            $permission = $CmdletObj.Permission
+            $action = $CmdletObj.Action
+
+            if ($action -eq 'Remove') {
+                $null = $Results.Add("Removed $($targetUser) from $($mailbox) with $($permission) permissions")
+            }
+            else {
+                if ($permission -eq 'FullAccess') {
+                    $autoMapText = if ($CmdletObj.CmdletInput.Parameters.automapping) { "with automapping enabled" } else { "with automapping disabled" }
+                    $null = $Results.Add("Granted $($targetUser) access to $($mailbox) Mailbox ($($permission)) $($autoMapText)")
+                }
+                else {
+                    $null = $Results.Add("Granted $($targetUser) access to $($mailbox) with $($permission) permissions")
+                }
+            }
+        }
+
+        Write-LogMessage -headers $Request.Headers -API $APINAME -message "Successfully processed bulk mailbox permission changes" -Sev 'Info' -tenant $TenantFilter
+    }
+    catch {
+        Write-LogMessage -headers $Request.Headers -API $APINAME -message "Error executing bulk request: $($_.Exception.Message)" -Sev 'Error' -tenant $TenantFilter
+        $null = $Results.Add("Error executing bulk permission changes: $($_.Exception.Message)")
+    }
+
+    $body = [pscustomobject]@{'Results' = @($Results) }
 
     # Associate values to output bindings by calling 'Push-OutputBinding'.
     Push-OutputBinding -Name Response -Value ([HttpResponseContext]@{
