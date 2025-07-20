@@ -33,7 +33,9 @@ function New-ExoBulkRequest {
         }
 
         if ($Compliance.IsPresent) {
-            # Compliance URL logic (omitted for brevity)
+            $ComplianceUrl = 'https://ps.compliance.protection.outlook.com/adminapi/beta'
+            $URL = "$ComplianceUrl/$($Tenant.customerId)/InvokeCommand?$Select"
+            $BatchURL = "$ComplianceUrl/$($Tenant.customerId)/`$batch"
         }
 
         try {
@@ -41,8 +43,9 @@ function New-ExoBulkRequest {
             $URL = "$Resource/adminapi/beta/$($Tenant.customerId)/InvokeCommand?$Select"
             $BatchURL = "$Resource/adminapi/beta/$($Tenant.customerId)/`$batch"
 
-            # Initialize the ID to Cmdlet Name mapping
+            # Initialize the ID to Cmdlet Name and GUID mapping
             $IdToCmdletName = @{}
+            $IdToOperationGuid = @{}  # NEW: Track operation GUIDs
 
             # Split the cmdletArray into batches of 10
             $batches = [System.Collections.Generic.List[object]]::new()
@@ -69,8 +72,13 @@ function New-ExoBulkRequest {
                     $Headers['Accept'] = 'application/json; odata.metadata=minimal'
                     $Headers['Accept-Encoding'] = 'gzip'
 
-                    # Generate a unique ID for each request
-                    $RequestId = [Guid]::NewGuid().ToString()
+                    # Use provided GUID or generate new one
+                    $RequestId = if ($cmd.OperationGuid) {
+                        $cmd.OperationGuid
+                    } else {
+                        [Guid]::NewGuid().ToString()
+                    }
+
                     $BatchRequest = @{
                         url     = $URL
                         method  = 'POST'
@@ -80,8 +88,9 @@ function New-ExoBulkRequest {
                     }
                     $BatchBodyObj['requests'] = $BatchBodyObj['requests'] + $BatchRequest
 
-                    # Map the Request ID to the Cmdlet Name
+                    # Map the Request ID to the Cmdlet Name and Operation GUID
                     $IdToCmdletName[$RequestId] = $cmd.CmdletInput.CmdletName
+                    $IdToOperationGuid[$RequestId] = $RequestId  # Store the GUID for response mapping
                 }
                 $BatchBodyJson = ConvertTo-Json -InputObject $BatchBodyObj -Depth 10
                 $BatchBodyJson = Get-CIPPTextReplacement -TenantFilter $tenantid -Text $BatchBodyJson
@@ -93,10 +102,10 @@ function New-ExoBulkRequest {
                 Write-Host "Batch #$($batches.IndexOf($batch) + 1) of $($batches.Count) processed"
             }
         } catch {
-            # Error handling (omitted for brevity)
+            $ErrorMessage = Get-CippException -Exception $_
+            Write-LogMessage -API 'New-ExoBulkRequest' -message "Failed to execute bulk request. Error: $($ErrorMessage.NormalizedError)" -Sev 'Error'
+            throw $ErrorMessage.NormalizedError
         }
-
-        #Write-Information ($responseHeaders | ConvertTo-Json -Depth 10)
 
         # Process the returned data
         if ($ReturnWithCommand) {
@@ -104,6 +113,7 @@ function New-ExoBulkRequest {
             foreach ($item in $ReturnedData) {
                 $itemId = $item.id
                 $CmdletName = $IdToCmdletName[$itemId]
+                $OperationGuid = $IdToOperationGuid[$itemId]  # Get the operation GUID
                 $body = $item.body.PSObject.Copy()
 
                 if ($body.'@adminapi.warnings') {
@@ -111,12 +121,38 @@ function New-ExoBulkRequest {
                 }
                 if (![string]::IsNullOrEmpty($body.error.details.message) -or ![string]::IsNullOrEmpty($body.error.message)) {
                     if ($body.error.details.message) {
-                        $msg = [pscustomobject]@{ error = $body.error.details.message; target = $body.error.details.target }
+                        $msg = [pscustomobject]@{
+                            error = $body.error.details.message
+                            target = $body.error.details.target
+                            OperationGuid = $OperationGuid  # Include GUID in error response
+                        }
                     } else {
-                        $msg = [pscustomobject]@{ error = $body.error.message; target = $body.error.details.target }
+                        $msg = [pscustomobject]@{
+                            error = $body.error.message
+                            target = $body.error.details.target
+                            OperationGuid = $OperationGuid  # Include GUID in error response
+                        }
                     }
                     $body | Add-Member -MemberType NoteProperty -Name 'value' -Value $msg -Force
+                } else {
+                    # Add GUID to successful operations too
+                    if ($body.value) {
+                        if ($body.value -is [array]) {
+                            foreach ($val in $body.value) {
+                                $val | Add-Member -MemberType NoteProperty -Name 'OperationGuid' -Value $OperationGuid -Force
+                            }
+                        } else {
+                            $body.value | Add-Member -MemberType NoteProperty -Name 'OperationGuid' -Value $OperationGuid -Force
+                        }
+                    } else {
+                        # For operations that don't return values, create a success indicator
+                        $body | Add-Member -MemberType NoteProperty -Name 'value' -Value ([pscustomobject]@{
+                            OperationGuid = $OperationGuid
+                            Success = $true
+                        }) -Force
+                    }
                 }
+
                 $resultValues = $body.value
                 foreach ($resultValue in $resultValues) {
                     if (-not $FinalData.ContainsKey($CmdletName)) {
@@ -129,6 +165,8 @@ function New-ExoBulkRequest {
             }
         } else {
             $FinalData = foreach ($item in $ReturnedData) {
+                $itemId = $item.id
+                $OperationGuid = $IdToOperationGuid[$itemId]
                 $body = $item.body.PSObject.Copy()
 
                 if ($body.'@adminapi.warnings') {
@@ -136,11 +174,36 @@ function New-ExoBulkRequest {
                 }
                 if (![string]::IsNullOrEmpty($body.error.details.message) -or ![string]::IsNullOrEmpty($body.error.message)) {
                     if ($body.error.details.message) {
-                        $msg = [pscustomobject]@{ error = $body.error.details.message; target = $body.error.details.target }
+                        $msg = [pscustomobject]@{
+                            error = $body.error.details.message
+                            target = $body.error.details.target
+                            OperationGuid = $OperationGuid
+                        }
                     } else {
-                        $msg = [pscustomobject]@{ error = $body.error.message; target = $body.error.details.target }
+                        $msg = [pscustomobject]@{
+                            error = $body.error.message
+                            target = $body.error.details.target
+                            OperationGuid = $OperationGuid
+                        }
                     }
                     $body | Add-Member -MemberType NoteProperty -Name 'value' -Value $msg -Force
+                } else {
+                    # Add GUID to successful operations
+                    if ($body.value) {
+                        if ($body.value -is [array]) {
+                            foreach ($val in $body.value) {
+                                $val | Add-Member -MemberType NoteProperty -Name 'OperationGuid' -Value $OperationGuid -Force
+                            }
+                        } else {
+                            $body.value | Add-Member -MemberType NoteProperty -Name 'OperationGuid' -Value $OperationGuid -Force
+                        }
+                    } else {
+                        # For operations that don't return values, create a success indicator
+                        $body | Add-Member -MemberType NoteProperty -Name 'value' -Value ([pscustomobject]@{
+                            OperationGuid = $OperationGuid
+                            Success = $true
+                        }) -Force
+                    }
                 }
                 $body.value
             }
