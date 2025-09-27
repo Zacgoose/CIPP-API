@@ -1,12 +1,12 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/azure/functions-action
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Powershell project to Azure Function App - cippahmcc
+name: Build and deploy Powershell project to Azure Function App - cippgze2t
 
 on:
   push:
     branches:
-      - dev
+      - master
   workflow_dispatch:
 
 env:
@@ -14,7 +14,7 @@ env:
 
 jobs:
   deploy:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     
     steps:
       - name: 'Checkout GitHub Action'
@@ -24,7 +24,9 @@ jobs:
         uses: Azure/functions-action@v1
         id: fa
         with:
-          app-name: 'cippahmcc'
+          app-name: 'cippgze2t'
           slot-name: 'Production'
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_D6317AAB492A474D91B7A6CD29E53BA3 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_BB579F6560544CEE9BC5D7817874AA0B }}
+          sku: 'flexconsumption'
+        
