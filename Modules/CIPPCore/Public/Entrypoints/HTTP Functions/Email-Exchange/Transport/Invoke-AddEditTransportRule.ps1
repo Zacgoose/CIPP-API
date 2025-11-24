@@ -64,6 +64,7 @@ function Invoke-AddEditTransportRule {
     $HeaderContainsWordsMessageHeader = $Request.Body.HeaderContainsWordsMessageHeader
     $HeaderMatchesPatterns = $Request.Body.HeaderMatchesPatterns
     $HeaderMatchesPatternsMessageHeader = $Request.Body.HeaderMatchesPatternsMessageHeader
+    $SenderIpRanges = $Request.Body.SenderIpRanges
 
     # Extract action fields
     $DeleteMessage = $Request.Body.DeleteMessage
@@ -113,6 +114,7 @@ function Invoke-AddEditTransportRule {
     $ExceptIfHeaderContainsWordsMessageHeader = $Request.Body.ExceptIfHeaderContainsWordsMessageHeader
     $ExceptIfHeaderMatchesPatterns = $Request.Body.ExceptIfHeaderMatchesPatterns
     $ExceptIfHeaderMatchesPatternsMessageHeader = $Request.Body.ExceptIfHeaderMatchesPatternsMessageHeader
+    $ExceptIfSenderIpRanges = $Request.Body.ExceptIfSenderIpRanges
 
     # Helper function to process array fields
     function Process-ArrayField {
@@ -240,6 +242,10 @@ function Invoke-AddEditTransportRule {
     $ExceptIfHeaderContainsWords = Process-TextArrayField -Field $ExceptIfHeaderContainsWords
     $ExceptIfHeaderMatchesPatterns = Process-TextArrayField -Field $ExceptIfHeaderMatchesPatterns
 
+    # Process IP range fields
+    $SenderIpRanges = Process-TextArrayField -Field $SenderIpRanges
+    $ExceptIfSenderIpRanges = Process-TextArrayField -Field $ExceptIfSenderIpRanges
+
     try {
         # Build command parameters for transport rule
         $ruleParams = @{
@@ -321,6 +327,9 @@ function Invoke-AddEditTransportRule {
         if ($null -ne $HeaderMatchesPatterns -and $HeaderMatchesPatterns.Count -gt 0 -and $null -ne $HeaderMatchesPatternsMessageHeader) {
             $ruleParams.Add('HeaderMatchesMessageHeader', $HeaderMatchesPatternsMessageHeader)
             $ruleParams.Add('HeaderMatchesPatterns', $HeaderMatchesPatterns)
+        }
+        if ($null -ne $SenderIpRanges -and $SenderIpRanges.Count -gt 0) {
+            $ruleParams.Add('SenderIpRanges', $SenderIpRanges)
         }
 
         # Action parameters
@@ -430,6 +439,9 @@ function Invoke-AddEditTransportRule {
         if ($null -ne $ExceptIfHeaderMatchesPatterns -and $ExceptIfHeaderMatchesPatterns.Count -gt 0 -and $null -ne $ExceptIfHeaderMatchesPatternsMessageHeader) {
             $ruleParams.Add('ExceptIfHeaderMatchesMessageHeader', $ExceptIfHeaderMatchesPatternsMessageHeader)
             $ruleParams.Add('ExceptIfHeaderMatchesPatterns', $ExceptIfHeaderMatchesPatterns)
+        }
+        if ($null -ne $ExceptIfSenderIpRanges -and $ExceptIfSenderIpRanges.Count -gt 0) {
+            $ruleParams.Add('ExceptIfSenderIpRanges', $ExceptIfSenderIpRanges)
         }
 
         if (!$Identity) {
