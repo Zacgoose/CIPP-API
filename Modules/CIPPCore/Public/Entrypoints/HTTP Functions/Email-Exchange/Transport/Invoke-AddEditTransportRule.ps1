@@ -310,23 +310,36 @@ function Invoke-AddEditTransportRule {
         if (($null -ne $State) -and (!$Identity)) { $ruleParams.Add('Enabled', $State) }
         if ($null -ne $Priority) { $ruleParams.Add('Priority', $Priority) }
         if ($null -ne $Comments) { $ruleParams.Add('Comments', $Comments) }
-        if ($null -ne $Mode -and $null -ne $Mode.value) { $ruleParams.Add('Mode', $Mode.value) }
-        if ($null -ne $SetAuditSeverity -and $null -ne $SetAuditSeverity.value -and $SetAuditSeverity.value -ne '') {
-            $ruleParams.Add('SetAuditSeverity', $SetAuditSeverity.value)
+        if ($null -ne $Mode) {
+            $modeValue = if ($Mode.value) { $Mode.value } else { $Mode }
+            $ruleParams.Add('Mode', $modeValue)
+        }
+        if ($null -ne $SetAuditSeverity) {
+            $severityValue = if ($SetAuditSeverity.value) { $SetAuditSeverity.value } else { $SetAuditSeverity }
+            if ($severityValue -ne '') {
+                $ruleParams.Add('SetAuditSeverity', $severityValue)
+            }
         }
         if ($null -ne $StopRuleProcessing) { $ruleParams.Add('StopRuleProcessing', $StopRuleProcessing) }
-        if ($null -ne $SenderAddressLocation -and $null -ne $SenderAddressLocation.value) {
-            $ruleParams.Add('SenderAddressLocation', $SenderAddressLocation.value)
+        if ($null -ne $SenderAddressLocation) {
+            $locationValue = if ($SenderAddressLocation.value) { $SenderAddressLocation.value } else { $SenderAddressLocation }
+            $ruleParams.Add('SenderAddressLocation', $locationValue)
         }
         if ($null -ne $ActivationDate -and $ActivationDate -ne '') { $ruleParams.Add('ActivationDate', $ActivationDate) }
         if ($null -ne $ExpiryDate -and $ExpiryDate -ne '') { $ruleParams.Add('ExpiryDate', $ExpiryDate) }
 
         # Condition parameters
         if ($null -ne $From -and $From.Count -gt 0) { $ruleParams.Add('From', $From) }
-        if ($null -ne $FromScope -and $null -ne $FromScope.value) { $ruleParams.Add('FromScope', $FromScope.value) }
+        if ($null -ne $FromScope) {
+            $fromScopeValue = if ($FromScope.value) { $FromScope.value } else { $FromScope }
+            $ruleParams.Add('FromScope', $fromScopeValue)
+        }
         if ($null -ne $FromMemberOf -and $FromMemberOf.Count -gt 0) { $ruleParams.Add('FromMemberOf', $FromMemberOf) }
         if ($null -ne $SentTo -and $SentTo.Count -gt 0) { $ruleParams.Add('SentTo', $SentTo) }
-        if ($null -ne $SentToScope -and $null -ne $SentToScope.value) { $ruleParams.Add('SentToScope', $SentToScope.value) }
+        if ($null -ne $SentToScope) {
+            $sentToScopeValue = if ($SentToScope.value) { $SentToScope.value } else { $SentToScope }
+            $ruleParams.Add('SentToScope', $sentToScopeValue)
+        }
         if ($null -ne $SentToMemberOf -and $SentToMemberOf.Count -gt 0) { $ruleParams.Add('SentToMemberOf', $SentToMemberOf) }
         if ($null -ne $SubjectContainsWords -and $SubjectContainsWords.Count -gt 0) {
             $ruleParams.Add('SubjectContainsWords', $SubjectContainsWords)
@@ -357,12 +370,17 @@ function Invoke-AddEditTransportRule {
         }
         if ($null -ne $AttachmentSizeOver) { $ruleParams.Add('AttachmentSizeOver', $AttachmentSizeOver) }
         if ($null -ne $MessageSizeOver) { $ruleParams.Add('MessageSizeOver', $MessageSizeOver) }
-        if ($null -ne $SCLOver -and $null -ne $SCLOver.value) { $ruleParams.Add('SCLOver', $SCLOver.value) }
-        if ($null -ne $WithImportance -and $null -ne $WithImportance.value) {
-            $ruleParams.Add('WithImportance', $WithImportance.value)
+        if ($null -ne $SCLOver) {
+            $sclValue = if ($SCLOver.value) { $SCLOver.value } else { $SCLOver }
+            $ruleParams.Add('SCLOver', $sclValue)
         }
-        if ($null -ne $MessageTypeMatches -and $null -ne $MessageTypeMatches.value) {
-            $ruleParams.Add('MessageTypeMatches', $MessageTypeMatches.value)
+        if ($null -ne $WithImportance) {
+            $importanceValue = if ($WithImportance.value) { $WithImportance.value } else { $WithImportance }
+            $ruleParams.Add('WithImportance', $importanceValue)
+        }
+        if ($null -ne $MessageTypeMatches) {
+            $messageTypeValue = if ($MessageTypeMatches.value) { $MessageTypeMatches.value } else { $MessageTypeMatches }
+            $ruleParams.Add('MessageTypeMatches', $messageTypeValue)
         }
         if ($null -ne $SenderDomainIs -and $SenderDomainIs.Count -gt 0) {
             $ruleParams.Add('SenderDomainIs', $SenderDomainIs)
@@ -431,7 +449,10 @@ function Invoke-AddEditTransportRule {
             $ruleParams.Add('RejectMessageEnhancedStatusCode', $RejectMessageEnhancedStatusCode)
         }
         if ($null -ne $PrependSubject -and $PrependSubject -ne '') { $ruleParams.Add('PrependSubject', $PrependSubject) }
-        if ($null -ne $SetSCL -and $null -ne $SetSCL.value) { $ruleParams.Add('SetSCL', $SetSCL.value) }
+        if ($null -ne $SetSCL) {
+            $setSclValue = if ($SetSCL.value) { $SetSCL.value } else { $SetSCL }
+            $ruleParams.Add('SetSCL', $setSclValue)
+        }
         if ($null -ne $SetHeaderName -and $SetHeaderName -ne '' -and $null -ne $SetHeaderValue) {
             $ruleParams.Add('SetHeaderName', $SetHeaderName)
             $ruleParams.Add('SetHeaderValue', $SetHeaderValue)
@@ -442,11 +463,13 @@ function Invoke-AddEditTransportRule {
         }
         if ($null -ne $ApplyHtmlDisclaimerText -and $ApplyHtmlDisclaimerText -ne '') {
             $ruleParams.Add('ApplyHtmlDisclaimerText', $ApplyHtmlDisclaimerText)
-            if ($null -ne $ApplyHtmlDisclaimerLocation -and $null -ne $ApplyHtmlDisclaimerLocation.value) {
-                $ruleParams.Add('ApplyHtmlDisclaimerLocation', $ApplyHtmlDisclaimerLocation.value)
+            if ($null -ne $ApplyHtmlDisclaimerLocation) {
+                $disclaimerLocationValue = if ($ApplyHtmlDisclaimerLocation.value) { $ApplyHtmlDisclaimerLocation.value } else { $ApplyHtmlDisclaimerLocation }
+                $ruleParams.Add('ApplyHtmlDisclaimerLocation', $disclaimerLocationValue)
             }
-            if ($null -ne $ApplyHtmlDisclaimerFallbackAction -and $null -ne $ApplyHtmlDisclaimerFallbackAction.value) {
-                $ruleParams.Add('ApplyHtmlDisclaimerFallbackAction', $ApplyHtmlDisclaimerFallbackAction.value)
+            if ($null -ne $ApplyHtmlDisclaimerFallbackAction) {
+                $disclaimerFallbackValue = if ($ApplyHtmlDisclaimerFallbackAction.value) { $ApplyHtmlDisclaimerFallbackAction.value } else { $ApplyHtmlDisclaimerFallbackAction }
+                $ruleParams.Add('ApplyHtmlDisclaimerFallbackAction', $disclaimerFallbackValue)
             }
         }
         if ($null -ne $GenerateIncidentReport -and $GenerateIncidentReport.Count -gt 0) {
@@ -459,13 +482,15 @@ function Invoke-AddEditTransportRule {
 
         # Exception parameters (ExceptIf versions)
         if ($null -ne $ExceptIfFrom -and $ExceptIfFrom.Count -gt 0) { $ruleParams.Add('ExceptIfFrom', $ExceptIfFrom) }
-        if ($null -ne $ExceptIfFromScope -and $null -ne $ExceptIfFromScope.value) {
-            $ruleParams.Add('ExceptIfFromScope', $ExceptIfFromScope.value)
+        if ($null -ne $ExceptIfFromScope) {
+            $exceptFromScopeValue = if ($ExceptIfFromScope.value) { $ExceptIfFromScope.value } else { $ExceptIfFromScope }
+            $ruleParams.Add('ExceptIfFromScope', $exceptFromScopeValue)
         }
         if ($null -ne $ExceptIfFromMemberOf -and $ExceptIfFromMemberOf.Count -gt 0) { $ruleParams.Add('ExceptIfFromMemberOf', $ExceptIfFromMemberOf) }
         if ($null -ne $ExceptIfSentTo -and $ExceptIfSentTo.Count -gt 0) { $ruleParams.Add('ExceptIfSentTo', $ExceptIfSentTo) }
-        if ($null -ne $ExceptIfSentToScope -and $null -ne $ExceptIfSentToScope.value) {
-            $ruleParams.Add('ExceptIfSentToScope', $ExceptIfSentToScope.value)
+        if ($null -ne $ExceptIfSentToScope) {
+            $exceptSentToScopeValue = if ($ExceptIfSentToScope.value) { $ExceptIfSentToScope.value } else { $ExceptIfSentToScope }
+            $ruleParams.Add('ExceptIfSentToScope', $exceptSentToScopeValue)
         }
         if ($null -ne $ExceptIfSentToMemberOf -and $ExceptIfSentToMemberOf.Count -gt 0) { $ruleParams.Add('ExceptIfSentToMemberOf', $ExceptIfSentToMemberOf) }
         if ($null -ne $ExceptIfSubjectContainsWords -and $ExceptIfSubjectContainsWords.Count -gt 0) {
@@ -499,14 +524,17 @@ function Invoke-AddEditTransportRule {
             $ruleParams.Add('ExceptIfAttachmentSizeOver', $ExceptIfAttachmentSizeOver)
         }
         if ($null -ne $ExceptIfMessageSizeOver) { $ruleParams.Add('ExceptIfMessageSizeOver', $ExceptIfMessageSizeOver) }
-        if ($null -ne $ExceptIfSCLOver -and $null -ne $ExceptIfSCLOver.value) {
-            $ruleParams.Add('ExceptIfSCLOver', $ExceptIfSCLOver.value)
+        if ($null -ne $ExceptIfSCLOver) {
+            $exceptSclValue = if ($ExceptIfSCLOver.value) { $ExceptIfSCLOver.value } else { $ExceptIfSCLOver }
+            $ruleParams.Add('ExceptIfSCLOver', $exceptSclValue)
         }
-        if ($null -ne $ExceptIfWithImportance -and $null -ne $ExceptIfWithImportance.value) {
-            $ruleParams.Add('ExceptIfWithImportance', $ExceptIfWithImportance.value)
+        if ($null -ne $ExceptIfWithImportance) {
+            $exceptImportanceValue = if ($ExceptIfWithImportance.value) { $ExceptIfWithImportance.value } else { $ExceptIfWithImportance }
+            $ruleParams.Add('ExceptIfWithImportance', $exceptImportanceValue)
         }
-        if ($null -ne $ExceptIfMessageTypeMatches -and $null -ne $ExceptIfMessageTypeMatches.value) {
-            $ruleParams.Add('ExceptIfMessageTypeMatches', $ExceptIfMessageTypeMatches.value)
+        if ($null -ne $ExceptIfMessageTypeMatches) {
+            $exceptMessageTypeValue = if ($ExceptIfMessageTypeMatches.value) { $ExceptIfMessageTypeMatches.value } else { $ExceptIfMessageTypeMatches }
+            $ruleParams.Add('ExceptIfMessageTypeMatches', $exceptMessageTypeValue)
         }
         if ($null -ne $ExceptIfSenderDomainIs -and $ExceptIfSenderDomainIs.Count -gt 0) {
             $ruleParams.Add('ExceptIfSenderDomainIs', $ExceptIfSenderDomainIs)
