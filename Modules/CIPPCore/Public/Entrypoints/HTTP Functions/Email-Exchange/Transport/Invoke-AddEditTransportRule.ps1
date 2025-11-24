@@ -42,8 +42,10 @@ function Invoke-AddEditTransportRule {
     # Extract condition fields
     $From = $Request.Body.From
     $FromScope = $Request.Body.FromScope
+    $FromMemberOf = $Request.Body.FromMemberOf
     $SentTo = $Request.Body.SentTo
     $SentToScope = $Request.Body.SentToScope
+    $SentToMemberOf = $Request.Body.SentToMemberOf
     $SubjectContainsWords = $Request.Body.SubjectContainsWords
     $SubjectMatchesPatterns = $Request.Body.SubjectMatchesPatterns
     $SubjectOrBodyContainsWords = $Request.Body.SubjectOrBodyContainsWords
@@ -60,6 +62,16 @@ function Invoke-AddEditTransportRule {
     $MessageTypeMatches = $Request.Body.MessageTypeMatches
     $SenderDomainIs = $Request.Body.SenderDomainIs
     $RecipientDomainIs = $Request.Body.RecipientDomainIs
+    $RecipientAddressContainsWords = $Request.Body.RecipientAddressContainsWords
+    $RecipientAddressMatchesPatterns = $Request.Body.RecipientAddressMatchesPatterns
+    $AnyOfRecipientAddressContainsWords = $Request.Body.AnyOfRecipientAddressContainsWords
+    $AnyOfRecipientAddressMatchesPatterns = $Request.Body.AnyOfRecipientAddressMatchesPatterns
+    $AnyOfToHeader = $Request.Body.AnyOfToHeader
+    $AnyOfToHeaderMemberOf = $Request.Body.AnyOfToHeaderMemberOf
+    $AnyOfCcHeader = $Request.Body.AnyOfCcHeader
+    $AnyOfCcHeaderMemberOf = $Request.Body.AnyOfCcHeaderMemberOf
+    $AnyOfToCcHeader = $Request.Body.AnyOfToCcHeader
+    $AnyOfToCcHeaderMemberOf = $Request.Body.AnyOfToCcHeaderMemberOf
     $HeaderContainsWords = $Request.Body.HeaderContainsWords
     $HeaderContainsWordsMessageHeader = $Request.Body.HeaderContainsWordsMessageHeader
     $HeaderMatchesPatterns = $Request.Body.HeaderMatchesPatterns
@@ -92,8 +104,10 @@ function Invoke-AddEditTransportRule {
     # Extract exception fields (ExceptIf versions)
     $ExceptIfFrom = $Request.Body.ExceptIfFrom
     $ExceptIfFromScope = $Request.Body.ExceptIfFromScope
+    $ExceptIfFromMemberOf = $Request.Body.ExceptIfFromMemberOf
     $ExceptIfSentTo = $Request.Body.ExceptIfSentTo
     $ExceptIfSentToScope = $Request.Body.ExceptIfSentToScope
+    $ExceptIfSentToMemberOf = $Request.Body.ExceptIfSentToMemberOf
     $ExceptIfSubjectContainsWords = $Request.Body.ExceptIfSubjectContainsWords
     $ExceptIfSubjectMatchesPatterns = $Request.Body.ExceptIfSubjectMatchesPatterns
     $ExceptIfSubjectOrBodyContainsWords = $Request.Body.ExceptIfSubjectOrBodyContainsWords
@@ -110,6 +124,16 @@ function Invoke-AddEditTransportRule {
     $ExceptIfMessageTypeMatches = $Request.Body.ExceptIfMessageTypeMatches
     $ExceptIfSenderDomainIs = $Request.Body.ExceptIfSenderDomainIs
     $ExceptIfRecipientDomainIs = $Request.Body.ExceptIfRecipientDomainIs
+    $ExceptIfRecipientAddressContainsWords = $Request.Body.ExceptIfRecipientAddressContainsWords
+    $ExceptIfRecipientAddressMatchesPatterns = $Request.Body.ExceptIfRecipientAddressMatchesPatterns
+    $ExceptIfAnyOfRecipientAddressContainsWords = $Request.Body.ExceptIfAnyOfRecipientAddressContainsWords
+    $ExceptIfAnyOfRecipientAddressMatchesPatterns = $Request.Body.ExceptIfAnyOfRecipientAddressMatchesPatterns
+    $ExceptIfAnyOfToHeader = $Request.Body.ExceptIfAnyOfToHeader
+    $ExceptIfAnyOfToHeaderMemberOf = $Request.Body.ExceptIfAnyOfToHeaderMemberOf
+    $ExceptIfAnyOfCcHeader = $Request.Body.ExceptIfAnyOfCcHeader
+    $ExceptIfAnyOfCcHeaderMemberOf = $Request.Body.ExceptIfAnyOfCcHeaderMemberOf
+    $ExceptIfAnyOfToCcHeader = $Request.Body.ExceptIfAnyOfToCcHeader
+    $ExceptIfAnyOfToCcHeaderMemberOf = $Request.Body.ExceptIfAnyOfToCcHeaderMemberOf
     $ExceptIfHeaderContainsWords = $Request.Body.ExceptIfHeaderContainsWords
     $ExceptIfHeaderContainsWordsMessageHeader = $Request.Body.ExceptIfHeaderContainsWordsMessageHeader
     $ExceptIfHeaderMatchesPatterns = $Request.Body.ExceptIfHeaderMatchesPatterns
@@ -204,13 +228,29 @@ function Invoke-AddEditTransportRule {
 
     # Process array fields for recipients/users
     $From = Process-ArrayField -Field $From
+    $FromMemberOf = Process-ArrayField -Field $FromMemberOf
     $SentTo = Process-ArrayField -Field $SentTo
+    $SentToMemberOf = Process-ArrayField -Field $SentToMemberOf
+    $AnyOfToHeader = Process-ArrayField -Field $AnyOfToHeader
+    $AnyOfToHeaderMemberOf = Process-ArrayField -Field $AnyOfToHeaderMemberOf
+    $AnyOfCcHeader = Process-ArrayField -Field $AnyOfCcHeader
+    $AnyOfCcHeaderMemberOf = Process-ArrayField -Field $AnyOfCcHeaderMemberOf
+    $AnyOfToCcHeader = Process-ArrayField -Field $AnyOfToCcHeader
+    $AnyOfToCcHeaderMemberOf = Process-ArrayField -Field $AnyOfToCcHeaderMemberOf
     $RedirectMessageTo = Process-ArrayField -Field $RedirectMessageTo
     $BlindCopyTo = Process-ArrayField -Field $BlindCopyTo
     $CopyTo = Process-ArrayField -Field $CopyTo
     $ModerateMessageByUser = Process-ArrayField -Field $ModerateMessageByUser
     $ExceptIfFrom = Process-ArrayField -Field $ExceptIfFrom
+    $ExceptIfFromMemberOf = Process-ArrayField -Field $ExceptIfFromMemberOf
     $ExceptIfSentTo = Process-ArrayField -Field $ExceptIfSentTo
+    $ExceptIfSentToMemberOf = Process-ArrayField -Field $ExceptIfSentToMemberOf
+    $ExceptIfAnyOfToHeader = Process-ArrayField -Field $ExceptIfAnyOfToHeader
+    $ExceptIfAnyOfToHeaderMemberOf = Process-ArrayField -Field $ExceptIfAnyOfToHeaderMemberOf
+    $ExceptIfAnyOfCcHeader = Process-ArrayField -Field $ExceptIfAnyOfCcHeader
+    $ExceptIfAnyOfCcHeaderMemberOf = Process-ArrayField -Field $ExceptIfAnyOfCcHeaderMemberOf
+    $ExceptIfAnyOfToCcHeader = Process-ArrayField -Field $ExceptIfAnyOfToCcHeader
+    $ExceptIfAnyOfToCcHeaderMemberOf = Process-ArrayField -Field $ExceptIfAnyOfToCcHeaderMemberOf
     $SenderDomainIs = Process-ArrayField -Field $SenderDomainIs
     $RecipientDomainIs = Process-ArrayField -Field $RecipientDomainIs
     $ExceptIfSenderDomainIs = Process-ArrayField -Field $ExceptIfSenderDomainIs
@@ -226,6 +266,10 @@ function Invoke-AddEditTransportRule {
     $AttachmentContainsWords = Process-TextArrayField -Field $AttachmentContainsWords
     $AttachmentMatchesPatterns = Process-TextArrayField -Field $AttachmentMatchesPatterns
     $AttachmentExtensionMatchesWords = Process-TextArrayField -Field $AttachmentExtensionMatchesWords
+    $RecipientAddressContainsWords = Process-TextArrayField -Field $RecipientAddressContainsWords
+    $RecipientAddressMatchesPatterns = Process-TextArrayField -Field $RecipientAddressMatchesPatterns
+    $AnyOfRecipientAddressContainsWords = Process-TextArrayField -Field $AnyOfRecipientAddressContainsWords
+    $AnyOfRecipientAddressMatchesPatterns = Process-TextArrayField -Field $AnyOfRecipientAddressMatchesPatterns
     $HeaderContainsWords = Process-TextArrayField -Field $HeaderContainsWords
     $HeaderMatchesPatterns = Process-TextArrayField -Field $HeaderMatchesPatterns
 
@@ -239,6 +283,10 @@ function Invoke-AddEditTransportRule {
     $ExceptIfAttachmentContainsWords = Process-TextArrayField -Field $ExceptIfAttachmentContainsWords
     $ExceptIfAttachmentMatchesPatterns = Process-TextArrayField -Field $ExceptIfAttachmentMatchesPatterns
     $ExceptIfAttachmentExtensionMatchesWords = Process-TextArrayField -Field $ExceptIfAttachmentExtensionMatchesWords
+    $ExceptIfRecipientAddressContainsWords = Process-TextArrayField -Field $ExceptIfRecipientAddressContainsWords
+    $ExceptIfRecipientAddressMatchesPatterns = Process-TextArrayField -Field $ExceptIfRecipientAddressMatchesPatterns
+    $ExceptIfAnyOfRecipientAddressContainsWords = Process-TextArrayField -Field $ExceptIfAnyOfRecipientAddressContainsWords
+    $ExceptIfAnyOfRecipientAddressMatchesPatterns = Process-TextArrayField -Field $ExceptIfAnyOfRecipientAddressMatchesPatterns
     $ExceptIfHeaderContainsWords = Process-TextArrayField -Field $ExceptIfHeaderContainsWords
     $ExceptIfHeaderMatchesPatterns = Process-TextArrayField -Field $ExceptIfHeaderMatchesPatterns
 
@@ -276,8 +324,10 @@ function Invoke-AddEditTransportRule {
         # Condition parameters
         if ($null -ne $From -and $From.Count -gt 0) { $ruleParams.Add('From', $From) }
         if ($null -ne $FromScope -and $null -ne $FromScope.value) { $ruleParams.Add('FromScope', $FromScope.value) }
+        if ($null -ne $FromMemberOf -and $FromMemberOf.Count -gt 0) { $ruleParams.Add('FromMemberOf', $FromMemberOf) }
         if ($null -ne $SentTo -and $SentTo.Count -gt 0) { $ruleParams.Add('SentTo', $SentTo) }
         if ($null -ne $SentToScope -and $null -ne $SentToScope.value) { $ruleParams.Add('SentToScope', $SentToScope.value) }
+        if ($null -ne $SentToMemberOf -and $SentToMemberOf.Count -gt 0) { $ruleParams.Add('SentToMemberOf', $SentToMemberOf) }
         if ($null -ne $SubjectContainsWords -and $SubjectContainsWords.Count -gt 0) {
             $ruleParams.Add('SubjectContainsWords', $SubjectContainsWords)
         }
@@ -319,6 +369,36 @@ function Invoke-AddEditTransportRule {
         }
         if ($null -ne $RecipientDomainIs -and $RecipientDomainIs.Count -gt 0) {
             $ruleParams.Add('RecipientDomainIs', $RecipientDomainIs)
+        }
+        if ($null -ne $RecipientAddressContainsWords -and $RecipientAddressContainsWords.Count -gt 0) {
+            $ruleParams.Add('RecipientAddressContainsWords', $RecipientAddressContainsWords)
+        }
+        if ($null -ne $RecipientAddressMatchesPatterns -and $RecipientAddressMatchesPatterns.Count -gt 0) {
+            $ruleParams.Add('RecipientAddressMatchesPatterns', $RecipientAddressMatchesPatterns)
+        }
+        if ($null -ne $AnyOfRecipientAddressContainsWords -and $AnyOfRecipientAddressContainsWords.Count -gt 0) {
+            $ruleParams.Add('AnyOfRecipientAddressContainsWords', $AnyOfRecipientAddressContainsWords)
+        }
+        if ($null -ne $AnyOfRecipientAddressMatchesPatterns -and $AnyOfRecipientAddressMatchesPatterns.Count -gt 0) {
+            $ruleParams.Add('AnyOfRecipientAddressMatchesPatterns', $AnyOfRecipientAddressMatchesPatterns)
+        }
+        if ($null -ne $AnyOfToHeader -and $AnyOfToHeader.Count -gt 0) {
+            $ruleParams.Add('AnyOfToHeader', $AnyOfToHeader)
+        }
+        if ($null -ne $AnyOfToHeaderMemberOf -and $AnyOfToHeaderMemberOf.Count -gt 0) {
+            $ruleParams.Add('AnyOfToHeaderMemberOf', $AnyOfToHeaderMemberOf)
+        }
+        if ($null -ne $AnyOfCcHeader -and $AnyOfCcHeader.Count -gt 0) {
+            $ruleParams.Add('AnyOfCcHeader', $AnyOfCcHeader)
+        }
+        if ($null -ne $AnyOfCcHeaderMemberOf -and $AnyOfCcHeaderMemberOf.Count -gt 0) {
+            $ruleParams.Add('AnyOfCcHeaderMemberOf', $AnyOfCcHeaderMemberOf)
+        }
+        if ($null -ne $AnyOfToCcHeader -and $AnyOfToCcHeader.Count -gt 0) {
+            $ruleParams.Add('AnyOfToCcHeader', $AnyOfToCcHeader)
+        }
+        if ($null -ne $AnyOfToCcHeaderMemberOf -and $AnyOfToCcHeaderMemberOf.Count -gt 0) {
+            $ruleParams.Add('AnyOfToCcHeaderMemberOf', $AnyOfToCcHeaderMemberOf)
         }
         if ($null -ne $HeaderContainsWords -and $HeaderContainsWords.Count -gt 0 -and $null -ne $HeaderContainsWordsMessageHeader) {
             $ruleParams.Add('HeaderContainsMessageHeader', $HeaderContainsWordsMessageHeader)
@@ -382,10 +462,12 @@ function Invoke-AddEditTransportRule {
         if ($null -ne $ExceptIfFromScope -and $null -ne $ExceptIfFromScope.value) {
             $ruleParams.Add('ExceptIfFromScope', $ExceptIfFromScope.value)
         }
+        if ($null -ne $ExceptIfFromMemberOf -and $ExceptIfFromMemberOf.Count -gt 0) { $ruleParams.Add('ExceptIfFromMemberOf', $ExceptIfFromMemberOf) }
         if ($null -ne $ExceptIfSentTo -and $ExceptIfSentTo.Count -gt 0) { $ruleParams.Add('ExceptIfSentTo', $ExceptIfSentTo) }
         if ($null -ne $ExceptIfSentToScope -and $null -ne $ExceptIfSentToScope.value) {
             $ruleParams.Add('ExceptIfSentToScope', $ExceptIfSentToScope.value)
         }
+        if ($null -ne $ExceptIfSentToMemberOf -and $ExceptIfSentToMemberOf.Count -gt 0) { $ruleParams.Add('ExceptIfSentToMemberOf', $ExceptIfSentToMemberOf) }
         if ($null -ne $ExceptIfSubjectContainsWords -and $ExceptIfSubjectContainsWords.Count -gt 0) {
             $ruleParams.Add('ExceptIfSubjectContainsWords', $ExceptIfSubjectContainsWords)
         }
@@ -431,6 +513,36 @@ function Invoke-AddEditTransportRule {
         }
         if ($null -ne $ExceptIfRecipientDomainIs -and $ExceptIfRecipientDomainIs.Count -gt 0) {
             $ruleParams.Add('ExceptIfRecipientDomainIs', $ExceptIfRecipientDomainIs)
+        }
+        if ($null -ne $ExceptIfRecipientAddressContainsWords -and $ExceptIfRecipientAddressContainsWords.Count -gt 0) {
+            $ruleParams.Add('ExceptIfRecipientAddressContainsWords', $ExceptIfRecipientAddressContainsWords)
+        }
+        if ($null -ne $ExceptIfRecipientAddressMatchesPatterns -and $ExceptIfRecipientAddressMatchesPatterns.Count -gt 0) {
+            $ruleParams.Add('ExceptIfRecipientAddressMatchesPatterns', $ExceptIfRecipientAddressMatchesPatterns)
+        }
+        if ($null -ne $ExceptIfAnyOfRecipientAddressContainsWords -and $ExceptIfAnyOfRecipientAddressContainsWords.Count -gt 0) {
+            $ruleParams.Add('ExceptIfAnyOfRecipientAddressContainsWords', $ExceptIfAnyOfRecipientAddressContainsWords)
+        }
+        if ($null -ne $ExceptIfAnyOfRecipientAddressMatchesPatterns -and $ExceptIfAnyOfRecipientAddressMatchesPatterns.Count -gt 0) {
+            $ruleParams.Add('ExceptIfAnyOfRecipientAddressMatchesPatterns', $ExceptIfAnyOfRecipientAddressMatchesPatterns)
+        }
+        if ($null -ne $ExceptIfAnyOfToHeader -and $ExceptIfAnyOfToHeader.Count -gt 0) {
+            $ruleParams.Add('ExceptIfAnyOfToHeader', $ExceptIfAnyOfToHeader)
+        }
+        if ($null -ne $ExceptIfAnyOfToHeaderMemberOf -and $ExceptIfAnyOfToHeaderMemberOf.Count -gt 0) {
+            $ruleParams.Add('ExceptIfAnyOfToHeaderMemberOf', $ExceptIfAnyOfToHeaderMemberOf)
+        }
+        if ($null -ne $ExceptIfAnyOfCcHeader -and $ExceptIfAnyOfCcHeader.Count -gt 0) {
+            $ruleParams.Add('ExceptIfAnyOfCcHeader', $ExceptIfAnyOfCcHeader)
+        }
+        if ($null -ne $ExceptIfAnyOfCcHeaderMemberOf -and $ExceptIfAnyOfCcHeaderMemberOf.Count -gt 0) {
+            $ruleParams.Add('ExceptIfAnyOfCcHeaderMemberOf', $ExceptIfAnyOfCcHeaderMemberOf)
+        }
+        if ($null -ne $ExceptIfAnyOfToCcHeader -and $ExceptIfAnyOfToCcHeader.Count -gt 0) {
+            $ruleParams.Add('ExceptIfAnyOfToCcHeader', $ExceptIfAnyOfToCcHeader)
+        }
+        if ($null -ne $ExceptIfAnyOfToCcHeaderMemberOf -and $ExceptIfAnyOfToCcHeaderMemberOf.Count -gt 0) {
+            $ruleParams.Add('ExceptIfAnyOfToCcHeaderMemberOf', $ExceptIfAnyOfToCcHeaderMemberOf)
         }
         if ($null -ne $ExceptIfHeaderContainsWords -and $ExceptIfHeaderContainsWords.Count -gt 0 -and $null -ne $ExceptIfHeaderContainsWordsMessageHeader) {
             $ruleParams.Add('ExceptIfHeaderContainsMessageHeader', $ExceptIfHeaderContainsWordsMessageHeader)
