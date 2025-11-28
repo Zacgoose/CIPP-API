@@ -126,19 +126,22 @@ function Test-CIPPAuditLogRules {
         $TrustedIPTable = Get-CIPPTable -TableName 'trustedIps'
         $ConfigTable = Get-CIPPTable -TableName 'WebhookRules'
         $ConfigEntries = Get-CIPPAzDataTableEntity @ConfigTable
-        $Configuration = $ConfigEntries | Where-Object {
-            $Tenants = $_.Tenants | ConvertFrom-Json -ErrorAction SilentlyContinue
+        $Configuration = foreach ($ConfigEntry in $ConfigEntries) {
+            $Tenants = $ConfigEntry.Tenants | ConvertFrom-Json -ErrorAction SilentlyContinue
+            if ($null -eq $Tenants) {
+                continue
+            }
             # Expand tenant groups to get actual tenant list
             $ExpandedTenants = Expand-CIPPTenantGroups -TenantFilter $Tenants
             # Check if the TenantFilter matches any tenant in the expanded list or AllTenants
-            ($ExpandedTenants.value -contains $TenantFilter -or $ExpandedTenants.value -contains 'AllTenants')
-        } | ForEach-Object {
-            [pscustomobject]@{
-                Tenants    = ($_.Tenants | ConvertFrom-Json)
-                Excluded   = ($_.excludedTenants | ConvertFrom-Json -ErrorAction SilentlyContinue)
-                Conditions = $_.Conditions
-                Actions    = $_.Actions
-                LogType    = $_.Type
+            if ($ExpandedTenants.value -contains $TenantFilter -or $ExpandedTenants.value -contains 'AllTenants') {
+                [pscustomobject]@{
+                    Tenants    = $Tenants
+                    Excluded   = ($ConfigEntry.excludedTenants | ConvertFrom-Json -ErrorAction SilentlyContinue)
+                    Conditions = $ConfigEntry.Conditions
+                    Actions    = $ConfigEntry.Actions
+                    LogType    = $ConfigEntry.Type
+                }
             }
         }
 
