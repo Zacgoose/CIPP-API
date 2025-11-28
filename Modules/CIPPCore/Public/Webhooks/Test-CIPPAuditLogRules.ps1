@@ -127,6 +127,9 @@ function Test-CIPPAuditLogRules {
         $ConfigTable = Get-CIPPTable -TableName 'WebhookRules'
         $ConfigEntries = Get-CIPPAzDataTableEntity @ConfigTable
         $Configuration = foreach ($ConfigEntry in $ConfigEntries) {
+            if ([string]::IsNullOrEmpty($ConfigEntry.Tenants)) {
+                continue
+            }
             $Tenants = $ConfigEntry.Tenants | ConvertFrom-Json -ErrorAction SilentlyContinue
             if ($null -eq $Tenants) {
                 continue
