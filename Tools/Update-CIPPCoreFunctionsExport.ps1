@@ -43,11 +43,12 @@ $FunctionLines = $FunctionNames | ForEach-Object { "        '$_'" }
 $FunctionsArray = "    FunctionsToExport = @(`n" + ($FunctionLines -join "`n") + "`n    )"
 
 # Replace existing FunctionsToExport using a regex that matches multiline arrays
-$Pattern = '    FunctionsToExport\s*=\s*@\([^)]*\)'
-if ($ManifestContent -match $Pattern) {
-    $NewContent = [regex]::Replace($ManifestContent, $Pattern, $FunctionsArray, [System.Text.RegularExpressions.RegexOptions]::Singleline)
+# Pattern matches: FunctionsToExport = @( ... ) including newlines and nested content
+$Pattern = '(?s)    FunctionsToExport\s*=\s*@\(.*?\n    \)'
+if ([regex]::IsMatch($ManifestContent, $Pattern)) {
+    $NewContent = [regex]::Replace($ManifestContent, $Pattern, $FunctionsArray)
 } else {
-    Write-Error "Could not find FunctionsToExport section in manifest"
+    Write-Error "Could not find FunctionsToExport section in manifest. Ensure the manifest has 'FunctionsToExport = @(...)' defined."
     return
 }
 
@@ -56,13 +57,14 @@ Set-Content -Path $ManifestPath -Value $NewContent -NoNewline
 
 Write-Host "Updated $ManifestPath with $($FunctionNames.Count) functions" -ForegroundColor Green
 
-# Verify the manifest is valid
+# Verify the manifest is valid using Import-PowerShellDataFile for faster validation
 try {
-    $Manifest = Test-ModuleManifest -Path $ManifestPath -ErrorAction SilentlyContinue
-    if ($Manifest.ExportedFunctions.Count -eq $FunctionNames.Count) {
-        Write-Host "Manifest validation passed - $($Manifest.ExportedFunctions.Count) functions exported" -ForegroundColor Green
+    $ManifestData = Import-PowerShellDataFile -Path $ManifestPath
+    $ExportedCount = $ManifestData.FunctionsToExport.Count
+    if ($ExportedCount -eq $FunctionNames.Count) {
+        Write-Host "Manifest validation passed - $ExportedCount functions exported" -ForegroundColor Green
     } else {
-        Write-Warning "Function count mismatch: Expected $($FunctionNames.Count), got $($Manifest.ExportedFunctions.Count)"
+        Write-Warning "Function count mismatch: Expected $($FunctionNames.Count), got $ExportedCount"
     }
 } catch {
     Write-Warning "Manifest validation warning: $_"
