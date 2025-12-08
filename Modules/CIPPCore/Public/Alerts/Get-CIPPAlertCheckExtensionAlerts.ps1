@@ -20,23 +20,14 @@ function Get-CIPPAlertCheckExtensionAlerts {
         }
 
         # Calculate the timestamp threshold
-        $ThresholdTime = (Get-Date).AddHours(-$IntervalHours)
+        $ThresholdTime = (Get-Date).AddHours(-$IntervalHours).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ')
 
         # Get the CheckExtensionAlerts table
         $Table = Get-CIPPTable -tablename CheckExtensionAlerts
 
-        # Query alerts for this tenant
-        $Filter = "PartitionKey eq 'CheckAlert' and tenantFilter eq '$TenantFilter'"
-        $AllAlerts = Get-CIPPAzDataTableEntity @Table -Filter $Filter
-
-        if (!$AllAlerts) {
-            return
-        }
-
-        # Filter alerts by timestamp - only include alerts within the interval
-        $RecentAlerts = $AllAlerts | Where-Object {
-            $_.Timestamp -gt $ThresholdTime
-        }
+        # Query alerts for this tenant with timestamp filter for better performance
+        $Filter = "PartitionKey eq 'CheckAlert' and tenantFilter eq '$TenantFilter' and Timestamp ge datetime'$ThresholdTime'"
+        $RecentAlerts = Get-CIPPAzDataTableEntity @Table -Filter $Filter
 
         if (!$RecentAlerts -or $RecentAlerts.Count -eq 0) {
             return
@@ -66,7 +57,8 @@ function Get-CIPPAlertCheckExtensionAlerts {
         Write-AlertTrace -cmdletName $MyInvocation.MyCommand -tenantFilter $TenantFilter -data $AlertData
 
     } catch {
-        Write-Host "Error processing check extension alerts for $($TenantFilter): $($_.Exception.Message)"
+        $ErrorMessage = Get-NormalizedError -Message $_.Exception.Message
+        Write-LogMessage -message "Failed to process check extension alerts: $ErrorMessage" -API 'Check Extension Alerts' -tenant $TenantFilter -sev Error
         return
     }
 }
