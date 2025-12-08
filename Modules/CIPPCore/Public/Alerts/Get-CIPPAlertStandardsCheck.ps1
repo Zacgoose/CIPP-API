@@ -8,8 +8,7 @@ function Get-CIPPAlertStandardsCheck {
         [Parameter(Mandatory = $false)]
         [Alias('input')]
         $InputValue,
-        [Parameter(Mandatory = $true)]
-        [string]$TenantFilter
+        $TenantFilter
     )
 
     try {
