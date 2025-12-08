@@ -8,7 +8,8 @@ function Get-CIPPAlertStandardsCheck {
         [Parameter(Mandatory = $false)]
         [Alias('input')]
         $InputValue,
-        $TenantFilter
+        [Parameter(Mandatory = $true)]
+        [string]$TenantFilter
     )
 
     try {
@@ -28,12 +29,14 @@ function Get-CIPPAlertStandardsCheck {
         $Table = Get-CIPPTable -tablename CippStandardsAlerts
 
         # Retrieve all standards check alerts for this tenant within the interval
-        $AllAlerts = @()
+        $AllAlerts = [System.Collections.Generic.List[object]]::new()
         foreach ($PartitionKey in $PartitionKeys) {
             $Filter = "PartitionKey eq '$PartitionKey' and tenant eq '$TenantFilter'"
             $Alerts = Get-CIPPAzDataTableEntity @Table -Filter $Filter
             if ($Alerts) {
-                $AllAlerts += $Alerts
+                foreach ($Alert in $Alerts) {
+                    $AllAlerts.Add($Alert)
+                }
             }
         }
 
