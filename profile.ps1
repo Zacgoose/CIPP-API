@@ -49,7 +49,11 @@ if ($CIPPCoreModule) {
     
     if (Test-Path $PermissionsFileJson) {
         try {
-            $global:CIPPFunctionPermissions = Get-Content -Path $PermissionsFileJson -Raw | ConvertFrom-Json -AsHashtable
+            $jsonData = Get-Content -Path $PermissionsFileJson -Raw | ConvertFrom-Json -AsHashtable
+            $global:CIPPFunctionPermissions = [System.Collections.Hashtable]::new([StringComparer]::OrdinalIgnoreCase)
+            foreach ($key in $jsonData.Keys) {
+                $global:CIPPFunctionPermissions[$key] = $jsonData[$key]
+            }
             Write-Information "Loaded $($global:CIPPFunctionPermissions.Count) function permissions from JSON cache in $($SwPermissions.ElapsedMilliseconds)ms"
         } catch {
             Write-Warning "Failed to load function permissions from JSON: $($_.Exception.Message)"

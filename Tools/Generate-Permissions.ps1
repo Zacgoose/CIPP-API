@@ -11,43 +11,43 @@ param(
 Write-Host "Generating function permissions cache from source files..."
 $sw = [System.Diagnostics.Stopwatch]::StartNew()
 
-# Get all function files from Public folder
-$PublicPath = Join-Path $SourcePath "Public"
-if (-not (Test-Path $PublicPath)) {
-    Write-Warning "Public functions path not found: $PublicPath"
+# Import the module to get help content
+$ModulePath = Join-Path $SourcePath "CIPPCore.psd1"
+if (-not (Test-Path $ModulePath)) {
+    Write-Warning "Module manifest not found: $ModulePath"
     return
 }
 
-$FunctionFiles = Get-ChildItem -Path $PublicPath -Filter "*.ps1" -Recurse -File
-Write-Host "Processing $($FunctionFiles.Count) function files..."
+Write-Host "Importing CIPPCore module..."
+Import-Module $ModulePath -Force -ErrorAction Stop
 
-# Build permissions by parsing comment-based help directly
+# Get all exported functions
+$Functions = Get-Command -Module CIPPCore -CommandType Function
+Write-Host "Processing $($Functions.Count) functions..."
+
+# Build permissions using Get-Help
 $Permissions = [ordered]@{}
 $Count = 0
 
-foreach ($File in $FunctionFiles) {
-    $Content = Get-Content -Path $File.FullName -Raw
-    $FunctionName = $File.BaseName
+foreach ($Function in $Functions) {
+    $FunctionName = $Function.Name
     
-    # Extract .ROLE using regex
-    $Role = ''
-    if ($Content -match '(?m)^\s*\.ROLE\s*$\s*^([^\r\n.]+?)(?=\s*(?:^$|^\s*\.|\s*#>))') {
-        $Role = $Matches[1].Trim() -replace '\s+', ' '
-    }
-    
-    # Extract .FUNCTIONALITY using regex
-    $Functionality = ''
-    if ($Content -match '(?m)^\s*\.FUNCTIONALITY\s*$\s*^([^\r\n.]+?)(?=\s*(?:^$|^\s*\.|\s*#>))') {
-        $Functionality = $Matches[1].Trim() -replace '\s+', ' '
-    }
-    
-    # Only store if at least one property exists
-    if ($Role -or $Functionality) {
-        $Permissions[$FunctionName] = @{
-            Role          = $Role
-            Functionality = $Functionality
+    try {
+        $Help = Get-Help $FunctionName -ErrorAction Stop
+        
+        $Role = if ($Help.Role) { $Help.Role.Trim() } else { '' }
+        $Functionality = if ($Help.Functionality) { $Help.Functionality.Trim() } else { '' }
+        
+        # Only store if at least one property exists
+        if ($Role -or $Functionality) {
+            $Permissions[$FunctionName] = @{
+                Role          = $Role
+                Functionality = $Functionality
+            }
+            $Count++
         }
-        $Count++
+    } catch {
+        Write-Warning "Failed to get help for $FunctionName : $_"
     }
 }
 
@@ -57,7 +57,7 @@ if (-not (Test-Path $DataPath)) {
     New-Item -Path $DataPath -ItemType Directory -Force | Out-Null
 }
 
-# Generate JSON file (more reliable than PSD1 for large datasets)
+# Generate JSON file
 $PermissionsFile = Join-Path $DataPath "function-permissions.json"
 
 # Convert to JSON and write

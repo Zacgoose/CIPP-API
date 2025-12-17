@@ -20,12 +20,13 @@ function Test-CIPPAccess {
             $PermissionData = $global:CIPPFunctionPermissions[$FunctionName]
             $APIRole = $PermissionData.Role
             $Functionality = $PermissionData.Functionality
+            Write-Information "Function '$FunctionName' found in static permissions cache"
         } else {
-            # Fallback to Get-Help (dev/source mode or cache miss)
             try {
                 $Help = Get-Help $FunctionName -ErrorAction Stop
                 $APIRole = $Help.Role
                 $Functionality = $Help.Functionality
+                Write-Information "Function '$FunctionName' found via Get-Help"
             } catch {
                 Write-Warning "Function '$FunctionName' not found"
             }
