@@ -14,17 +14,25 @@ function Test-CIPPAccess {
 
     if ($FunctionName -ne 'Invoke-me') {
         $swHelp = [System.Diagnostics.Stopwatch]::StartNew()
-        try {
-            $Help = Get-Help $FunctionName -ErrorAction Stop
-        } catch {
-            Write-Warning "Function '$FunctionName' not found"
+        
+        # Try static cache first (production/built modules)
+        if ($global:CIPPFunctionPermissions -and $global:CIPPFunctionPermissions.ContainsKey($FunctionName)) {
+            $PermissionData = $global:CIPPFunctionPermissions[$FunctionName]
+            $APIRole = $PermissionData.Role
+            $Functionality = $PermissionData.Functionality
+        } else {
+            # Fallback to Get-Help (dev/source mode or cache miss)
+            try {
+                $Help = Get-Help $FunctionName -ErrorAction Stop
+                $APIRole = $Help.Role
+                $Functionality = $Help.Functionality
+            } catch {
+                Write-Warning "Function '$FunctionName' not found"
+            }
         }
         $swHelp.Stop()
         $AccessTimings['GetHelp'] = $swHelp.Elapsed.TotalMilliseconds
     }
-
-    # Check help for role
-    $APIRole = $Help.Role
 
     # Get default roles from config
     $swRolesLoad = [System.Diagnostics.Stopwatch]::StartNew()
@@ -367,7 +375,7 @@ function Test-CIPPAccess {
                 if (!$APIAllowed) {
                     throw "Access to this CIPP API endpoint is not allowed, you do not have the required permission: $APIRole"
                 }
-                if (!$TenantAllowed -and $Help.Functionality -notmatch 'AnyTenant') {
+                if (!$TenantAllowed -and $Functionality -notmatch 'AnyTenant') {
                     throw 'Access to this tenant is not allowed'
                 } else {
                     return $true
@@ -405,12 +413,12 @@ function Test-CIPPAccess {
                 }
             }
 
-            if (!$TenantAllowed -and $Help.Functionality -notmatch 'AnyTenant') {
+            if (!$TenantAllowed -and $Functionality -notmatch 'AnyTenant') {
 
                 if (!$APIAllowed) {
                     throw "Access to this CIPP API endpoint is not allowed, you do not have the required permission: $APIRole"
                 }
-                if (!$TenantAllowed -and $Help.Functionality -notmatch 'AnyTenant') {
+                if (!$TenantAllowed -and $Functionality -notmatch 'AnyTenant') {
                     Write-Information "Tenant not allowed: $TenantFilter"
 
                     throw 'Access to this tenant is not allowed'
