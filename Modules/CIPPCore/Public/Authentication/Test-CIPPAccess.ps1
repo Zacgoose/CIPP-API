@@ -33,7 +33,7 @@ function Test-CIPPAccess {
         }
     }
     $SwPermissions.Stop()
-    $Timings['FunctionPermissions'] = $SwPermissions.Elapsed.TotalMilliseconds
+    $AccessTimings['FunctionPermissions'] = $SwPermissions.Elapsed.TotalMilliseconds
 
     if ($FunctionName -ne 'Invoke-me') {
         $swHelp = [System.Diagnostics.Stopwatch]::StartNew()
