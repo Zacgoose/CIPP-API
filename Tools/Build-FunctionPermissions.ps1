@@ -41,19 +41,22 @@ $permissions = [ordered]@{}
 foreach ($command in $commands | Sort-Object -Property Name -Unique) {
     $help = Get-Help -Name $command.Name -ErrorAction SilentlyContinue
     if ($help) {
-        $role = $help.Role
-        $functionality = $help.Functionality
+        $roleProperty = $help.PSObject.Properties['Role']
+        $functionalityProperty = $help.PSObject.Properties['Functionality']
+        $role = if ($roleProperty) { $roleProperty.Value } else { '' }
+        $functionality = if ($functionalityProperty) { $functionalityProperty.Value } else { '' }
     } else {
         $role = ''
         $functionality = ''
     }
 
     $permissions[$command.Name] = @{
-        Role          = [string]$role
-        Functionality = [string]$functionality
+        Role          = $role
+        Functionality = $functionality
     }
 }
 
+# Depth 3 is sufficient for the flat hashtable of functions -> (Role, Functionality)
 $json = $permissions | ConvertTo-Json -Depth 3
 Set-Content -Path $OutputPath -Value $json -Encoding UTF8
 
