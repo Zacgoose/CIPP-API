@@ -28,7 +28,8 @@ if (-not (Test-Path -Path $ModulePath)) {
 $ModulePath = (Resolve-Path -Path $ModulePath).ProviderPath
 if (-not $ModuleName) { $ModuleName = (Split-Path -Path $ModulePath -Leaf) }
 if (-not $OutputPath) {
-$OutputPath = Join-Path $ModulePath 'lib' 'data' 'function-permissions.json'
+    $defaultLibData = Join-Path $ModulePath 'lib' 'data' 'function-permissions.json'
+    $OutputPath = if (Test-Path (Split-Path -Parent $defaultLibData)) { $defaultLibData } else { Join-Path $ModulePath 'function-permissions.json' }
 }
 
 # Ensure destination directory exists
@@ -36,8 +37,13 @@ $null = New-Item -ItemType Directory -Path (Split-Path -Parent $OutputPath) -For
 
 # Import target module so Get-Help can read Role/Functionality metadata
 $ModuleImportPath = Resolve-ModuleImportPath -Root $ModulePath -Name $ModuleName
-Write-Host "Importing module '$ModuleName' from '$ModuleImportPath' with -Force"
-Import-Module -Name $ModuleImportPath -Force -ErrorAction Stop
+$loaded = Get-Module -Name $ModuleName | Where-Object { $_.Path -eq $ModuleImportPath }
+if (-not $loaded) {
+    Write-Host "Importing module '$ModuleName' from '$ModuleImportPath'"
+    Import-Module -Name $ModuleImportPath -Force -ErrorAction Stop
+} else {
+    Write-Host "Module '$ModuleName' already loaded from '$ModuleImportPath'; reusing existing session copy."
+}
 
 $commands = Get-Command -Module $ModuleName -CommandType Function
 $permissions = [ordered]@{}
