@@ -22,10 +22,13 @@ function Resolve-ModuleImportPath {
 }
 
 # Resolve defaults
+if (-not (Test-Path -Path $ModulePath)) {
+    throw "ModulePath '$ModulePath' not found. Provide -ModulePath to the module root."
+}
 $ModulePath = (Resolve-Path -Path $ModulePath).ProviderPath
 if (-not $ModuleName) { $ModuleName = (Split-Path -Path $ModulePath -Leaf) }
 if (-not $OutputPath) {
-    $OutputPath = Join-Path $ModulePath 'lib' 'data' 'function-permissions.json'
+$OutputPath = Join-Path $ModulePath 'lib' 'data' 'function-permissions.json'
 }
 
 # Ensure destination directory exists
@@ -33,7 +36,8 @@ $null = New-Item -ItemType Directory -Path (Split-Path -Parent $OutputPath) -For
 
 # Import target module so Get-Help can read Role/Functionality metadata
 $ModuleImportPath = Resolve-ModuleImportPath -Root $ModulePath -Name $ModuleName
-Import-Module -Name $ModuleImportPath -Force
+Write-Host "Importing module '$ModuleName' from '$ModuleImportPath' with -Force"
+Import-Module -Name $ModuleImportPath -Force -ErrorAction Stop
 
 $commands = Get-Command -Module $ModuleName -CommandType Function
 $permissions = [ordered]@{}
