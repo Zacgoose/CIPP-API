@@ -12,7 +12,28 @@ function Test-CIPPAccess {
     # Get function help
     $FunctionName = 'Invoke-{0}' -f $Request.Params.CIPPEndpoint
 
-    $AccessTimings['FunctionPermissions'] = 0
+    $SwPermissions = [System.Diagnostics.Stopwatch]::StartNew()
+    if (-not $global:CIPPFunctionPermissions) {
+        $CIPPCoreModule = Get-Module -Name CIPPCore
+        if ($CIPPCoreModule) {
+            $PermissionsFileJson = Join-Path $CIPPCoreModule.ModuleBase 'lib' 'data' 'function-permissions.json'
+            
+            if (Test-Path $PermissionsFileJson) {
+                try {
+                    $jsonData = Get-Content -Path $PermissionsFileJson -Raw | ConvertFrom-Json -AsHashtable
+                    $global:CIPPFunctionPermissions = [System.Collections.Hashtable]::new([StringComparer]::OrdinalIgnoreCase)
+                    foreach ($key in $jsonData.Keys) {
+                        $global:CIPPFunctionPermissions[$key] = $jsonData[$key]
+                    }
+                    Write-Information "Loaded $($global:CIPPFunctionPermissions.Count) function permissions from JSON cache"
+                } catch {
+                    Write-Warning "Failed to load function permissions from JSON: $($_.Exception.Message)"
+                }
+            }
+        }
+    }
+    $SwPermissions.Stop()
+    $AccessTimings['FunctionPermissions'] = $SwPermissions.Elapsed.TotalMilliseconds
 
     if ($FunctionName -ne 'Invoke-me') {
         $swHelp = [System.Diagnostics.Stopwatch]::StartNew()

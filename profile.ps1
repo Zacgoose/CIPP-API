@@ -41,29 +41,6 @@ foreach ($Module in $Modules) {
 $SwModules.Stop()
 $Timings['AllModules'] = $SwModules.Elapsed.TotalMilliseconds
 
-# Load function permissions once at startup
-$SwPermissions = [System.Diagnostics.Stopwatch]::StartNew()
-if (-not $global:CIPPFunctionPermissions) {
-    $CIPPCoreModule = Get-Module -Name CIPPCore
-    if ($CIPPCoreModule) {
-        $PermissionsFileJson = Join-Path $CIPPCoreModule.ModuleBase 'lib' 'data' 'function-permissions.json'
-        if (Test-Path $PermissionsFileJson) {
-            try {
-                $jsonData = Get-Content -Path $PermissionsFileJson -Raw | ConvertFrom-Json -AsHashtable
-                $global:CIPPFunctionPermissions = [System.Collections.Hashtable]::new([StringComparer]::OrdinalIgnoreCase)
-                foreach ($key in $jsonData.Keys) {
-                    $global:CIPPFunctionPermissions[$key] = $jsonData[$key]
-                }
-                Write-Information "Loaded $($global:CIPPFunctionPermissions.Count) function permissions from JSON cache"
-            } catch {
-                Write-Warning "Failed to load function permissions from JSON: $($_.Exception.Message)"
-            }
-        }
-    }
-}
-$SwPermissions.Stop()
-$Timings['FunctionPermissions'] = $SwPermissions.Elapsed.TotalMilliseconds
-
 # Initialize global TelemetryClient only if Application Insights is configured
 $SwTelemetry = [System.Diagnostics.Stopwatch]::StartNew()
 if ($hasAppInsights -and -not $global:TelemetryClient) {
