@@ -21,6 +21,17 @@ function Resolve-ModuleImportPath {
     throw "Module files not found for '$Name' in '$Root'. Expected $Name.psd1 or $Name.psm1."
 }
 
+function Get-HelpProperty {
+    param(
+        [Parameter(Mandatory = $true)]$HelpObject,
+        [Parameter(Mandatory = $true)][string]$PropertyName
+    )
+
+    $property = $HelpObject.PSObject.Properties[$PropertyName]
+    if ($property) { return $property.Value }
+    return ''
+}
+
 # Resolve defaults
 if (-not (Test-Path -Path $ModulePath)) {
     throw "ModulePath '$ModulePath' not found. Provide -ModulePath to the module root."
@@ -37,7 +48,8 @@ $null = New-Item -ItemType Directory -Path (Split-Path -Parent $OutputPath) -For
 
 # Import target module so Get-Help can read Role/Functionality metadata
 $ModuleImportPath = Resolve-ModuleImportPath -Root $ModulePath -Name $ModuleName
-$loaded = Get-Module -Name $ModuleName | Where-Object { $_.Path -eq $ModuleImportPath }
+$normalizedImportPath = [System.IO.Path]::GetFullPath($ModuleImportPath)
+$loaded = Get-Module -Name $ModuleName | Where-Object { [System.IO.Path]::GetFullPath($_.Path) -eq $normalizedImportPath }
 if (-not $loaded) {
     Write-Host "Importing module '$ModuleName' from '$ModuleImportPath'"
     Import-Module -Name $ModuleImportPath -Force -ErrorAction Stop
@@ -48,13 +60,11 @@ if (-not $loaded) {
 $commands = Get-Command -Module $ModuleName -CommandType Function
 $permissions = [ordered]@{}
 
-foreach ($command in $commands | Sort-Object -Property Name -Unique) {
+foreach ($command in $commands | Sort-Object -Property Name | Select-Object -Unique) {
     $help = Get-Help -Name $command.Name -ErrorAction SilentlyContinue
     if ($help) {
-        $roleProperty = $help.PSObject.Properties['Role']
-        $functionalityProperty = $help.PSObject.Properties['Functionality']
-        $role = if ($roleProperty) { $roleProperty.Value } else { '' }
-        $functionality = if ($functionalityProperty) { $functionalityProperty.Value } else { '' }
+        $role = Get-HelpProperty -HelpObject $help -PropertyName 'Role'
+        $functionality = Get-HelpProperty -HelpObject $help -PropertyName 'Functionality'
     } else {
         $role = ''
         $functionality = ''
