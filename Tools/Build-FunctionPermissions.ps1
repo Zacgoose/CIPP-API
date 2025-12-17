@@ -40,8 +40,13 @@ $permissions = [ordered]@{}
 
 foreach ($command in $commands | Sort-Object -Property Name -Unique) {
     $help = Get-Help -Name $command.Name -ErrorAction SilentlyContinue
-    $role = $help.Role
-    $functionality = $help.Functionality
+    if ($help) {
+        $role = $help.Role
+        $functionality = $help.Functionality
+    } else {
+        $role = ''
+        $functionality = ''
+    }
 
     $permissions[$command.Name] = @{
         Role          = [string]$role
@@ -49,7 +54,7 @@ foreach ($command in $commands | Sort-Object -Property Name -Unique) {
     }
 }
 
-$json = $permissions | ConvertTo-Json -Depth 5
+$json = $permissions | ConvertTo-Json -Depth 3
 Set-Content -Path $OutputPath -Value $json -Encoding UTF8
 
 Write-Host "Wrote permissions for $($permissions.Count) functions to $OutputPath"
