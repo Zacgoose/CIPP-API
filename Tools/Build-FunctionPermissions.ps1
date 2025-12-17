@@ -70,9 +70,13 @@ foreach ($command in $commands | Sort-Object -Property Name | Select-Object -Uni
         $functionality = ''
     }
 
-    $permissions[$command.Name] = @{
-        Role          = $role
-        Functionality = $functionality
+    if ($role -or $functionality) {
+        $permissions[$command.Name] = @{
+            Role          = $role
+            Functionality = $functionality
+        }
+    } else {
+        Write-Host "Skipping $($command.Name): no Role or Functionality metadata found."
     }
 }
 
