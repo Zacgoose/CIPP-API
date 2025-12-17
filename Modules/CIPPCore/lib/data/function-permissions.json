@@ -1,0 +1,3094 @@
+{
+    "Add-CIPPAzDataTableEntity": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Add-CIPPGDAPRoleTemplate": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Convert-SKUname": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Enable-CippConsoleLogging": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Get-AuthorisedRequest": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Get-CIPPAccessRole": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Get-CIPPAlertAdminPassword": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertApnCertExpiry": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertAppCertificateExpiry": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertAppleTerms": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertAppSecretExpiry": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CippAlertBreachAlert": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertDefenderIncidents": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertDefenderMalware": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertDefenderStatus": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertDepTokenExpiry": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertDeviceCompliance": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertEntraConnectSyncStatus": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertEntraLicenseUtilization": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertExpiringLicenses": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertGlobalAdminAllowList": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertGlobalAdminNoAltEmail": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertHuntressRogueApps": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertInactiveLicensedUsers": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertLicenseAssignmentErrors": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertLicensedUsersWithRoles": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertLowDomainScore": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertLowTenantAlignment": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertMFAAdmins": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertMFAAlertUsers": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertMXRecordChanged": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertNewAppApproval": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertNewRiskyUsers": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertNewRole": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertNoCAConfig": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertOneDriveQuota": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertOverusedLicenses": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertQuarantineReleaseRequests": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertQuotaUsed": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertReportOnlyCA": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertRestrictedUsers": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertSecDefaultsUpsell": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertSharepointQuota": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertSmtpAuthSuccess": {
+        "Functionality": "Entrypoint – Check sign-in logs for SMTP AUTH with success status",
+        "Role": ""
+    },
+    "Get-CIPPAlertSoftDeletedMailboxes": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertTERRL": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertUnusedLicenses": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertVppTokenExpiry": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAlertVulnerabilities": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Get-CIPPAuditLogContent": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Get-CIPPAuditLogContentBundles": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Get-CIPPDrift": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Get-CippSamPermissions": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Get-CIPPTable": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Get-CIPPTenantAlignment": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Get-CIPPTenantVariables": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Get-CIPPURLName": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Get-ClassicAPIToken": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Get-GraphBulkResultByID": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Get-GraphToken": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Get-NormalizedError": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Get-SharePointAdminLink": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Get-Tenants": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-AddAlert": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Alert.ReadWrite"
+    },
+    "Invoke-AddAPDevice": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.Autopilot.ReadWrite"
+    },
+    "Invoke-AddAssignmentFilter": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.MEM.ReadWrite"
+    },
+    "Invoke-AddAssignmentFilterTemplate": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Endpoint.MEM.ReadWrite"
+    },
+    "Invoke-AddAutopilotConfig": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.Autopilot.ReadWrite"
+    },
+    "Invoke-AddBPATemplate": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.BestPracticeAnalyser.ReadWrite"
+    },
+    "Invoke-AddCAPolicy": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.ConditionalAccess.ReadWrite"
+    },
+    "Invoke-AddCATemplate": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.ConditionalAccess.ReadWrite"
+    },
+    "Invoke-AddChocoApp": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.Application.ReadWrite"
+    },
+    "Invoke-AddConnectionFilter": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.ConnectionFilter.ReadWrite"
+    },
+    "Invoke-AddConnectionFilterTemplate": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Exchange.ConnectionFilter.ReadWrite"
+    },
+    "Invoke-AddContact": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Contact.ReadWrite"
+    },
+    "Invoke-AddContactTemplates": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Exchange.ReadWrite"
+    },
+    "Invoke-AddDefenderDeployment": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.MEM.ReadWrite"
+    },
+    "Invoke-AddEditTransportRule": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.TransportRule.ReadWrite"
+    },
+    "Invoke-AddEnrollment": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.Autopilot.ReadWrite"
+    },
+    "Invoke-AddEquipmentMailbox": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Equipment.ReadWrite"
+    },
+    "Invoke-AddExConnector": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Exchange.Connector.ReadWrite"
+    },
+    "Invoke-AddExConnectorTemplate": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Exchange.Connector.ReadWrite"
+    },
+    "Invoke-AddGroup": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.Group.ReadWrite"
+    },
+    "Invoke-AddGroupTeam": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.Group.ReadWrite"
+    },
+    "Invoke-AddGroupTemplate": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Identity.Group.ReadWrite"
+    },
+    "Invoke-AddGuest": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.User.ReadWrite"
+    },
+    "Invoke-AddIntuneTemplate": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Endpoint.MEM.ReadWrite"
+    },
+    "Invoke-AddMSPApp": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.Application.ReadWrite"
+    },
+    "Invoke-AddNamedLocation": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Tenant.ConditionalAccess.ReadWrite"
+    },
+    "Invoke-AddOfficeApp": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.Application.ReadWrite"
+    },
+    "Invoke-AddPolicy": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.MEM.ReadWrite"
+    },
+    "Invoke-AddQuarantinePolicy": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Spamfilter.ReadWrite"
+    },
+    "Invoke-AddRoomList": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Room.ReadWrite"
+    },
+    "Invoke-AddRoomMailbox": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Room.ReadWrite"
+    },
+    "Invoke-AddSafeLinksPolicyFromTemplate": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.SafeLinks.ReadWrite"
+    },
+    "Invoke-AddSafeLinksPolicyTemplate": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Exchange.SafeLinks.ReadWrite"
+    },
+    "Invoke-AddScheduledItem": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Scheduler.ReadWrite"
+    },
+    "Invoke-AddSharedMailbox": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.ReadWrite"
+    },
+    "Invoke-AddSite": {
+        "Functionality": "Entrypoint",
+        "Role": "Sharepoint.Site.ReadWrite"
+    },
+    "Invoke-AddSiteBulk": {
+        "Functionality": "Entrypoint",
+        "Role": "Sharepoint.Site.ReadWrite"
+    },
+    "Invoke-AddSpamFilter": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.SpamFilter.ReadWrite"
+    },
+    "Invoke-AddSpamFilterTemplate": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Spamfilter.ReadWrite"
+    },
+    "Invoke-AddStandardsDeploy": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Standards.ReadWrite"
+    },
+    "Invoke-AddStandardsTemplate": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Standards.ReadWrite"
+    },
+    "Invoke-AddStoreApp": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.Application.ReadWrite"
+    },
+    "Invoke-AddTeam": {
+        "Functionality": "Entrypoint",
+        "Role": "Teams.Group.ReadWrite"
+    },
+    "Invoke-AddTenant": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Tenant.Config.ReadWrite"
+    },
+    "Invoke-AddTenantAllowBlockList": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.SpamFilter.ReadWrite"
+    },
+    "Invoke-AddTransportRule": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Exchange.TransportRule.ReadWrite"
+    },
+    "Invoke-AddTransportTemplate": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Exchange.TransportRule.ReadWrite"
+    },
+    "Invoke-AddUser": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.User.ReadWrite"
+    },
+    "Invoke-AddUserBulk": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.User.ReadWrite"
+    },
+    "Invoke-AddUserDefaults": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.User.ReadWrite"
+    },
+    "Invoke-BestPracticeAnalyser_List": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Tenant.BestPracticeAnalyser.Read"
+    },
+    "Invoke-CIPPStandardActivityBasedTimeout": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardAddDKIM": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardAddDMARCToMOERA": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardallowOAuthTokens": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardallowOTPTokens": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardAnonReportDisable": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardAntiPhishPolicy": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardAntiSpamSafeList": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardAppDeploy": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardAssignmentFilterTemplate": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardAtpPolicyForO365": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardAuditLog": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardAuthMethodsPolicyMigration": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardAuthMethodsSettings": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardAutoAddProxy": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardAutoArchive": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardAutoExpandArchive": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardAutopilotProfile": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardAutopilotStatusPage": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardAzurePortal": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardBitLockerKeysForOwnedDevice": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardBookings": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardBranding": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardcalDefault": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardCloudMessageRecall": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardConditionalAccessTemplate": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardCustomBannedPasswordList": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardDefaultPlatformRestrictions": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardDefaultSharingLink": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardDelegateSentItems": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardDeletedUserRentention": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardDeployCheckChromeExtension": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardDeployContactTemplates": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardDeployMailContact": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardDisableAdditionalStorageProviders": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardDisableAddShortcutsToOneDrive": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardDisableAppCreation": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardDisableBasicAuth": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardDisableBasicAuthSMTP": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardDisableEmail": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardDisableEntraPortal": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardDisableExchangeOnlinePowerShell": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardDisableExternalCalendarSharing": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardDisableGuestDirectory": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardDisableGuests": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardDisableM365GroupUsers": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandarddisableMacSync": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardDisableOutlookAddins": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardDisableQRCodePin": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardDisableReshare": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardDisableResourceMailbox": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardDisableSecurityGroupUsers": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardDisableSelfServiceLicenses": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardDisableSharedMailbox": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardDisableSharePointLegacyAuth": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardDisableSMS": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardDisableTenantCreation": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardDisableTNEF": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardDisableUserSiteCreate": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardDisableViva": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardDisableVoice": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardDisablex509Certificate": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardEnableAppConsentRequests": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardEnableCustomerLockbox": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardEnableFIDO2": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardEnableHardwareOAuth": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardEnableLitigationHold": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardEnableMailboxAuditing": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardEnableMailTips": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardEnableNamePronunciation": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardEnableOnlineArchiving": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardEnablePronouns": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardEnrollmentWindowsHelloForBusinessConfiguration": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardExchangeConnectorTemplate": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardExcludedfileExt": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardEXODirectSend": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardEXODisableAutoForwarding": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardEXOOutboundSpamLimits": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardExternalMFATrusted": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardFocusedInbox": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardFormsPhishingProtection": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardfwdAdminAlerts": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardGlobalQuarantineNotifications": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardGroupTemplate": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardGuestInvite": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardintuneBrandingProfile": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardIntuneComplianceSettings": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardintuneDeviceReg": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardintuneDeviceRetirementDays": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardintuneRequireMFA": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardIntuneTemplate": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardlaps": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardLegacyEmailReportAddins": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardLegacyMFA": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardLegacyMFACleanup": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardMailboxRecipientLimits": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardMailContacts": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardMalwareFilterPolicy": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardMDMEnrollmentDuringRegistration": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardMDMScope": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardMessageExpiration": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardModernAuth": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardNudgeMFA": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardOauthConsent": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardOauthConsentLowSec": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardOutBoundSpamAlert": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardOWAAttachmentRestrictions": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardPasswordExpireDisabled": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardPerUserMFA": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardPhishingSimulations": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardPhishProtection": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardPhishSimSpoofIntelligence": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardProfilePhotos": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardPWcompanionAppAllowedState": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardPWdisplayAppInformationRequiredState": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardPWnumberMatchingRequiredState": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardQuarantineRequestAlert": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardQuarantineTemplate": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardRestrictThirdPartyStorageServices": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardRetentionPolicyTag": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardRotateDKIM": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardSafeAttachmentPolicy": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardSafeLinksPolicy": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardSafeLinksTemplatePolicy": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardSafeSendersDisable": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardSecureScoreRemediation": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardSecurityDefaults": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardSendFromAlias": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardSendReceiveLimitTenant": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardSharePointMassDeletionAlert": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardsharingCapability": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardsharingDomainRestriction": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardShortenMeetings": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardSpamFilterPolicy": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardSPAzureB2B": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardSPDirectSharing": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardSPDisableLegacyWorkflows": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardSPDisallowInfectedFiles": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardSPEmailAttestation": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardSPExternalUserExpiration": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardSPFileRequests": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardSpoofWarn": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardSPSyncButtonState": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardsRun": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Standards.ReadWrite"
+    },
+    "Invoke-CIPPStandardSSPR": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardStaleEntraDevices": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardTAP": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardTeamsChatProtection": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardTeamsEmailIntegration": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardTeamsEnrollUser": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardTeamsExternalAccessPolicy": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardTeamsExternalChatWithAnyone": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardTeamsExternalFileSharing": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardTeamsFederationConfiguration": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardTeamsGlobalMeetingPolicy": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardTeamsGuestAccess": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardTeamsMeetingRecordingExpiration": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardTeamsMeetingsByDefault": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardTeamsMeetingVerification": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardTeamsMessagingPolicy": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardTenantDefaultTimezone": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardTransportRuleTemplate": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardTwoClickEmailProtection": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardUndoOauth": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardUndoSSPR": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardunmanagedSync": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardUserPreferredLanguage": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CIPPStandardUserSubmissions": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Invoke-CreateSafeLinksPolicyTemplate": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Exchange.SafeLinks.ReadWrite"
+    },
+    "Invoke-DeleteSharepointSite": {
+        "Functionality": "Entrypoint",
+        "Role": "Sharepoint.Site.ReadWrite"
+    },
+    "Invoke-DeployContactTemplates": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Contact.ReadWrite"
+    },
+    "Invoke-DomainAnalyser_List": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Tenant.DomainAnalyser.Read"
+    },
+    "Invoke-EditAntiPhishingFilter": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.SpamFilter.ReadWrite"
+    },
+    "Invoke-EditAssignmentFilter": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.MEM.ReadWrite"
+    },
+    "Invoke-EditCAPolicy": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.ConditionalAccess.ReadWrite"
+    },
+    "Invoke-EditContact": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Contact.ReadWrite"
+    },
+    "Invoke-EditContactTemplates": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Exchange.ReadWrite"
+    },
+    "Invoke-EditEquipmentMailbox": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Equipment.ReadWrite"
+    },
+    "Invoke-EditExConnector": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Connector.ReadWrite"
+    },
+    "Invoke-EditGroup": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.Group.ReadWrite"
+    },
+    "Invoke-EditIntunePolicy": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.MEM.Read"
+    },
+    "Invoke-EditIntuneScript": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.MEM.ReadWrite"
+    },
+    "Invoke-EditMalwareFilter": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.SpamFilter.ReadWrite"
+    },
+    "Invoke-EditPolicy": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.MEM.ReadWrite"
+    },
+    "Invoke-EditQuarantinePolicy": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Spamfilter.ReadWrite"
+    },
+    "Invoke-EditRoomList": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Room.ReadWrite"
+    },
+    "Invoke-EditRoomMailbox": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Room.ReadWrite"
+    },
+    "Invoke-EditSafeAttachmentsFilter": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.SpamFilter.ReadWrite"
+    },
+    "Invoke-EditSafeLinksPolicy": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.SpamFilter.ReadWrite"
+    },
+    "Invoke-EditSafeLinksPolicyTemplate": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Exchange.SafeLinks.ReadWrite"
+    },
+    "Invoke-EditSpamFilter": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.SpamFilter.ReadWrite"
+    },
+    "Invoke-EditTenant": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Tenant.Config.ReadWrite"
+    },
+    "Invoke-EditTenantOffboardingDefaults": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Tenant.Config.ReadWrite"
+    },
+    "Invoke-EditTransportRule": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.TransportRule.ReadWrite"
+    },
+    "Invoke-EditUser": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.User.ReadWrite"
+    },
+    "Invoke-EditUserAliases": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.User.ReadWrite"
+    },
+    "Invoke-ExecAccessChecks": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.AppSettings.Read"
+    },
+    "Invoke-ExecAddAlert": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "CIPP.Alert.ReadWrite"
+    },
+    "Invoke-ExecAddGDAPRole": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Tenant.Relationship.ReadWrite"
+    },
+    "Invoke-ExecAddMultiTenantApp": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Application.ReadWrite"
+    },
+    "Invoke-ExecAddSPN": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Administration.ReadWrite"
+    },
+    "Invoke-ExecAddTenant": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "CIPP.AppSettings.ReadWrite"
+    },
+    "Invoke-ExecAddTrustedIP": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.AppSettings.ReadWrite"
+    },
+    "Invoke-ExecAlertsList": {
+        "Functionality": "Entrypoint",
+        "Role": "Security.Alert.Read"
+    },
+    "Invoke-ExecApiClient": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Extension.ReadWrite"
+    },
+    "Invoke-ExecAPIPermissionList": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.SuperAdmin.Read"
+    },
+    "Invoke-ExecAppApproval": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Application.Read"
+    },
+    "Invoke-ExecAppApprovalTemplate": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Tenant.Application.ReadWrite"
+    },
+    "Invoke-ExecAppInsightsQuery": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.SuperAdmin.Read"
+    },
+    "Invoke-ExecApplication": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Application.ReadWrite"
+    },
+    "Invoke-ExecAppPermissionTemplate": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Tenant.ApplicationTemplates.ReadWrite"
+    },
+    "Invoke-ExecAppUpload": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.Application.ReadWrite"
+    },
+    "Invoke-ExecAssignAPDevice": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.Autopilot.ReadWrite"
+    },
+    "Invoke-ExecAssignApp": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.Application.ReadWrite"
+    },
+    "Invoke-ExecAssignmentFilter": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.MEM.ReadWrite"
+    },
+    "Invoke-ExecAssignPolicy": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.MEM.ReadWrite"
+    },
+    "Invoke-ExecAuditLogSearch": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Alert.ReadWrite"
+    },
+    "Invoke-ExecAutoExtendGDAP": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Tenant.Relationship.ReadWrite"
+    },
+    "Invoke-ExecAzBobbyTables": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.SuperAdmin.ReadWrite"
+    },
+    "Invoke-ExecBackendURLs": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.AppSettings.Read"
+    },
+    "Invoke-ExecBackupRetentionConfig": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.AppSettings.ReadWrite"
+    },
+    "Invoke-ExecBECCheck": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.User.Read"
+    },
+    "Invoke-ExecBECRemediate": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.User.ReadWrite"
+    },
+    "Invoke-ExecBPA": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Tenant.BestPracticeAnalyser.ReadWrite"
+    },
+    "Invoke-ExecBrandingSettings": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.AppSettings.ReadWrite"
+    },
+    "Invoke-ExecBreachSearch": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Core.Read"
+    },
+    "Invoke-ExecBulkLicense": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.User.ReadWrite"
+    },
+    "Invoke-ExecCaCheck": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.ConditionalAccess.Read"
+    },
+    "Invoke-ExecCAExclusion": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.ConditionalAccess.ReadWrite"
+    },
+    "Invoke-ExecCAServiceExclusion": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.ConditionalAccess.ReadWrite"
+    },
+    "Invoke-ExecCippFunction": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.SuperAdmin.ReadWrite"
+    },
+    "Invoke-ExecCippReplacemap": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Config.ReadWrite"
+    },
+    "Invoke-ExecCloneTemplate": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "CIPP.Core.ReadWrite"
+    },
+    "Invoke-ExecClrImmId": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.User.ReadWrite"
+    },
+    "Invoke-ExecCombinedSetup": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "CIPP.AppSettings.ReadWrite"
+    },
+    "Invoke-ExecCommunityRepo": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "CIPP.Core.ReadWrite"
+    },
+    "Invoke-ExecConvertMailbox": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.ReadWrite"
+    },
+    "Invoke-ExecCopyForSent": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.ReadWrite"
+    },
+    "Invoke-ExecCPVPermissions": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.AppSettings.ReadWrite"
+    },
+    "Invoke-ExecCPVRefresh": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Core.ReadWrite"
+    },
+    "Invoke-ExecCreateAppTemplate": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Application.ReadWrite"
+    },
+    "Invoke-ExecCreateDefaultGroups": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Tenant.Groups.ReadWrite"
+    },
+    "Invoke-ExecCreateSAMApp": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "CIPP.AppSettings.ReadWrite"
+    },
+    "Invoke-ExecCreateTAP": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.User.ReadWrite"
+    },
+    "Invoke-ExecCSPLicense": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Directory.ReadWrite"
+    },
+    "Invoke-ExecCustomData": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "CIPP.AppSettings.ReadWrite"
+    },
+    "Invoke-ExecCustomRole": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.SuperAdmin.ReadWrite"
+    },
+    "Invoke-ExecDeleteGDAPRelationship": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Tenant.Relationship.ReadWrite"
+    },
+    "Invoke-ExecDeleteGDAPRoleMapping": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Tenant.Relationship.ReadWrite"
+    },
+    "Invoke-ExecDeleteSafeLinksPolicy": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.SpamFilter.ReadWrite"
+    },
+    "Invoke-ExecDeviceAction": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.MEM.ReadWrite"
+    },
+    "Invoke-ExecDeviceCodeLogon": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "CIPP.AppSettings.ReadWrite"
+    },
+    "Invoke-ExecDeviceDelete": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.Device.ReadWrite"
+    },
+    "Invoke-ExecDevicePasscodeAction": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.MEM.ReadWrite"
+    },
+    "Invoke-ExecDiagnosticsPresets": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.SuperAdmin.ReadWrite"
+    },
+    "Invoke-ExecDisableUser": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.User.ReadWrite"
+    },
+    "Invoke-ExecDismissRiskyUser": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.User.ReadWrite"
+    },
+    "Invoke-ExecDnsConfig": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.AppSettings.ReadWrite"
+    },
+    "Invoke-ExecDomainAnalyser": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Tenant.DomainAnalyser.ReadWrite"
+    },
+    "Invoke-ExecDriftClone": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Standards.ReadWrite"
+    },
+    "Invoke-ExecDurableFunctions": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.AppSettings.ReadWrite"
+    },
+    "Invoke-ExecEditCalendarPermissions": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.ReadWrite"
+    },
+    "Invoke-ExecEditMailboxPermissions": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.ReadWrite"
+    },
+    "Invoke-ExecEditTemplate": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "CIPP.Core.ReadWrite"
+    },
+    "Invoke-ExecEmailForward": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.ReadWrite"
+    },
+    "Invoke-ExecEnableArchive": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.ReadWrite"
+    },
+    "Invoke-ExecEnableAutoExpandingArchive": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.ReadWrite"
+    },
+    "Invoke-ExecExchangeRoleRepair": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.AppSettings.ReadWrite"
+    },
+    "Invoke-ExecExcludeLicenses": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.AppSettings.ReadWrite"
+    },
+    "Invoke-ExecExcludeTenant": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.AppSettings.ReadWrite"
+    },
+    "Invoke-ExecExtensionMapping": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Extension.ReadWrite"
+    },
+    "Invoke-ExecExtensionNinjaOneQueue": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Extension.ReadWrite"
+    },
+    "Invoke-ExecExtensionsConfig": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Extension.ReadWrite"
+    },
+    "Invoke-ExecExtensionSync": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Extension.ReadWrite"
+    },
+    "Invoke-ExecExtensionTest": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "CIPP.Extension.Read"
+    },
+    "Invoke-ExecGDAPAccessAssignment": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Tenant.Relationship.ReadWrite"
+    },
+    "Invoke-ExecGDAPInvite": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Tenant.Relationship.ReadWrite"
+    },
+    "Invoke-ExecGDAPInviteApproved": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Tenant.Relationship.ReadWrite"
+    },
+    "Invoke-ExecGDAPRemoveGArole": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Tenant.Relationship.ReadWrite"
+    },
+    "Invoke-ExecGDAPRoleTemplate": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Tenant.Relationship.ReadWrite"
+    },
+    "Invoke-ExecGeoIPLookup": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "CIPP.Core.Read"
+    },
+    "Invoke-ExecGetLocalAdminPassword": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.Device.Read"
+    },
+    "Invoke-ExecGetRecoveryKey": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.Device.Read"
+    },
+    "Invoke-ExecGitHubAction": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "CIPP.Extension.ReadWrite"
+    },
+    "Invoke-ExecGraphExplorerPreset": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Core.Read"
+    },
+    "Invoke-ExecGroupsDelete": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.ReadWrite"
+    },
+    "Invoke-ExecGroupsDeliveryManagement": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Group.ReadWrite"
+    },
+    "Invoke-ExecGroupsHideFromGAL": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Group.ReadWrite"
+    },
+    "Invoke-ExecHideFromGAL": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.ReadWrite"
+    },
+    "Invoke-ExecHVEUser": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.ReadWrite"
+    },
+    "Invoke-ExecIncidentsList": {
+        "Functionality": "Entrypoint",
+        "Role": "Security.Incident.Read"
+    },
+    "Invoke-ExecJITAdmin": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.Role.ReadWrite"
+    },
+    "Invoke-ExecListAppId": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Core.ReadWrite"
+    },
+    "Invoke-ExecListBackup": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Backup.Read"
+    },
+    "Invoke-ExecMailboxMobileDevices": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.ReadWrite"
+    },
+    "Invoke-ExecMailboxRestore": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.ReadWrite"
+    },
+    "Invoke-ExecMailTest": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Core.Read"
+    },
+    "Invoke-ExecMaintenanceScripts": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.AppSettings.Read"
+    },
+    "Invoke-ExecManageRetentionPolicies": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.RetentionPolicies.ReadWrite"
+    },
+    "Invoke-ExecManageRetentionTags": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.RetentionPolicies.ReadWrite"
+    },
+    "Invoke-ExecMDOAlertsList": {
+        "Functionality": "Entrypoint",
+        "Role": "Security.Alert.Read"
+    },
+    "Invoke-ExecModifyCalPerms": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.ReadWrite"
+    },
+    "Invoke-ExecModifyContactPerms": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.ReadWrite"
+    },
+    "Invoke-ExecModifyMBPerms": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.ReadWrite"
+    },
+    "Invoke-ExecNamedLocation": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Tenant.ConditionalAccess.ReadWrite"
+    },
+    "Invoke-ExecNewSafeLinksPolicy": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.SpamFilter.ReadWrite"
+    },
+    "Invoke-ExecNotificationConfig": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.AppSettings.ReadWrite"
+    },
+    "Invoke-ExecOffboardTenant": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Administration.ReadWrite"
+    },
+    "Invoke-ExecOffboardUser": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.User.ReadWrite"
+    },
+    "Invoke-ExecOffloadFunctions": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.SuperAdmin.ReadWrite"
+    },
+    "Invoke-ExecOnboardTenant": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Tenant.Administration.ReadWrite"
+    },
+    "Invoke-ExecOneDriveProvision": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.User.ReadWrite"
+    },
+    "Invoke-ExecOneDriveShortCut": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.User.ReadWrite"
+    },
+    "Invoke-ExecPartnerMode": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.SuperAdmin.ReadWrite"
+    },
+    "Invoke-ExecPartnerWebhook": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.AppSettings.ReadWrite"
+    },
+    "Invoke-ExecPasswordConfig": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.AppSettings.ReadWrite"
+    },
+    "Invoke-ExecPasswordNeverExpires": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.User.ReadWrite"
+    },
+    "Invoke-ExecPermissionRepair": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.AppSettings.ReadWrite"
+    },
+    "Invoke-ExecPerUserMFA": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.User.ReadWrite"
+    },
+    "Invoke-ExecQuarantineManagement": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.SpamFilter.ReadWrite"
+    },
+    "Invoke-ExecRemoveMailboxRule": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.ReadWrite"
+    },
+    "Invoke-ExecRemoveRestrictedUser": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.ReadWrite"
+    },
+    "Invoke-ExecRemoveTeamsVoicePhoneNumberAssignment": {
+        "Functionality": "Entrypoint",
+        "Role": "Teams.Voice.ReadWrite"
+    },
+    "Invoke-ExecRemoveTenant": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Administration.ReadWrite"
+    },
+    "Invoke-ExecRenameAPDevice": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.Autopilot.ReadWrite"
+    },
+    "Invoke-ExecResetMFA": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.User.ReadWrite"
+    },
+    "Invoke-ExecResetPass": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.User.ReadWrite"
+    },
+    "Invoke-ExecRestoreBackup": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.AppSettings.ReadWrite"
+    },
+    "Invoke-ExecRestoreDeleted": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Directory.ReadWrite"
+    },
+    "Invoke-ExecRevokeSessions": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.User.ReadWrite"
+    },
+    "Invoke-ExecRunBackup": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.AppSettings.ReadWrite"
+    },
+    "Invoke-ExecRunTenantGroupRule": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Tenant.Groups.ReadWrite"
+    },
+    "Invoke-ExecSAMAppPermissions": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.SuperAdmin.ReadWrite"
+    },
+    "Invoke-ExecSAMRoles": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.SuperAdmin.ReadWrite"
+    },
+    "Invoke-ExecSchedulerBillingRun": {
+        "Functionality": "Entrypoint",
+        "Role": "Scheduler.Billing.ReadWrite"
+    },
+    "Invoke-ExecSendOrgMessage": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Directory.ReadWrite"
+    },
+    "Invoke-ExecSendPush": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.User.Read"
+    },
+    "Invoke-ExecServicePrincipals": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Tenant.Application.ReadWrite"
+    },
+    "Invoke-ExecSetAPDeviceGroupTag": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.Autopilot.ReadWrite"
+    },
+    "Invoke-ExecSetCalendarProcessing": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.ReadWrite"
+    },
+    "Invoke-ExecSetCIPPAutoBackup": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Backup.ReadWrite"
+    },
+    "Invoke-ExecSetCloudManaged": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.DirSync.ReadWrite"
+    },
+    "Invoke-ExecSetLitigationHold": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.ReadWrite"
+    },
+    "Invoke-ExecSetMailboxEmailSize": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.ReadWrite"
+    },
+    "Invoke-ExecSetMailboxLocale": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.ReadWrite"
+    },
+    "Invoke-ExecSetMailboxQuota": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.ReadWrite"
+    },
+    "Invoke-ExecSetMailboxRetentionPolicies": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.ReadWrite"
+    },
+    "Invoke-ExecSetMailboxRule": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.ReadWrite"
+    },
+    "Invoke-ExecSetMdoAlert": {
+        "Functionality": "Entrypoint",
+        "Role": "Security.Incident.ReadWrite"
+    },
+    "Invoke-ExecSetOoO": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.ReadWrite"
+    },
+    "Invoke-ExecSetPackageTag": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "CIPP.Core.ReadWrite"
+    },
+    "Invoke-ExecSetRecipientLimits": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.ReadWrite"
+    },
+    "Invoke-ExecSetRetentionHold": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.ReadWrite"
+    },
+    "Invoke-ExecSetSecurityAlert": {
+        "Functionality": "Entrypoint",
+        "Role": "Security.Alert.ReadWrite"
+    },
+    "Invoke-ExecSetSecurityIncident": {
+        "Functionality": "Entrypoint",
+        "Role": "Security.Incident.ReadWrite"
+    },
+    "Invoke-ExecSetSharePointMember": {
+        "Functionality": "Entrypoint",
+        "Role": "Sharepoint.Site.ReadWrite"
+    },
+    "Invoke-ExecSetUserPhoto": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.User.ReadWrite"
+    },
+    "Invoke-ExecSharePointPerms": {
+        "Functionality": "Entrypoint",
+        "Role": "Sharepoint.Site.ReadWrite"
+    },
+    "Invoke-ExecStandardConvert": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Standards.ReadWrite"
+    },
+    "Invoke-ExecStandardsRun": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Standards.ReadWrite"
+    },
+    "Invoke-ExecStartManagedFolderAssistant": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.ReadWrite"
+    },
+    "Invoke-ExecSyncAPDevices": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.Autopilot.ReadWrite"
+    },
+    "Invoke-ExecSyncVPP": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.Application.ReadWrite"
+    },
+    "Invoke-ExecTeamsVoicePhoneNumberAssignment": {
+        "Functionality": "Entrypoint",
+        "Role": "Teams.Voice.ReadWrite"
+    },
+    "Invoke-ExecTenantGroup": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Tenant.Groups.ReadWrite"
+    },
+    "Invoke-ExecTimeSettings": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.SuperAdmin.ReadWrite"
+    },
+    "Invoke-ExecTokenExchange": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "CIPP.AppSettings.ReadWrite"
+    },
+    "Invoke-ExecUniversalSearch": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Core.Read"
+    },
+    "Invoke-ExecUpdateDriftDeviation": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Standards.ReadWrite"
+    },
+    "Invoke-ExecUpdateRefreshToken": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "CIPP.AppSettings.ReadWrite"
+    },
+    "Invoke-ExecUpdateSecureScore": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Administration.ReadWrite"
+    },
+    "Invoke-ExecUserSettings": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Core.ReadWrite"
+    },
+    "Invoke-ExecWebhookSubscriptions": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Alert.ReadWrite"
+    },
+    "Invoke-GetCippAlerts": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "CIPP.Core.Read"
+    },
+    "Invoke-GetVersion": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "CIPP.AppSettings.Read"
+    },
+    "Invoke-ListAdminPortalLicenses": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Core.Read"
+    },
+    "Invoke-ListAlertsQueue": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Alert.Read"
+    },
+    "Invoke-ListAllTenantDeviceCompliance": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.DeviceCompliance.Read"
+    },
+    "Invoke-ListAntiPhishingFilters": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.SpamFilter.Read"
+    },
+    "Invoke-ListAPDevices": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.Autopilot.Read"
+    },
+    "Invoke-ListApiTest": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "CIPP.Core.Read"
+    },
+    "Invoke-ListAppApprovalTemplates": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Tenant.Application.Read"
+    },
+    "Invoke-ListAppConsentRequests": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Administration.Read"
+    },
+    "Invoke-ListApplicationQueue": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.Application.Read"
+    },
+    "Invoke-ListAppProtectionPolicies": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.MEM.Read"
+    },
+    "Invoke-ListApps": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.Application.Read"
+    },
+    "Invoke-ListAppsRepository": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Endpoint.Application.Read"
+    },
+    "Invoke-ListAppStatus": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.Device.Read"
+    },
+    "Invoke-ListAssignmentFilters": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.MEM.Read"
+    },
+    "Invoke-ListAssignmentFilterTemplates": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Endpoint.MEM.Read"
+    },
+    "Invoke-ListAuditLogs": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Alert.Read"
+    },
+    "Invoke-ListAuditLogSearches": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Alert.Read"
+    },
+    "Invoke-ListAuditLogTest": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Tenant.Alert.Read"
+    },
+    "Invoke-ListAutopilotconfig": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.Autopilot.Read"
+    },
+    "Invoke-ListAzureADConnectStatus": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Directory.Read"
+    },
+    "Invoke-ListBasicAuth": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.AuditLog.Read"
+    },
+    "Invoke-ListBPA": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.BestPracticeAnalyser.Read"
+    },
+    "Invoke-ListBPATemplates": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Tenant.BestPracticeAnalyser.Read"
+    },
+    "Invoke-ListBreachesAccount": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Core.Read"
+    },
+    "Invoke-ListBreachesTenant": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Core.Read"
+    },
+    "Invoke-ListCalendarPermissions": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.Read"
+    },
+    "Invoke-ListCAtemplates": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Tenant.ConditionalAccess.Read"
+    },
+    "Invoke-ListCheckExtAlerts": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Core.Read"
+    },
+    "Invoke-ListCippQueue": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "CIPP.Core.Read"
+    },
+    "Invoke-ListCommunityRepos": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "CIPP.Core.Read"
+    },
+    "Invoke-ListCompliancePolicies": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.MEM.Read"
+    },
+    "Invoke-ListConditionalAccessPolicies": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.ConditionalAccess.Read"
+    },
+    "Invoke-ListConditionalAccessPolicyChanges": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.ConditionalAccess.Read"
+    },
+    "Invoke-ListConnectionFilter": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.ConnectionFilter.Read"
+    },
+    "Invoke-ListConnectionFilterTemplates": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Exchange.ConnectionFilter.Read"
+    },
+    "Invoke-ListContactPermissions": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.Read"
+    },
+    "Invoke-ListContacts": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Contact.Read"
+    },
+    "Invoke-ListContactTemplates": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Exchange.Read"
+    },
+    "Invoke-ListCSPLicenses": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Directory.Read"
+    },
+    "Invoke-ListCSPsku": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Directory.Read"
+    },
+    "Invoke-ListCustomDataMappings": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Core.Read"
+    },
+    "Invoke-ListCustomRole": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Core.Read"
+    },
+    "Invoke-ListCustomVariables": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Core.Read"
+    },
+    "Invoke-ListDefenderState": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.MEM.Read"
+    },
+    "Invoke-ListDefenderTVM": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.MEM.Read"
+    },
+    "Invoke-ListDeletedItems": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Directory.Read"
+    },
+    "Invoke-ListDeviceDetails": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.Device.Read"
+    },
+    "Invoke-ListDevices": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.Device.Read"
+    },
+    "Invoke-ListDiagnosticsPresets": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.SuperAdmin.Read"
+    },
+    "Invoke-ListDirectoryObjects": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "CIPP.Core.Read"
+    },
+    "Invoke-ListDomainAnalyser": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.DomainAnalyser.Read"
+    },
+    "Invoke-ListDomainHealth": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Tenant.DomainAnalyser.Read"
+    },
+    "Invoke-ListDomains": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Administration.Read"
+    },
+    "invoke-ListEmptyResults": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "CIPP.Core"
+    },
+    "Invoke-ListEquipment": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Equipment.Read"
+    },
+    "Invoke-ListExchangeConnectors": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Connector.Read"
+    },
+    "Invoke-ListExConnectorTemplates": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Exchange.Connector.Read"
+    },
+    "Invoke-ListExtensionCacheData": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Core.Read"
+    },
+    "Invoke-ListExtensionsConfig": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "CIPP.Extension.Read"
+    },
+    "Invoke-ListExtensionSync": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "CIPP.Extension.Read"
+    },
+    "Invoke-ListExternalTenantInfo": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "CIPP.Core.Read"
+    },
+    "Invoke-ListFunctionParameters": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "CIPP.Core.Read"
+    },
+    "Invoke-ListFunctionStats": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Core.Read"
+    },
+    "Invoke-ListGDAPAccessAssignments": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": ""
+    },
+    "Invoke-ListGDAPInvite": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Tenant.Relationship.Read"
+    },
+    "Invoke-ListGDAPRoles": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Tenant.Relationship.Read"
+    },
+    "Invoke-ListGenericTestFunction": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Core.Read"
+    },
+    "Invoke-ListGitHubReleaseNotes": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "CIPP.Core.Read"
+    },
+    "Invoke-ListGlobalAddressList": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.Read"
+    },
+    "Invoke-ListGraphBulkRequest": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Core.Read"
+    },
+    "Invoke-ListGraphExplorerPresets": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "CIPP.Core.Read"
+    },
+    "Invoke-ListGraphRequest": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Core.Read"
+    },
+    "Invoke-ListGroups": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.Group.Read"
+    },
+    "Invoke-ListGroupTemplates": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Identity.Group.Read"
+    },
+    "Invoke-ListHaloClients": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Extension.Read"
+    },
+    "Invoke-ListInactiveAccounts": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Directory.Read"
+    },
+    "Invoke-ListIntuneIntents": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.MEM.Read"
+    },
+    "Invoke-ListIntunePolicy": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.MEM.Read"
+    },
+    "Invoke-ListIntuneScript": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.MEM.Read"
+    },
+    "Invoke-ListIntuneTemplates": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Endpoint.MEM.Read"
+    },
+    "Invoke-ListIPWhitelist": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Core.Read"
+    },
+    "Invoke-ListJITAdmin": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.Role.Read"
+    },
+    "Invoke-ListKnownIPDb": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Core.Read"
+    },
+    "Invoke-ListLicenses": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Directory.Read"
+    },
+    "Invoke-ListLogs": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "CIPP.Core.Read"
+    },
+    "Invoke-ListMailboxCAS": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.Read"
+    },
+    "Invoke-ListMailboxes": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.Read"
+    },
+    "Invoke-ListMailboxMobileDevices": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.Read"
+    },
+    "Invoke-ListmailboxPermissions": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.Read"
+    },
+    "Invoke-ListMailboxRestores": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.Read"
+    },
+    "Invoke-ListMailboxRules": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.Read"
+    },
+    "Invoke-ListMailQuarantine": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.SpamFilter.Read"
+    },
+    "Invoke-ListMailQuarantineMessage": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.SpamFilter.Read"
+    },
+    "Invoke-ListMalwareFilters": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.SpamFilter.Read"
+    },
+    "Invoke-ListMessageTrace": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.TransportRule.Read"
+    },
+    "Invoke-ListMFAUsers": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.User.Read"
+    },
+    "Invoke-ListNamedLocations": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.ConditionalAccess.Read"
+    },
+    "Invoke-ListNewUserDefaults": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Identity.User.Read"
+    },
+    "Invoke-ListNotificationConfig": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.AppSettings.Read"
+    },
+    "Invoke-ListOAuthApps": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Application.Read"
+    },
+    "Invoke-ListOoO": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.Read"
+    },
+    "Invoke-ListOrg": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Core.Read"
+    },
+    "Invoke-ListPartnerRelationships": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Relationship.Read"
+    },
+    "Invoke-ListPendingWebhooks": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Alert.Read"
+    },
+    "Invoke-ListPerUserMFA": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.User.Read"
+    },
+    "Invoke-ListPotentialApps": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.Application.Read"
+    },
+    "Invoke-ListQuarantinePolicy": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.SpamFilter.Read"
+    },
+    "Invoke-ListRestrictedUsers": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.Read"
+    },
+    "Invoke-ListRoles": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.Role.Read"
+    },
+    "Invoke-ListRoomLists": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Room.Read"
+    },
+    "Invoke-ListRooms": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Room.Read"
+    },
+    "Invoke-ListSafeAttachmentsFilters": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.SpamFilter.Read"
+    },
+    "Invoke-ListSafeLinksPolicy": {
+        "Functionality": "Entrypoint",
+        "Role": "Security.SafeLinksPolicy.Read"
+    },
+    "Invoke-ListSafeLinksPolicyDetails": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.SpamFilter.Read"
+    },
+    "Invoke-ListSafeLinksPolicyTemplateDetails": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Exchange.SafeLinks.Read"
+    },
+    "Invoke-ListSafeLinksPolicyTemplates": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Exchange.SafeLinks.Read"
+    },
+    "Invoke-ListScheduledItemDetails": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "CIPP.Scheduler.Read"
+    },
+    "Invoke-ListScheduledItems": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "CIPP.Scheduler.Read"
+    },
+    "Invoke-ListServiceHealth": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Administration.Read"
+    },
+    "Invoke-ListSharedMailboxAccountEnabled": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.Read"
+    },
+    "Invoke-ListSharedMailboxStatistics": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.Read"
+    },
+    "Invoke-ListSharepointAdminUrl": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Core.Read"
+    },
+    "Invoke-ListSharepointQuota": {
+        "Functionality": "Entrypoint",
+        "Role": "Sharepoint.Admin.Read"
+    },
+    "Invoke-ListSharepointSettings": {
+        "Functionality": "Entrypoint",
+        "Role": "Sharepoint.Admin.Read"
+    },
+    "Invoke-ListSignIns": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.AuditLog.Read"
+    },
+    "Invoke-ListSites": {
+        "Functionality": "Entrypoint",
+        "Role": "Sharepoint.Site.Read"
+    },
+    "Invoke-ListSpamfilter": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.SpamFilter.Read"
+    },
+    "Invoke-ListSpamFilterTemplates": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Exchange.SpamFilter.Read"
+    },
+    "Invoke-ListStandards": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Standards.Read"
+    },
+    "Invoke-ListStandardsCompare": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.BestPracticeAnalyser.Read"
+    },
+    "Invoke-listStandardTemplates": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Standards.Read"
+    },
+    "Invoke-ListTeams": {
+        "Functionality": "Entrypoint",
+        "Role": "Teams.Group.Read"
+    },
+    "Invoke-ListTeamsActivity": {
+        "Functionality": "Entrypoint",
+        "Role": "Teams.Activity.Read"
+    },
+    "Invoke-ListTeamsLisLocation": {
+        "Functionality": "Entrypoint",
+        "Role": "Teams.Voice.Read"
+    },
+    "Invoke-ListTeamsVoice": {
+        "Functionality": "Entrypoint",
+        "Role": "Teams.Voice.Read"
+    },
+    "Invoke-ListTenantAlignment": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Standards.Read"
+    },
+    "Invoke-ListTenantAllowBlockList": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.SpamFilter.Read"
+    },
+    "Invoke-ListTenantDetails": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Core.Read"
+    },
+    "Invoke-ListTenantDrift": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Standards.Read"
+    },
+    "Invoke-ListTenantGroups": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "CIPP.Core.Read"
+    },
+    "Invoke-ListTenantOnboarding": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Administration.Read"
+    },
+    "Invoke-ListTenants": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "CIPP.Core.Read"
+    },
+    "Invoke-ListTransportRules": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.TransportRule.Read"
+    },
+    "Invoke-ListTransportRulesTemplates": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Exchange.TransportRule.Read"
+    },
+    "Invoke-ListUserConditionalAccessPolicies": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.User.Read"
+    },
+    "Invoke-ListUserCounts": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.User.Read"
+    },
+    "Invoke-ListUserDevices": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.User.Read"
+    },
+    "Invoke-ListUserGroups": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.User.Read"
+    },
+    "Invoke-ListUserMailboxDetails": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.Read"
+    },
+    "Invoke-ListUserMailboxRules": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Mailbox.Read"
+    },
+    "Invoke-ListUserPhoto": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Identity.User.Read"
+    },
+    "Invoke-ListUsers": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.User.Read"
+    },
+    "Invoke-ListUsersAndGroups": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Directory.Read"
+    },
+    "Invoke-ListUserSettings": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Identity.User.Read"
+    },
+    "Invoke-ListUserSigninLogs": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.User.Read"
+    },
+    "Invoke-ListWebhookAlert": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Alert.Read"
+    },
+    "Invoke-PatchUser": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.User.ReadWrite"
+    },
+    "Invoke-PublicPhishingCheck": {
+        "Functionality": "Entrypoint",
+        "Role": "Public"
+    },
+    "Invoke-PublicPing": {
+        "Functionality": "Entrypoint",
+        "Role": "Public"
+    },
+    "Invoke-PublicWebhooks": {
+        "Functionality": "Entrypoint",
+        "Role": "Public"
+    },
+    "Invoke-RemoveAPDevice": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.Autopilot.ReadWrite"
+    },
+    "Invoke-RemoveApp": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.Application.ReadWrite"
+    },
+    "Invoke-RemoveAssignmentFilterTemplate": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Endpoint.MEM.ReadWrite"
+    },
+    "Invoke-RemoveAutopilotConfig": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.Autopilot.ReadWrite"
+    },
+    "Invoke-RemoveBPATemplate": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Standards.ReadWrite"
+    },
+    "Invoke-RemoveCAPolicy": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.ConditionalAccess.ReadWrite"
+    },
+    "Invoke-RemoveCATemplate": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.ConditionalAccess.ReadWrite"
+    },
+    "Invoke-RemoveCippQueue": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Core.ReadWrite"
+    },
+    "Invoke-RemoveConnectionfilterTemplate": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.ConnectionFilter.ReadWrite"
+    },
+    "Invoke-RemoveContact": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Contact.ReadWrite"
+    },
+    "Invoke-RemoveContactTemplates": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Exchange.ReadWrite"
+    },
+    "Invoke-RemoveDeletedObject": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Directory.ReadWrite"
+    },
+    "Invoke-RemoveExConnector": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Connector.ReadWrite"
+    },
+    "Invoke-RemoveExConnectorTemplate": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Exchange.Connector.ReadWrite"
+    },
+    "Invoke-RemoveGroupTemplate": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Identity.Group.ReadWrite"
+    },
+    "Invoke-RemoveIntuneScript": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.MEM.ReadWrite"
+    },
+    "Invoke-RemoveIntuneTemplate": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.MEM.ReadWrite"
+    },
+    "Invoke-RemovePolicy": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.MEM.ReadWrite"
+    },
+    "Invoke-RemoveQuarantinePolicy": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Spamfilter.ReadWrite"
+    },
+    "Invoke-RemoveQueuedAlert": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Alert.ReadWrite"
+    },
+    "Invoke-RemoveQueuedApp": {
+        "Functionality": "Entrypoint",
+        "Role": "Endpoint.Application.ReadWrite"
+    },
+    "Invoke-RemoveSafeLinksPolicyTemplate": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Exchange.SafeLinks.ReadWrite"
+    },
+    "Invoke-RemoveScheduledItem": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "CIPP.Scheduler.ReadWrite"
+    },
+    "Invoke-RemoveSpamfilter": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Spamfilter.ReadWrite"
+    },
+    "Invoke-RemoveSpamfilterTemplate": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.Spamfilter.ReadWrite"
+    },
+    "Invoke-RemoveStandard": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Standards.ReadWrite"
+    },
+    "Invoke-RemoveStandardTemplate": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Standards.ReadWrite"
+    },
+    "Invoke-RemoveTenantAllowBlockList": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.SpamFilter.ReadWrite"
+    },
+    "Invoke-RemoveTenantCapabilitiesCache": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Tenant.Administration.ReadWrite"
+    },
+    "Invoke-RemoveTransportRule": {
+        "Functionality": "Entrypoint",
+        "Role": "Exchange.TransportRule.ReadWrite"
+    },
+    "Invoke-RemoveTransportRuleTemplate": {
+        "Functionality": "Entrypoint,AnyTenant",
+        "Role": "Exchange.TransportRule.ReadWrite"
+    },
+    "Invoke-RemoveUser": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.User.ReadWrite"
+    },
+    "Invoke-RemoveUserDefaultTemplate": {
+        "Functionality": "Entrypoint",
+        "Role": "Identity.User.ReadWrite"
+    },
+    "Invoke-RemoveWebhookAlert": {
+        "Functionality": "Entrypoint",
+        "Role": "CIPP.Alert.ReadWrite"
+    },
+    "Invoke-SetAuthMethod": {
+        "Functionality": "Entrypoint",
+        "Role": "Tenant.Administration.ReadWrite"
+    },
+    "Measure-CippTask": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "New-CippCoreRequest": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "New-CippQueueEntry": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "New-ClassicAPIGetRequest": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "New-DeviceLogin": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "New-ExoBulkRequest": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "New-ExoRequest": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "New-GraphBulkRequest": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "New-GraphDeltaQuery": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "New-GraphGetRequest": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "New-GraphPOSTRequest": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "New-passwordString": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "New-TeamsAPIGetRequest": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Push-AuditLogSearchCreation": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-BECRun": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-BPACollectData": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-CIPPAccessTenantTest": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-CippDriftManagement": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-CIPPStandard": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-CIPPStandardsApplyBatch": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-CIPPStandardsList": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-DomainAnalyserDomain": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-DomainAnalyserTenant": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-ExecAddMultiTenantApp": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-ExecAlertsListAllTenants": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-ExecAppApprovalTemplate": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-ExecApplicationCopy": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-ExecGDAPInviteQueue": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-ExecIncidentsListAllTenants": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-ExecJITAdminListAllTenants": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-ExecMdoAlertsListAllTenants": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-ExecOffboardingMailboxPermissions": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-ExecOnboardTenantQueue": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-ExecScheduledCommand": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-GetPendingWebhooks": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-GetStandards": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-GetTenants": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-GraphDeltaQuery": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-ListBasicAuthAllTenants": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-ListConditionalAccessPoliciesAllTenants": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-ListGraphRequestQueue": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-ListLicensesQueue": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-ListMailboxRulesQueue": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-ListMailQuarantineAllTenants": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-ListMFAUsersQueue": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-ListTenantAllowBlockListAllTenants": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-ListTransportRulesAllTenants": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-PublicWebhookProcess": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-SchedulerCIPPNotifications": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-Schedulerwebhookcreation": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-UpdateDynamicTenantGroup": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-UpdatePermissionsQueue": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-UpdateTenants": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-UploadApplication": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Push-Z_CIPPQueueTrigger": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Read-JwtAccessDetails": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Remove-CIPPCache": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Send-CippConsoleLog": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Set-CIPPAccessRole": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Set-CIPPDriftDeviation": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Set-CippQueueTask": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Set-CIPPSAMAdminRoles": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Set-CIPPSPOTenant": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Start-ApplicationOrchestrator": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Start-AuditLogIngestion": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Start-AuditLogOrchestrator": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Start-AuditLogProcessingOrchestrator": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Start-AuditLogSearchCreation": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Start-BillingTimer": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Start-BPAOrchestrator": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Start-DomainOrchestrator": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Start-DriftStandardsOrchestrator": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Start-DurableCleanup": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Start-ExtensionOrchestrator": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Start-SchedulerOrchestrator": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Start-StandardsOrchestrator": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Start-TenantDynamicGroupOrchestrator": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Start-UpdatePermissionsOrchestrator": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Start-UserTasksOrchestrator": {
+        "Functionality": "Entrypoint",
+        "Role": ""
+    },
+    "Test-CIPPAccessUserRole": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Test-CIPPStandardLicense": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Test-DeltaQueryConditions": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Update-CIPPDynamicTenantGroups": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Update-CippQueueEntry": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Write-AlertMessage": {
+        "Functionality": "Internal\n\nDo duplicate detection, if no duplicate, write.",
+        "Role": ""
+    },
+    "Write-AlertTrace": {
+        "Functionality": "Internal function. Pleases most of Write-AlertTrace for alerting purposes",
+        "Role": ""
+    },
+    "Write-CippFunctionStats": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Write-LogMessage": {
+        "Functionality": "Internal",
+        "Role": ""
+    },
+    "Write-StandardsAlert": {
+        "Functionality": "Internal",
+        "Role": ""
+    }
+}
