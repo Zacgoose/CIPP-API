@@ -21,6 +21,29 @@ function Invoke-ListFunctionParameters {
     $CommonParameters = @('Verbose', 'Debug', 'ErrorAction', 'WarningAction', 'InformationAction', 'ErrorVariable', 'WarningVariable', 'InformationVariable', 'OutVariable', 'OutBuffer', 'PipelineVariable', 'TenantFilter', 'APIName', 'Headers', 'ProgressAction', 'WhatIf', 'Confirm', 'Headers', 'NoAuthCheck')
     $TemporaryBlacklist = 'Get-CIPPAuthentication', 'Invoke-CippWebhookProcessing', 'Invoke-ListFunctionParameters', 'New-CIPPAPIConfig', 'New-CIPPGraphSubscription'
     try {
+        # Load function permissions from cache if available (for CIPPCore module)
+        if (-not $global:CIPPFunctionPermissions -and (-not $Module -or $Module -eq 'CIPPCore')) {
+            $CIPPCoreModule = Get-Module -Name CIPPCore
+            if ($CIPPCoreModule) {
+                $PermissionsFileJson = Join-Path $CIPPCoreModule.ModuleBase 'lib' 'data' 'function-permissions.json'
+
+                if (Test-Path $PermissionsFileJson) {
+                    try {
+                        $jsonData = Get-Content -Path $PermissionsFileJson -Raw | ConvertFrom-Json -AsHashtable
+                        $global:CIPPFunctionPermissions = [System.Collections.Hashtable]::new([StringComparer]::OrdinalIgnoreCase)
+                        foreach ($key in $jsonData.Keys) {
+                            $global:CIPPFunctionPermissions[$key] = $jsonData[$key]
+                        }
+                        Write-Information "Loaded $($global:CIPPFunctionPermissions.Count) function permissions from JSON cache"
+                    } catch {
+                        Write-Warning "Failed to load function permissions from JSON: $($_.Exception.Message)"
+                    }
+                }
+            }
+        } else {
+            $CacheSw.Stop()
+        }
+
         if ($Module -eq 'ExchangeOnlineManagement') {
             $ExoRequest = @{
                 AvailableCmdlets = $true
@@ -40,13 +63,9 @@ function Invoke-ListFunctionParameters {
             $GetHelp = @{
                 Name = $Function
             }
-            if ($Module -eq 'ExchangeOnlineManagement') {
-                $GetHelp.Path = 'ExchangeOnlineHelp'
-            }
-            $Help = Get-Help @GetHelp
-            $ParamsHelp = ($Help | Select-Object -ExpandProperty parameters).parameter | Select-Object name, @{n = 'description'; exp = { $_.description.Text } }
-            if ($Help.Functionality -in $IgnoreList) { continue }
-            if ($Help.Functionality -match 'Entrypoint') { continue }
+
+            if ($Functionality -in $IgnoreList) { continue }
+            if ($Functionality -match 'Entrypoint') { continue }
             $Parameters = foreach ($Key in $Function.Parameters.Keys) {
                 if ($CommonParameters -notcontains $Key) {
                     $Param = $Function.Parameters.$Key
