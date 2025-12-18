@@ -86,7 +86,9 @@ function Receive-CippHttpTrigger {
 
                 try {
                     # Import required modules in the parallel thread
+                    # Note: CIPPHTTP must be imported because New-CippCoreRequest is defined there
                     Import-Module CIPPCore -Force
+                    Import-Module CIPPHTTP -Force
                     Import-Module CippExtensions -Force -ErrorAction SilentlyContinue
                     Import-Module DNSHealth -Force -ErrorAction SilentlyContinue
                     Import-Module AzBobbyTables -Force -ErrorAction SilentlyContinue
