@@ -15,11 +15,11 @@ function Push-CIPPStandard {
 
     Write-Information "We'll be running $FunctionName"
 
-    $apiParts = @($Standard)
+    $API = $Standard
     if (-not [string]::IsNullOrWhiteSpace($Item.templateId)) {
-        $apiParts += $Item.templateId
+        $API = '{0}_{1}' -f $API, $Item.templateId
     } else {
-        $apiParts += 'builtin'
+        $API = '{0}_builtin' -f $API
     }
 
     if (
@@ -28,10 +28,8 @@ function Push-CIPPStandard {
         $Item.Settings.TemplateList -and
         -not [string]::IsNullOrWhiteSpace($Item.Settings.TemplateList.value)
     ) {
-        $apiParts += $Item.Settings.TemplateList.value
+        $API = '{0}_{1}' -f $API, $Item.Settings.TemplateList.value
     }
-
-    $API = $apiParts -join '_'
 
     $Rerun = Test-CIPPRerun -Type Standard -Tenant $Tenant -API $API
     if ($Rerun) {
