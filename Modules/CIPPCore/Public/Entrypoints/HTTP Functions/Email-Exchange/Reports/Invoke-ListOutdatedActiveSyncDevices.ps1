@@ -12,20 +12,30 @@ function Invoke-ListOutdatedActiveSyncDevices {
     $TenantFilter = $Request.Query.TenantFilter
     
     try {
-        # Get all mobile devices for the tenant
-        $AllDevices = New-ExoRequest -tenantid $TenantFilter -cmdlet 'Get-MobileDevice'
-        
-        # Filter for outdated ActiveSync devices (version < 16.1)
+        # Filter for outdated ActiveSync devices (version < 16.1) using server-side filtering
         # ActiveSync 16.1 was released in June 2016 and will be the minimum required version starting March 1, 2026
+        # Using OPATH syntax to filter on the Exchange server for better performance
+        $Filter = "(ClientType -eq 'EAS' -or ClientType -like '*ActiveSync*')"
+        
+        # Get mobile devices with server-side filter
+        $AllDevices = New-ExoRequest -tenantid $TenantFilter -cmdlet 'Get-MobileDevice' -cmdParams @{Filter = $Filter}
+        
         $MinimumVersion = [version]'16.1'
         
+        # Client-side filtering for version comparison (as version comparison is not supported in OPATH)
         $OutdatedDevices = $AllDevices | Where-Object {
-            # Check if device is using ActiveSync/EAS
-            ($_.ClientType -eq 'EAS' -or $_.ClientType -match 'ActiveSync') -and 
-            # Ensure ClientVersion exists
-            $_.ClientVersion -and 
-            # Check if version is less than 16.1
-            ([version]$_.ClientVersion -lt $MinimumVersion)
+            # Ensure ClientVersion exists and can be parsed
+            if (-not $_.ClientVersion) {
+                return $false
+            }
+            # Safely parse and check if version is less than 16.1
+            try {
+                $deviceVersion = [version]$_.ClientVersion
+                return ($deviceVersion -lt $MinimumVersion)
+            } catch {
+                # If version parsing fails, exclude the device
+                return $false
+            }
         } | Sort-Object UserDisplayName | Select-Object @{ Name = 'userDisplayName'; Expression = { $_.UserDisplayName } },
         @{ Name = 'userPrincipalName'; Expression = { $_.UserPrincipalName } },
         @{ Name = 'deviceId'; Expression = { $_.DeviceId } },
