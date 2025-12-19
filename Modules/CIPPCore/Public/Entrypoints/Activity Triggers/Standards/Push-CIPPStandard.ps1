@@ -18,6 +18,8 @@ function Push-CIPPStandard {
     $apiParts = @($Standard)
     if (-not [string]::IsNullOrWhiteSpace($Item.templateId)) {
         $apiParts += $Item.templateId
+    } else {
+        $apiParts += 'builtin'
     }
 
     if ($Standard -in @('IntuneTemplate', 'ConditionalAccessTemplate')) {
