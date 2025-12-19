@@ -12,13 +12,12 @@ function Invoke-ListOutdatedActiveSyncDevices {
     $TenantFilter = $Request.Query.TenantFilter
     
     try {
-        # Filter for outdated ActiveSync devices (version < 16.1) using server-side filtering
+        # Filter for outdated ActiveSync devices (version < 16.1) using the ActiveSync switch
         # ActiveSync 16.1 was released in June 2016 and will be the minimum required version starting March 1, 2026
-        # Using OPATH syntax to filter on the Exchange server for better performance
-        $Filter = "(ClientType -eq 'EAS' -or ClientType -like '*ActiveSync*')"
+        # Using the -ActiveSync switch to filter on the Exchange server for better performance
         
-        # Get mobile devices with server-side filter
-        $AllDevices = New-ExoRequest -tenantid $TenantFilter -cmdlet 'Get-MobileDevice' -cmdParams @{Filter = $Filter}
+        # Get mobile devices with ActiveSync filter
+        $AllDevices = New-ExoRequest -tenantid $TenantFilter -cmdlet 'Get-MobileDevice' -cmdParams @{ActiveSync = $true}
         
         $MinimumVersion = [version]'16.1'
         
