@@ -18,7 +18,7 @@ function Push-CIPPStandard {
     $API = $Standard
     if (-not [string]::IsNullOrWhiteSpace($Item.templateId)) {
         $API = '{0}_{1}' -f $API, $Item.templateId
-    } else {
+    } elseif ($true) {
         $API = '{0}_builtin' -f $API
     }
 
