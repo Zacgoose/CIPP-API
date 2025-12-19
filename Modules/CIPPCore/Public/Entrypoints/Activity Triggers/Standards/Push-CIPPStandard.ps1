@@ -17,15 +17,7 @@ function Push-CIPPStandard {
 
     $API = $Standard
     if ($Standard -in @('IntuneTemplate', 'ConditionalAccessTemplate')) {
-        $API = '{0}_{1}' -f $API, (if (-not [string]::IsNullOrWhiteSpace($Item.templateId)) { $Item.templateId } else { 'builtin' })
-
-        if (
-            $Item.Settings -and
-            $Item.Settings.TemplateList -and
-            -not [string]::IsNullOrWhiteSpace($Item.Settings.TemplateList.value)
-        ) {
-            $API = '{0}_{1}' -f $API, $Item.Settings.TemplateList.value
-        }
+        $API = "$($Standard)_$($Item.templateId)_$($Item.Settings.TemplateList.value)"
     } elseif (-not [string]::IsNullOrWhiteSpace($Item.templateId)) {
         $API = '{0}_{1}' -f $API, $Item.templateId
     } else {
