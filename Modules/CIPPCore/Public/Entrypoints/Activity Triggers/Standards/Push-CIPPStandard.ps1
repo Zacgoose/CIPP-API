@@ -15,23 +15,21 @@ function Push-CIPPStandard {
 
     Write-Information "We'll be running $FunctionName"
 
-    $templateIdPart = if (-not [string]::IsNullOrWhiteSpace($Item.templateId)) { $Item.templateId } else { 'builtin' }
-    $templateListPart = if (
+    $apiParts = @($Standard)
+    if (-not [string]::IsNullOrWhiteSpace($Item.templateId)) {
+        $apiParts += $Item.templateId
+    } else {
+        $apiParts += 'builtin'
+    }
+
+    if (
         $Standard -in @('IntuneTemplate', 'ConditionalAccessTemplate') -and
         $Item.Settings -and
         $Item.Settings.TemplateList -and
         -not [string]::IsNullOrWhiteSpace($Item.Settings.TemplateList.value)
     ) {
-        $Item.Settings.TemplateList.value
-    } else {
-        $null
+        $apiParts += $Item.Settings.TemplateList.value
     }
-
-    $apiParts = @(
-        $Standard
-        $templateIdPart
-        $templateListPart
-    ) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
 
     $API = $apiParts -join '_'
 
