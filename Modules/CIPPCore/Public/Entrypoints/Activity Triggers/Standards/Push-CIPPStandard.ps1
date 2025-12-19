@@ -15,13 +15,12 @@ function Push-CIPPStandard {
 
     Write-Information "We'll be running $FunctionName"
 
-    $API = $Standard
     if ($Standard -in @('IntuneTemplate', 'ConditionalAccessTemplate')) {
         $API = "$($Standard)_$($Item.templateId)_$($Item.Settings.TemplateList.value)"
     } elseif (-not [string]::IsNullOrWhiteSpace($Item.templateId)) {
-        $API = '{0}_{1}' -f $API, $Item.templateId
+        $API = "$($Standard)_$($Item.templateId)"
     } else {
-        $API = '{0}_builtin' -f $API
+        $API = "$($Standard)_builtin"
     }
 
     $Rerun = Test-CIPPRerun -Type Standard -Tenant $Tenant -API $API
