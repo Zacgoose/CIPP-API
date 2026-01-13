@@ -19,7 +19,7 @@ function Invoke-ExecUpdateDriftDeviation {
             $Filter = "PartitionKey eq '$TenantFilter'"
             $ExistingDeviations = Get-CIPPAzDataTableEntity @Table -Filter $Filter
             foreach ($Deviation in $ExistingDeviations) {
-                Remove-AzDataTableEntity @Table -Entity $Deviation
+                Remove-CIPPAzDataTableEntity -Context $Table.Context -Entity $Deviation -Force
             }
             $Results = @([PSCustomObject]@{
                     success = $true

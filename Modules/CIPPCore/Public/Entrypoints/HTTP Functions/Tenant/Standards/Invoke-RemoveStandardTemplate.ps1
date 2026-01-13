@@ -19,7 +19,7 @@ function Invoke-RemoveStandardTemplate {
         $Filter = "PartitionKey eq 'StandardsTemplateV2' and RowKey eq '$ID'"
         $ClearRow = Get-CIPPAzDataTableEntity @Table -Filter $Filter -Property PartitionKey, RowKey, JSON
         $TemplateName = (ConvertFrom-Json -InputObject $ClearRow.JSON).templateName
-        Remove-AzDataTableEntity -Force @Table -Entity $ClearRow
+        Remove-CIPPAzDataTableEntity -Context $Table.Context -Entity $ClearRow -Force
         $Result = "Removed Standards Template named: '$($TemplateName)' with id: $($ID)"
         Write-LogMessage -Headers $Headers -API $APIName -message $Result -Sev Info
         $StatusCode = [HttpStatusCode]::OK

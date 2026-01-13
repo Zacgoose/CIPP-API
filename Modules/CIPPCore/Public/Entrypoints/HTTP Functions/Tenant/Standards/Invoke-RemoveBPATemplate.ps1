@@ -18,7 +18,7 @@ Function Invoke-RemoveBPATemplate {
 
         $Filter = "PartitionKey eq 'BPATemplate' and RowKey eq '$ID'"
         $ClearRow = Get-CIPPAzDataTableEntity @Table -Filter $Filter -Property PartitionKey, RowKey
-        Remove-AzDataTableEntity -Force @Table -Entity $ClearRow
+        Remove-CIPPAzDataTableEntity -Context $Table.Context -Entity $ClearRow -Force
         $Result = "Removed BPA Template with ID $ID"
         Write-LogMessage -Headers $Headers -API $APINAME -message $Result -Sev 'Info'
         $StatusCode = [HttpStatusCode]::OK

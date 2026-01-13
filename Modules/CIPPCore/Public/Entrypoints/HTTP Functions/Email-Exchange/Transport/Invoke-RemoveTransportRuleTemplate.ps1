@@ -17,7 +17,7 @@ Function Invoke-RemoveTransportRuleTemplate {
         $Table = Get-CippTable -tablename 'templates'
         $Filter = "PartitionKey eq 'TransportTemplate' and RowKey eq '$id'"
         $ClearRow = Get-CIPPAzDataTableEntity @Table -Filter $Filter -Property PartitionKey, RowKey
-        Remove-AzDataTableEntity -Force @Table -Entity $ClearRow
+        Remove-CIPPAzDataTableEntity -Context $Table.Context -Entity $ClearRow -Force
         $Result = "Removed Transport Rule Template with ID $ID."
         Write-LogMessage -Headers $User -API $APINAME -message $Result -Sev 'Info'
         $StatusCode = [HttpStatusCode]::OK

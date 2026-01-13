@@ -20,7 +20,7 @@ Function Invoke-RemoveGroupTemplate {
         $Filter = "PartitionKey eq 'GroupTemplate' and RowKey eq '$ID'"
         Write-Host $Filter
         $ClearRow = Get-CIPPAzDataTableEntity @Table -Filter $Filter -Property PartitionKey, RowKey
-        Remove-AzDataTableEntity -Force @Table -Entity $ClearRow
+        Remove-CIPPAzDataTableEntity -Context $Table.Context -Entity $ClearRow -Force
         $Result = "Removed Group Template with ID $ID"
         Write-LogMessage -Headers $Headers -API $APIName -message $Result -Sev 'Info'
         $StatusCode = [HttpStatusCode]::OK

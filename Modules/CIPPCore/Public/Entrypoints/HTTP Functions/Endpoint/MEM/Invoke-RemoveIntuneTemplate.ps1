@@ -19,7 +19,7 @@ function Invoke-RemoveIntuneTemplate {
         $Filter = "PartitionKey eq 'IntuneTemplate' and RowKey eq '$ID'"
         $ClearRow = Get-CIPPAzDataTableEntity @Table -Filter $Filter -Property PartitionKey, RowKey
         if ($ClearRow) {
-            Remove-AzDataTableEntity @Table -Entity $clearRow -Force
+            Remove-CIPPAzDataTableEntity -Context $Table.Context -Entity $clearRow -Force
             $Result = "Removed Intune Template with ID $ID."
         } else {
             $Result = "The template with ID $ID has already been deleted."
