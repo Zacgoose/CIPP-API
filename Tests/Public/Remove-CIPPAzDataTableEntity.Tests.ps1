@@ -7,7 +7,7 @@ BeforeAll {
 
     # Mock the AzBobbyTables cmdlet
     function Remove-AzDataTableEntity { 
-        param($Context, $Entity, $PartitionKey, $RowKey, [switch]$Force, [switch]$ErrorAction) 
+        param($Context, $Entity, $PartitionKey, $RowKey, [switch]$Force) 
     }
 
     # Source the function
