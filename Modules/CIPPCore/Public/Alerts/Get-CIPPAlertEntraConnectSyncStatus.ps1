@@ -9,11 +9,21 @@ function Get-CIPPAlertEntraConnectSyncStatus {
         [Parameter(Mandatory = $false)]
         [Alias('input')]
         $InputValue,
+        
+        [Parameter(Mandatory = $false)]
+        [int]$Hours,
+        
         $TenantFilter
     )
     try {
-        # Set Hours with fallback to 72 hours
-        $Hours = if ($InputValue) { [int]$InputValue } else { 72 }
+        # Handle hours threshold - support both direct parameter and InputValue for backward compatibility
+        if ($PSBoundParameters.ContainsKey('Hours')) {
+            $HoursThreshold = $Hours
+        } elseif ($InputValue) {
+            $HoursThreshold = [int]$InputValue
+        } else {
+            $HoursThreshold = 72
+        }
         $ConnectSyncStatus = New-GraphGetRequest -uri 'https://graph.microsoft.com/beta/organization?$select=onPremisesLastPasswordSyncDateTime,onPremisesLastSyncDateTime,onPremisesSyncEnabled' -tenantid $TenantFilter
 
         if ($ConnectSyncStatus.onPremisesSyncEnabled -eq $true) {
