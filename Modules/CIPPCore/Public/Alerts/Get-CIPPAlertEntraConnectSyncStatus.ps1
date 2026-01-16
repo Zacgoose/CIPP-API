@@ -22,10 +22,10 @@ function Get-CIPPAlertEntraConnectSyncStatus {
             # Get the older of the two sync times
             $LastSync = if ($SyncDateTime -lt $LastPasswordSync) { $SyncDateTime; $Cause = 'DirectorySync' } else { $LastPasswordSync; $Cause = 'PasswordSync' }
 
-            if ($LastSync -lt (Get-Date).AddHours(-$Hours).ToUniversalTime()) {
+            if ($LastSync -lt (Get-Date).AddHours(-$HoursThreshold).ToUniversalTime()) {
 
                 $AlertData = @{
-                    Message           = "Entra Connect $Cause for $($TenantFilter) has not run for over $Hours hours. Last sync was at $($LastSync.ToString('o'))"
+                    Message           = "Entra Connect $Cause for $($TenantFilter) has not run for over $HoursThreshold hours. Last sync was at $($LastSync.ToString('o'))"
                     LastSync          = $LastSync
                     Cause             = $Cause
                     LastPasswordSync  = $LastPasswordSync

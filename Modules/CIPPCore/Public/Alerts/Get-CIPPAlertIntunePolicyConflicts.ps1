@@ -8,6 +8,22 @@ function Get-CIPPAlertIntunePolicyConflicts {
         [Parameter(Mandatory = $false)]
         [Alias('input')]
         $InputValue,
+        
+        [Parameter(Mandatory = $false)]
+        [bool]$AlertEachIssue,
+        
+        [Parameter(Mandatory = $false)]
+        [bool]$IncludePolicies,
+        
+        [Parameter(Mandatory = $false)]
+        [bool]$IncludeApplications,
+        
+        [Parameter(Mandatory = $false)]
+        [bool]$AlertConflicts,
+        
+        [Parameter(Mandatory = $false)]
+        [bool]$AlertErrors,
+        
         $TenantFilter
     )
 
@@ -30,18 +46,40 @@ function Get-CIPPAlertIntunePolicyConflicts {
         AlertErrors         = $true
     }
 
-    if ($InputValue -is [hashtable] -or $InputValue -is [pscustomobject]) {
+    # Priority: Direct parameters > InputValue properties > Defaults
+    if ($PSBoundParameters.ContainsKey('AlertEachIssue')) {
+        $Config.AlertEachIssue = $AlertEachIssue
+    } elseif ($InputValue -is [hashtable] -or $InputValue -is [pscustomobject]) {
         # Primary key follows AlertEach* convention; legacy Aggregate supported (true == aggregated)
         if ($null -ne $InputValue.AlertEachIssue) { $Config.AlertEachIssue = [bool]$InputValue.AlertEachIssue }
         if ($null -ne $InputValue.Aggregate) { $Config.AlertEachIssue = -not [bool]$InputValue.Aggregate }
-
-        $Config.IncludePolicies = if ($null -ne $InputValue.IncludePolicies) { [bool]$InputValue.IncludePolicies } else { $Config.IncludePolicies }
-        $Config.IncludeApplications = if ($null -ne $InputValue.IncludeApplications) { [bool]$InputValue.IncludeApplications } else { $Config.IncludeApplications }
-        $Config.AlertConflicts = if ($null -ne $InputValue.AlertConflicts) { [bool]$InputValue.AlertConflicts } else { $Config.AlertConflicts }
-        $Config.AlertErrors = if ($null -ne $InputValue.AlertErrors) { [bool]$InputValue.AlertErrors } else { $Config.AlertErrors }
     } elseif ($InputValue -is [bool]) {
         # Back-compat for boolean toggle used as Aggregate previously
         $Config.AlertEachIssue = -not [bool]$InputValue
+    }
+    
+    if ($PSBoundParameters.ContainsKey('IncludePolicies')) {
+        $Config.IncludePolicies = $IncludePolicies
+    } elseif ($InputValue -is [hashtable] -or $InputValue -is [pscustomobject]) {
+        $Config.IncludePolicies = if ($null -ne $InputValue.IncludePolicies) { [bool]$InputValue.IncludePolicies } else { $Config.IncludePolicies }
+    }
+    
+    if ($PSBoundParameters.ContainsKey('IncludeApplications')) {
+        $Config.IncludeApplications = $IncludeApplications
+    } elseif ($InputValue -is [hashtable] -or $InputValue -is [pscustomobject]) {
+        $Config.IncludeApplications = if ($null -ne $InputValue.IncludeApplications) { [bool]$InputValue.IncludeApplications } else { $Config.IncludeApplications }
+    }
+    
+    if ($PSBoundParameters.ContainsKey('AlertConflicts')) {
+        $Config.AlertConflicts = $AlertConflicts
+    } elseif ($InputValue -is [hashtable] -or $InputValue -is [pscustomobject]) {
+        $Config.AlertConflicts = if ($null -ne $InputValue.AlertConflicts) { [bool]$InputValue.AlertConflicts } else { $Config.AlertConflicts }
+    }
+    
+    if ($PSBoundParameters.ContainsKey('AlertErrors')) {
+        $Config.AlertErrors = $AlertErrors
+    } elseif ($InputValue -is [hashtable] -or $InputValue -is [pscustomobject]) {
+        $Config.AlertErrors = if ($null -ne $InputValue.AlertErrors) { [bool]$InputValue.AlertErrors } else { $Config.AlertErrors }
     }
 
     if (-not $Config.IncludePolicies -and -not $Config.IncludeApplications) {
