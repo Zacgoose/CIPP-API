@@ -8,10 +8,6 @@ function Get-CIPPAlertSharepointQuota {
         [Parameter(Mandatory = $false)]
         [Alias('input')]
         $InputValue,
-        
-        [Parameter(Mandatory = $false)]
-        [int]$PercentageThreshold,
-        
         $TenantFilter
     )
     try {
@@ -24,12 +20,9 @@ function Get-CIPPAlertSharepointQuota {
         return
     }
     if ($sharepointQuota) {
-        # Handle threshold - support both direct parameter and InputValue for backward compatibility
-        if ($PSBoundParameters.ContainsKey('PercentageThreshold')) {
-            $Value = $PercentageThreshold
-        } elseif ([int]$InputValue -gt 0) {
-            $Value = [int]$InputValue
-        } else {
+        try {
+            if ([int]$InputValue -gt 0) { $Value = [int]$InputValue } else { $Value = 90 }
+        } catch {
             $Value = 90
         }
         $UsedStoragePercentage = [int](($sharepointQuota.GeoUsedStorageMB / $sharepointQuota.TenantStorageMB) * 100)

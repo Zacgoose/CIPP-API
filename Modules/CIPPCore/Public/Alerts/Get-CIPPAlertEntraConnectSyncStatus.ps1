@@ -9,21 +9,11 @@ function Get-CIPPAlertEntraConnectSyncStatus {
         [Parameter(Mandatory = $false)]
         [Alias('input')]
         $InputValue,
-        
-        [Parameter(Mandatory = $false)]
-        [int]$Hours,
-        
         $TenantFilter
     )
     try {
-        # Handle hours threshold - support both direct parameter and InputValue for backward compatibility
-        if ($PSBoundParameters.ContainsKey('Hours')) {
-            $HoursThreshold = $Hours
-        } elseif ($InputValue) {
-            $HoursThreshold = [int]$InputValue
-        } else {
-            $HoursThreshold = 72
-        }
+        # Set Hours with fallback to 72 hours
+        $Hours = if ($InputValue) { [int]$InputValue } else { 72 }
         $ConnectSyncStatus = New-GraphGetRequest -uri 'https://graph.microsoft.com/beta/organization?$select=onPremisesLastPasswordSyncDateTime,onPremisesLastSyncDateTime,onPremisesSyncEnabled' -tenantid $TenantFilter
 
         if ($ConnectSyncStatus.onPremisesSyncEnabled -eq $true) {
@@ -32,10 +22,10 @@ function Get-CIPPAlertEntraConnectSyncStatus {
             # Get the older of the two sync times
             $LastSync = if ($SyncDateTime -lt $LastPasswordSync) { $SyncDateTime; $Cause = 'DirectorySync' } else { $LastPasswordSync; $Cause = 'PasswordSync' }
 
-            if ($LastSync -lt (Get-Date).AddHours(-$HoursThreshold).ToUniversalTime()) {
+            if ($LastSync -lt (Get-Date).AddHours(-$Hours).ToUniversalTime()) {
 
                 $AlertData = @{
-                    Message           = "Entra Connect $Cause for $($TenantFilter) has not run for over $HoursThreshold hours. Last sync was at $($LastSync.ToString('o'))"
+                    Message           = "Entra Connect $Cause for $($TenantFilter) has not run for over $Hours hours. Last sync was at $($LastSync.ToString('o'))"
                     LastSync          = $LastSync
                     Cause             = $Cause
                     LastPasswordSync  = $LastPasswordSync

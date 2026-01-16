@@ -8,39 +8,17 @@ function Get-CIPPAlertExpiringLicenses {
         [Parameter(Mandatory = $false)]
         [Alias('input')]
         $InputValue,
-        
-        [Parameter(Mandatory = $false)]
-        [int]$ExpiringLicensesDays,
-        
-        [Parameter(Mandatory = $false)]
-        [bool]$ExpiringLicensesUnassignedOnly,
-        
         $TenantFilter
     )
     try {
-        # Parse input parameters - support both direct parameters and InputValue for backward compatibility
-        # Priority: Direct parameters > InputValue properties > Defaults
-        
-        # Handle DaysThreshold
-        if ($PSBoundParameters.ContainsKey('ExpiringLicensesDays')) {
-            # Direct parameter takes priority
-            $DaysThreshold = $ExpiringLicensesDays
-        } elseif ($InputValue -is [hashtable] -or $InputValue -is [PSCustomObject]) {
+        # Parse input parameters - default to 30 days if not specified
+        # Support both old format (direct value) and new format (object with properties)
+        if ($InputValue -is [hashtable] -or $InputValue -is [PSCustomObject]) {
             $DaysThreshold = if ($InputValue.ExpiringLicensesDays) { [int]$InputValue.ExpiringLicensesDays } else { 30 }
-        } elseif ($InputValue) {
-            # Backward compatibility: if InputValue is a simple value, treat it as days threshold
-            $DaysThreshold = [int]$InputValue
-        } else {
-            $DaysThreshold = 30
-        }
-        
-        # Handle UnassignedOnly
-        if ($PSBoundParameters.ContainsKey('ExpiringLicensesUnassignedOnly')) {
-            # Direct parameter takes priority
-            $UnassignedOnly = $ExpiringLicensesUnassignedOnly
-        } elseif ($InputValue -is [hashtable] -or $InputValue -is [PSCustomObject]) {
             $UnassignedOnly = if ($null -ne $InputValue.ExpiringLicensesUnassignedOnly) { [bool]$InputValue.ExpiringLicensesUnassignedOnly } else { $false }
         } else {
+            # Backward compatibility: if InputValue is a simple value, treat it as days threshold
+            $DaysThreshold = if ($InputValue) { [int]$InputValue } else { 30 }
             $UnassignedOnly = $false
         }
 

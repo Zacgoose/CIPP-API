@@ -79,15 +79,6 @@ Describe 'Get-CIPPAlertIntunePolicyConflicts' {
         ($CapturedData | Where-Object { $_.Type -eq 'Application' }).Count | Should -Be 1
     }
 
-    It 'supports direct AlertEachIssue parameter (bypassing InputValue)' {
-        Get-CIPPAlertIntunePolicyConflicts -TenantFilter 'contoso.onmicrosoft.com' -AlertEachIssue $true
-
-        $CapturedData | Should -Not -BeNullOrEmpty
-        $CapturedData.Count | Should -Be 2
-        ($CapturedData | Where-Object { $_.Type -eq 'Policy' }).Count | Should -Be 1
-        ($CapturedData | Where-Object { $_.Type -eq 'Application' }).Count | Should -Be 1
-    }
-
     It 'supports legacy Aggregate=false for per-issue alerts' {
         Get-CIPPAlertIntunePolicyConflicts -TenantFilter 'contoso.onmicrosoft.com' -InputValue @{ Aggregate = $false }
 
@@ -106,39 +97,6 @@ Describe 'Get-CIPPAlertIntunePolicyConflicts' {
         $CapturedData[0].AppIssues | Should -Be 1
         $CapturedData[0].Issues.Count | Should -Be 1
         ($CapturedData[0].Issues | Where-Object { $_.Type -eq 'Policy' }).Count | Should -Be 0
-    }
-
-    It 'supports direct IncludePolicies parameter (bypassing InputValue)' {
-        Get-CIPPAlertIntunePolicyConflicts -TenantFilter 'contoso.onmicrosoft.com' -IncludePolicies $false
-
-        $CapturedData | Should -Not -BeNullOrEmpty
-        $CapturedData.Count | Should -Be 1
-        $CapturedData[0].PolicyIssues | Should -Be 0
-        $CapturedData[0].AppIssues | Should -Be 1
-        $CapturedData[0].Issues.Count | Should -Be 1
-        ($CapturedData[0].Issues | Where-Object { $_.Type -eq 'Policy' }).Count | Should -Be 0
-    }
-
-    It 'supports multiple direct parameters simultaneously' {
-        Get-CIPPAlertIntunePolicyConflicts -TenantFilter 'contoso.onmicrosoft.com' `
-            -AlertEachIssue $true `
-            -IncludeApplications $false
-
-        $CapturedData | Should -Not -BeNullOrEmpty
-        $CapturedData.Count | Should -Be 1
-        $CapturedData[0].Type | Should -Be 'Policy'
-    }
-
-    It 'direct parameters take priority over InputValue properties' {
-        # InputValue says AlertEachIssue=false, but direct parameter says true
-        Get-CIPPAlertIntunePolicyConflicts -TenantFilter 'contoso.onmicrosoft.com' `
-            -InputValue @{ AlertEachIssue = $false } `
-            -AlertEachIssue $true
-
-        $CapturedData | Should -Not -BeNullOrEmpty
-        $CapturedData.Count | Should -Be 2
-        ($CapturedData | Where-Object { $_.Type -eq 'Policy' }).Count | Should -Be 1
-        ($CapturedData | Where-Object { $_.Type -eq 'Application' }).Count | Should -Be 1
     }
 
     It 'suppresses conflict-only alerts when AlertConflicts is false' {

@@ -8,10 +8,6 @@ function Get-CIPPAlertQuotaUsed {
         [Parameter(Mandatory = $false)]
         [Alias('input')]
         $InputValue,
-        
-        [Parameter(Mandatory = $false)]
-        [int]$PercentageThreshold,
-        
         $TenantFilter
     )
 
@@ -25,13 +21,13 @@ function Get-CIPPAlertQuotaUsed {
         try {
             $PercentLeft = [math]::round(($_.storageUsedInBytes / $_.prohibitSendReceiveQuotaInBytes) * 100)
         } catch { $PercentLeft = 100 }
-        
-        # Handle threshold - support both direct parameter and InputValue for backward compatibility
-        if ($PSBoundParameters.ContainsKey('PercentageThreshold')) {
-            $Value = $PercentageThreshold
-        } elseif ([int]$InputValue -gt 0) {
-            $Value = [int]$InputValue
-        } else {
+        try {
+            if ([int]$InputValue -gt 0) {
+                $Value = [int]$InputValue
+            } else {
+                $Value = 90
+            }
+        } catch {
             $Value = 90
         }
         if ($PercentLeft -gt $Value) {
