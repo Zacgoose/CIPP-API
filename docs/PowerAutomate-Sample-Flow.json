@@ -1,0 +1,203 @@
+{
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+      "Parse_CIPP_Alert": {
+        "type": "ParseJson",
+        "inputs": {
+          "content": "@triggerBody()",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "SchemaVersion": {
+                "type": "string"
+              },
+              "AlertVersion": {
+                "type": "string"
+              },
+              "Timestamp": {
+                "type": "string"
+              },
+              "PartitionKey": {
+                "type": "string"
+              },
+              "AlertId": {
+                "type": "string"
+              },
+              "AlertType": {
+                "type": "string"
+              },
+              "Source": {
+                "type": "string"
+              },
+              "Tenant": {
+                "type": "string"
+              },
+              "TenantId": {
+                "type": "string"
+              },
+              "Title": {
+                "type": "string"
+              },
+              "Severity": {
+                "type": "string"
+              },
+              "Count": {
+                "type": "integer"
+              },
+              "Summary": {
+                "type": "string"
+              },
+              "CIPPURL": {
+                "type": "string"
+              },
+              "Data": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              }
+            },
+            "required": [
+              "SchemaVersion",
+              "AlertVersion",
+              "Timestamp",
+              "PartitionKey",
+              "AlertId",
+              "AlertType",
+              "Source",
+              "Tenant",
+              "Title",
+              "Severity",
+              "Count",
+              "Summary",
+              "Data"
+            ]
+          }
+        },
+        "runAfter": {}
+      },
+      "Switch_by_Severity": {
+        "type": "Switch",
+        "expression": "@body('Parse_CIPP_Alert')?['Severity']",
+        "cases": {
+          "Critical": {
+            "case": "Critical",
+            "actions": {
+              "Send_Critical_Alert": {
+                "type": "ApiConnection",
+                "inputs": {
+                  "host": {
+                    "connection": {
+                      "name": "@parameters('$connections')['office365']['connectionId']"
+                    }
+                  },
+                  "method": "post",
+                  "path": "/v2/Mail",
+                  "body": {
+                    "To": "oncall@company.com",
+                    "Subject": "[CRITICAL] @{body('Parse_CIPP_Alert')?['Title']}",
+                    "Body": "<p><strong>Severity:</strong> @{body('Parse_CIPP_Alert')?['Severity']}<br><strong>Tenant:</strong> @{body('Parse_CIPP_Alert')?['Tenant']}<br><strong>Alert Type:</strong> @{body('Parse_CIPP_Alert')?['AlertType']}<br><br><strong>Summary:</strong><br>@{body('Parse_CIPP_Alert')?['Summary']}<br><br><strong>Alert Count:</strong> @{body('Parse_CIPP_Alert')?['Count']}<br><br><strong>View in CIPP:</strong><br><a href='@{body('Parse_CIPP_Alert')?['CIPPURL']}'>Open CIPP</a></p>",
+                    "Importance": "High"
+                  }
+                }
+              }
+            }
+          },
+          "Error": {
+            "case": "Error",
+            "actions": {
+              "Send_Error_Alert": {
+                "type": "ApiConnection",
+                "inputs": {
+                  "host": {
+                    "connection": {
+                      "name": "@parameters('$connections')['office365']['connectionId']"
+                    }
+                  },
+                  "method": "post",
+                  "path": "/v2/Mail",
+                  "body": {
+                    "To": "alerts@company.com",
+                    "Subject": "[ERROR] @{body('Parse_CIPP_Alert')?['Title']}",
+                    "Body": "<p><strong>Severity:</strong> @{body('Parse_CIPP_Alert')?['Severity']}<br><strong>Tenant:</strong> @{body('Parse_CIPP_Alert')?['Tenant']}<br><strong>Alert Type:</strong> @{body('Parse_CIPP_Alert')?['AlertType']}<br><br><strong>Summary:</strong><br>@{body('Parse_CIPP_Alert')?['Summary']}</p>",
+                    "Importance": "Normal"
+                  }
+                }
+              }
+            }
+          },
+          "Warning": {
+            "case": "Warning",
+            "actions": {
+              "Post_to_Teams": {
+                "type": "ApiConnection",
+                "inputs": {
+                  "host": {
+                    "connection": {
+                      "name": "@parameters('$connections')['teams']['connectionId']"
+                    }
+                  },
+                  "method": "post",
+                  "path": "/v3/beta/teams/@{encodeURIComponent('team-id')}/channels/@{encodeURIComponent('channel-id')}/messages",
+                  "body": {
+                    "subject": "@{body('Parse_CIPP_Alert')?['Title']}",
+                    "body": {
+                      "contentType": "html",
+                      "content": "<h3>⚠️ @{body('Parse_CIPP_Alert')?['Title']}</h3><p><strong>Tenant:</strong> @{body('Parse_CIPP_Alert')?['Tenant']}<br><strong>Type:</strong> @{body('Parse_CIPP_Alert')?['AlertType']}<br><strong>Summary:</strong> @{body('Parse_CIPP_Alert')?['Summary']}</p>"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "default": {
+          "actions": {
+            "Log_Info_Alert": {
+              "type": "Compose",
+              "inputs": {
+                "Message": "Info/Alert level - logged only",
+                "AlertId": "@{body('Parse_CIPP_Alert')?['AlertId']}",
+                "Tenant": "@{body('Parse_CIPP_Alert')?['Tenant']}"
+              }
+            }
+          }
+        },
+        "runAfter": {
+          "Parse_CIPP_Alert": [
+            "Succeeded"
+          ]
+        }
+      }
+    },
+    "triggers": {
+      "manual": {
+        "type": "Request",
+        "kind": "Http",
+        "inputs": {
+          "schema": {},
+          "method": "POST"
+        }
+      }
+    },
+    "contentVersion": "1.0.0.0",
+    "outputs": {}
+  },
+  "parameters": {
+    "$connections": {
+      "value": {
+        "office365": {
+          "connectionId": "/subscriptions/{subscription-id}/resourceGroups/{resource-group}/providers/Microsoft.Web/connections/office365",
+          "connectionName": "office365",
+          "id": "/subscriptions/{subscription-id}/providers/Microsoft.Web/locations/{location}/managedApis/office365"
+        },
+        "teams": {
+          "connectionId": "/subscriptions/{subscription-id}/resourceGroups/{resource-group}/providers/Microsoft.Web/connections/teams",
+          "connectionName": "teams",
+          "id": "/subscriptions/{subscription-id}/providers/Microsoft.Web/locations/{location}/managedApis/teams"
+        }
+      }
+    }
+  }
+}
