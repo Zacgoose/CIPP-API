@@ -107,18 +107,50 @@ function Push-SchedulerCIPPNotifications {
         Write-Information $($config | ConvertTo-Json)
         Write-Information $config.webhook
         if (![string]::IsNullOrEmpty($config.webhook)) {
+            # Check if standardized schema should be used (default to true for new installations)
+            $UseStandardizedSchema = if ($null -eq $Config.UseStandardizedSchema) { $true } else { $Config.UseStandardizedSchema }
+            
             if ($Currentlog) {
                 $JSONContent = $Currentlog | ConvertTo-Json -Compress
-                Send-CIPPAlert -Type 'webhook' -JSONContent $JSONContent -TenantFilter $Tenant -APIName 'Alerts'
+                
+                # Group alerts by tenant for standardized schema
+                if ($UseStandardizedSchema) {
+                    foreach ($tenant in ($CurrentLog.Tenant | Sort-Object -Unique)) {
+                        $TenantAlerts = $CurrentLog | Where-Object -Property tenant -EQ $tenant
+                        $TenantData = $TenantAlerts | Select-Object Message, API, Tenant, Username, Severity
+                        
+                        # Determine alert type and severity
+                        $AlertType = 'Logbook'
+                        $MaxSeverity = ($TenantData.Severity | Sort-Object -Descending | Select-Object -First 1)
+                        $Source = 'CIPPNotifications'
+                        
+                        Send-CIPPAlert -Type 'webhook' -JSONContent ($TenantData | ConvertTo-Json -Compress) -TenantFilter $tenant -APIName 'Alerts' -UseStandardizedSchema -AlertType $AlertType -Severity $MaxSeverity -Source $Source -Title "CIPP Alert: $($TenantData.Count) alert(s) for $tenant" -CIPPURL $CIPPURL
+                    }
+                } else {
+                    # Legacy behavior - send all alerts in one webhook
+                    Send-CIPPAlert -Type 'webhook' -JSONContent $JSONContent -TenantFilter $Tenant -APIName 'Alerts'
+                }
+                
                 $UpdateLogs = $CurrentLog | ForEach-Object { $_.sentAsAlert = $true; $_ }
                 if ($UpdateLogs) { Add-CIPPAzDataTableEntity @Table -Entity $UpdateLogs -Force }
             }
 
             if ($CurrentStandardsLogs) {
                 $Data = $CurrentStandardsLogs
-                $JSONContent = New-CIPPAlertTemplate -Data $Data -Format 'json' -InputObject 'table' -CIPPURL $CIPPURL
-                $CurrentStandardsLogs | ConvertTo-Json -Compress
-                Send-CIPPAlert -Type 'webhook' -JSONContent $JSONContent -TenantFilter $Tenant -APIName 'Alerts'
+                
+                if ($UseStandardizedSchema) {
+                    foreach ($standardsTenant in ($CurrentStandardsLogs.Tenant | Sort-Object -Unique)) {
+                        $TenantStandards = $CurrentStandardsLogs | Where-Object -Property tenant -EQ $standardsTenant
+                        
+                        Send-CIPPAlert -Type 'webhook' -JSONContent ($TenantStandards | ConvertTo-Json -Compress) -TenantFilter $standardsTenant -APIName 'Alerts' -UseStandardizedSchema -AlertType 'Standards' -Severity 'Warning' -Source 'StandardsDrift' -Title "Standards are out of sync for $standardsTenant" -CIPPURL $CIPPURL
+                    }
+                } else {
+                    # Legacy behavior
+                    $JSONContent = New-CIPPAlertTemplate -Data $Data -Format 'json' -InputObject 'table' -CIPPURL $CIPPURL
+                    $CurrentStandardsLogs | ConvertTo-Json -Compress
+                    Send-CIPPAlert -Type 'webhook' -JSONContent $JSONContent -TenantFilter $Tenant -APIName 'Alerts'
+                }
+                
                 $updateStandards = $CurrentStandardsLogs | ForEach-Object {
                     if ($_.PSObject.Properties.Name -contains 'sentAsAlert') {
                         $_.sentAsAlert = $true

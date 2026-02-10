@@ -12,7 +12,13 @@ function Send-CIPPAlert {
         $APIName = 'Send Alert',
         $Headers,
         $TableName,
-        $RowKey = [string][guid]::NewGuid()
+        $RowKey = [string][guid]::NewGuid(),
+        [switch]$UseStandardizedSchema,
+        $AlertType = 'General',
+        $Severity = 'Info',
+        $Source = 'CIPP',
+        $TenantId = $null,
+        $CIPPURL = ''
     )
     Write-Information 'Shipping Alert'
     $Table = Get-CIPPTable -TableName SchedulerConfig
@@ -110,6 +116,17 @@ function Send-CIPPAlert {
             Write-Information 'CF-Access-Client-Id and CF-Access-Client-Secret headers added to webhook API request'
         } else {
             $Headers = $null
+        }
+
+        # Apply standardized schema if requested
+        if ($UseStandardizedSchema) {
+            try {
+                $AlertData = $JSONContent | ConvertFrom-Json -ErrorAction Stop
+                $StandardizedAlert = ConvertTo-CIPPAlertSchema -AlertData $AlertData -AlertType $AlertType -Severity $Severity -Tenant $TenantFilter -TenantId $TenantId -Source $Source -Title $Title -CIPPURL $CIPPURL
+                $JSONContent = $StandardizedAlert | ConvertTo-Json -Depth 10 -Compress
+            } catch {
+                Write-Information "Could not convert to standardized schema, using original format: $($_.Exception.Message)"
+            }
         }
 
         $JSONBody = Get-CIPPTextReplacement -TenantFilter $TenantFilter -Text $JSONContent -EscapeForJson
