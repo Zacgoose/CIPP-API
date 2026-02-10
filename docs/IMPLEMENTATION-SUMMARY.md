@@ -216,7 +216,7 @@ alert.Data.forEach(item => {
 
 **In CIPP UI**:
 1. Navigate to Settings > Notifications
-2. Enable "Use Standardized Alert Schema"
+2. Enable "Use Standardized Alert Schema" checkbox
 3. Save configuration
 
 **In Configuration Table**:
@@ -225,7 +225,7 @@ alert.Data.forEach(item => {
 - RowKey: `CippNotifications`
 - Property: `UseStandardizedSchema` = `true`
 
-**Default**: Enabled for new installations
+**Default**: Disabled (false) for backward compatibility with existing webhook consumers
 
 ### Disable (Legacy Mode)
 

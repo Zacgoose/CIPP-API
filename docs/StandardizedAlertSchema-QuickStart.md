@@ -117,10 +117,10 @@ For each alert in Data array:
 ## Configuration in CIPP
 
 1. Go to **Settings > Notifications**
-2. Enable **"Use Standardized Alert Schema"**
+2. Enable **"Use Standardized Alert Schema"** checkbox
 3. Save configuration
 
-The setting is enabled by default for new installations.
+The setting is **disabled by default** to maintain backward compatibility with existing webhook consumers.
 
 ## Need Help?
 
@@ -130,17 +130,14 @@ The setting is enabled by default for new installations.
 
 ## Migration from Legacy Format
 
-If you have existing flows:
+The standardized schema is **disabled by default**, so your existing flows continue to work without changes.
 
-1. **Option A**: Keep legacy format temporarily
-   - Set `UseStandardizedSchema: false` in config
-   - Update flows gradually
-   - Re-enable standardized schema when ready
+When you're ready to migrate:
 
-2. **Option B**: Update flows immediately
-   - Update Parse JSON action with new schema
-   - Update field references (wrap in `Data` array access)
-   - Test with sample alerts
+1. **Update your Power Automate flows** to use the new schema (see Step 2 above)
+2. **Test** with sample alerts in a test flow
+3. **Enable** "Use Standardized Alert Schema" in CIPP Settings > Notifications
+4. **Monitor** your flows to ensure they work correctly
 
 ## Key Fields
 

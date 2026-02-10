@@ -264,23 +264,24 @@ Condition: Severity in ["Critical", "Error"]
 
 ### Enabling Standardized Schema
 
-The standardized schema is **enabled by default** for new CIPP installations. For existing installations, you can enable it by setting the `UseStandardizedSchema` property in the notification configuration.
+The standardized schema is **disabled by default**. You can enable it in the CIPP notification settings.
 
 To enable standardized schema:
 
 1. Navigate to CIPP Settings > Notifications
-2. Enable "Use Standardized Alert Schema" option
+2. Enable "Use Standardized Alert Schema" checkbox
 3. Save configuration
 
 ### Legacy Compatibility
 
-If you have existing Power Automate flows that depend on the old alert format, you can:
+If you have existing Power Automate flows that depend on the old alert format:
 
-1. Keep the standardized schema disabled (set `UseStandardizedSchema` to `false`)
-2. Update your flows to use the new schema
-3. Re-enable the standardized schema
+1. The standardized schema is disabled by default, so existing flows continue to work
+2. When ready to migrate, enable "Use Standardized Alert Schema" in Settings > Notifications
+3. Update your flows to use the new schema
+4. Test with sample alerts before enabling in production
 
-The standardized schema is designed to be backward compatible - webhook URLs for Teams, Slack, and Discord continue to work with their specific formats, while generic webhooks receive the standardized JSON.
+The standardized schema is designed to be opt-in - webhook URLs for Teams, Slack, and Discord continue to work with their specific formats, while generic webhooks can use either the legacy format (default) or the standardized JSON (when enabled).
 
 ## Migration Guide
 

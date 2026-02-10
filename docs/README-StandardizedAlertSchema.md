@@ -9,7 +9,7 @@ CIPP includes a standardized JSON schema for webhook alerts, making it easier to
 ### Enable in CIPP
 
 1. Navigate to **Settings > Notifications**  
-2. Enable **"Use Standardized Alert Schema"** (enabled by default for new installations)
+2. Enable **"Use Standardized Alert Schema"** checkbox (disabled by default for backward compatibility)
 3. Configure your webhook URL
 4. Save configuration
 

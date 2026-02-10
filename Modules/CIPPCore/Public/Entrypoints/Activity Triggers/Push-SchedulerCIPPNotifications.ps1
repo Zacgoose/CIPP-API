@@ -107,8 +107,8 @@ function Push-SchedulerCIPPNotifications {
         Write-Information $($config | ConvertTo-Json)
         Write-Information $config.webhook
         if (![string]::IsNullOrEmpty($config.webhook)) {
-            # Check if standardized schema should be used (default to true for new installations)
-            $UseStandardizedSchema = if ($null -eq $Config.UseStandardizedSchema) { $true } else { $Config.UseStandardizedSchema }
+            # Check if standardized schema should be used (default to false/disabled if not configured)
+            $UseStandardizedSchema = if ($null -eq $Config.UseStandardizedSchema) { $false } else { [boolean]$Config.UseStandardizedSchema }
             
             if ($Currentlog) {
                 $JSONContent = $Currentlog | ConvertTo-Json -Compress
