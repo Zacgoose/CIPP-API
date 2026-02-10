@@ -332,14 +332,52 @@ function Push-ExecScheduledCommand {
             '*psa*' { Send-CIPPAlert -Type 'psa' -Title $title -HTMLContent $HTML -TenantFilter $Tenant }
             '*email*' { Send-CIPPAlert -Type 'email' -Title $title -HTMLContent $HTML -TenantFilter $Tenant }
             '*webhook*' {
-                $Webhook = [PSCustomObject]@{
-                    'tenantId'     = $TenantInfo.customerId
-                    'Tenant'       = $Tenant
-                    'TaskInfo'     = $Item.TaskInfo
-                    'Results'      = $Results
-                    'AlertComment' = $task.AlertComment
+                # Check if standardized schema should be used
+                $ConfigTable = Get-CIPPTable -TableName SchedulerConfig
+                $ConfigFilter = "RowKey eq 'CippNotifications' and PartitionKey eq 'CippNotifications'"
+                $Config = Get-CIPPAzDataTableEntity @ConfigTable -Filter $ConfigFilter
+                $UseStandardizedSchema = if ($null -eq $Config.UseStandardizedSchema) { $false } else { [boolean]$Config.UseStandardizedSchema }
+                
+                if ($UseStandardizedSchema) {
+                    # Get CIPP URL for deep links
+                    $CippConfigTable = Get-CippTable -tablename Config
+                    $CippConfig = Get-CIPPAzDataTableEntity @CippConfigTable -Filter "PartitionKey eq 'InstanceProperties' and RowKey eq 'CIPPURL'"
+                    $CIPPURL = if ($CippConfig.Value) { 'https://{0}' -f $CippConfig.Value } else { '' }
+                    
+                    # Prepare alert data for standardized schema
+                    $AlertData = $Results
+                    
+                    # Determine alert type based on command
+                    $AlertType = switch -Wildcard ($task.Command) {
+                        '*MFA*' { 'Security' }
+                        '*License*' { 'License' }
+                        '*Defender*' { 'Security' }
+                        '*Compliance*' { 'Compliance' }
+                        '*Standard*' { 'Standards' }
+                        default { 'ScheduledTask' }
+                    }
+                    
+                    # Use the task name as the source
+                    $Source = $task.Command
+                    
+                    # Determine severity - default to Info for scheduled tasks
+                    $Severity = 'Info'
+                    if ($Results -and ($Results -is [array] -and $Results.Count -gt 0)) {
+                        $Severity = 'Alert'
+                    }
+                    
+                    Send-CIPPAlert -Type 'webhook' -Title $title -TenantFilter $Tenant -JSONContent ($AlertData | ConvertTo-Json -Depth 10 -Compress) -UseStandardizedSchema -AlertType $AlertType -Severity $Severity -Source $Source -TenantId $TenantInfo.customerId -CIPPURL $CIPPURL
+                } else {
+                    # Legacy behavior - send raw webhook payload
+                    $Webhook = [PSCustomObject]@{
+                        'tenantId'     = $TenantInfo.customerId
+                        'Tenant'       = $Tenant
+                        'TaskInfo'     = $Item.TaskInfo
+                        'Results'      = $Results
+                        'AlertComment' = $task.AlertComment
+                    }
+                    Send-CIPPAlert -Type 'webhook' -Title $title -TenantFilter $Tenant -JSONContent $($Webhook | ConvertTo-Json -Depth 20)
                 }
-                Send-CIPPAlert -Type 'webhook' -Title $title -TenantFilter $Tenant -JSONContent $($Webhook | ConvertTo-Json -Depth 20)
             }
         }
     }
