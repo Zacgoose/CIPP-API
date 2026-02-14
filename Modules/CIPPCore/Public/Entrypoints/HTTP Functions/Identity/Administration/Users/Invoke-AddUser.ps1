@@ -75,8 +75,12 @@ function Invoke-AddUser {
                 'User'     = $CreationResults.User
             }
         } catch {
+            $ErrorMessage = $_.Exception.Message
+            if ($_.TargetObject -is [hashtable] -and $_.TargetObject.Results) {
+                $ErrorMessage = $_.TargetObject.Results -join ' '
+            }
             $body = [pscustomobject] @{
-                'Results' = @("$($_.Exception.Message)")
+                'Results' = @("$ErrorMessage")
             }
             $StatusCode = [HttpStatusCode]::InternalServerError
         }
