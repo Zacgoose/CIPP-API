@@ -1,0 +1,121 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="34" errors="0" failures="1" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-02-14" time="09:22:54">
+  <environment user="runner" clr-version="8.0.21" machine-name="runnervmjduv7" os-version="6.14.0-1017-azure" platform="Linux" nunit-version="2.5.8.0" cwd="/home/runner/work/CIPP-API/CIPP-API" user-domain="" />
+  <culture-info current-culture="" current-uiculture="" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Failure" success="False" time="3.1585" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="/home/runner/work/CIPP-API/CIPP-API/Tests/Endpoint/Invoke-AddIntuneReusableSetting.Tests.ps1" executed="True" result="Success" success="True" time="0.6806" asserts="0" description="/home/runner/work/CIPP-API/CIPP-API/Tests/Endpoint/Invoke-AddIntuneReusableSetting.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Invoke-AddIntuneReusableSetting" executed="True" result="Success" success="True" time="0.2929" asserts="0" description="Invoke-AddIntuneReusableSetting">
+            <results>
+              <test-case description="creates a new reusable setting when none exist" name="Invoke-AddIntuneReusableSetting.creates a new reusable setting when none exist" time="0.2257" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="returns OK and does not post when the setting is already compliant" name="Invoke-AddIntuneReusableSetting.returns OK and does not post when the setting is already compliant" time="0.0194" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="returns BadRequest when tenantFilter is missing" name="Invoke-AddIntuneReusableSetting.returns BadRequest when tenantFilter is missing" time="0.0103" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/home/runner/work/CIPP-API/CIPP-API/Tests/Endpoint/Invoke-AddIntuneReusableSettingTemplate.Tests.ps1" executed="True" result="Success" success="True" time="0.4021" asserts="0" description="/home/runner/work/CIPP-API/CIPP-API/Tests/Endpoint/Invoke-AddIntuneReusableSettingTemplate.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Invoke-AddIntuneReusableSettingTemplate" executed="True" result="Success" success="True" time="0.3731" asserts="0" description="Invoke-AddIntuneReusableSettingTemplate">
+            <results>
+              <test-case description="creates a reusable setting template with stored metadata" name="Invoke-AddIntuneReusableSettingTemplate.creates a reusable setting template with stored metadata" time="0.0997" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="returns InternalServerError when raw JSON is invalid" name="Invoke-AddIntuneReusableSettingTemplate.returns InternalServerError when raw JSON is invalid" time="0.2147" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="normalizes children null values in reusable setting templates" name="Invoke-AddIntuneReusableSettingTemplate.normalizes children null values in reusable setting templates" time="0.052" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/home/runner/work/CIPP-API/CIPP-API/Tests/Endpoint/Invoke-ListIntuneReusableSettings.Tests.ps1" executed="True" result="Success" success="True" time="0.3308" asserts="0" description="/home/runner/work/CIPP-API/CIPP-API/Tests/Endpoint/Invoke-ListIntuneReusableSettings.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Invoke-ListIntuneReusableSettings" executed="True" result="Success" success="True" time="0.2878" asserts="0" description="Invoke-ListIntuneReusableSettings">
+            <results>
+              <test-case description="returns reusable settings with raw JSON when tenantFilter is provided" name="Invoke-ListIntuneReusableSettings.returns reusable settings with raw JSON when tenantFilter is provided" time="0.2171" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="requests a specific setting when ID is provided" name="Invoke-ListIntuneReusableSettings.requests a specific setting when ID is provided" time="0.0359" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="returns BadRequest when tenantFilter is missing" name="Invoke-ListIntuneReusableSettings.returns BadRequest when tenantFilter is missing" time="0.0084" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/home/runner/work/CIPP-API/CIPP-API/Tests/Endpoint/Invoke-ListIntuneReusableSettingTemplates.Tests.ps1" executed="True" result="Failure" success="False" time="0.2335" asserts="0" description="/home/runner/work/CIPP-API/CIPP-API/Tests/Endpoint/Invoke-ListIntuneReusableSettingTemplates.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Invoke-ListIntuneReusableSettingTemplates" executed="True" result="Failure" success="False" time="0.2063" asserts="0" description="Invoke-ListIntuneReusableSettingTemplates">
+            <results>
+              <test-case description="returns sorted templates with parsed metadata and sync flag" name="Invoke-ListIntuneReusableSettingTemplates.returns sorted templates with parsed metadata and sync flag" time="0.0613" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="filters by ID when provided" name="Invoke-ListIntuneReusableSettingTemplates.filters by ID when provided" time="0.1383" asserts="0" success="False" result="Failure" executed="True">
+                <failure>
+                  <message>Expected a collection with size 1, but got collection with size 2 @(@{displayName=A; description=Entity desc; GUID=a-guid; RawJSON={"displayName":"A"}; isSynced=False}, @{displayName=B; description=B desc; GUID=b-guid; RawJSON={"b":1}; isSynced=True}).</message>
+                  <stack-trace>at $response.Body | Should -HaveCount 1, /home/runner/work/CIPP-API/CIPP-API/Tests/Endpoint/Invoke-ListIntuneReusableSettingTemplates.Tests.ps1:63
+at &lt;ScriptBlock&gt;, /home/runner/work/CIPP-API/CIPP-API/Tests/Endpoint/Invoke-ListIntuneReusableSettingTemplates.Tests.ps1:63</stack-trace>
+                </failure>
+              </test-case>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/home/runner/work/CIPP-API/CIPP-API/Tests/Endpoint/Invoke-RemoveIntuneReusableSetting.Tests.ps1" executed="True" result="Success" success="True" time="0.0705" asserts="0" description="/home/runner/work/CIPP-API/CIPP-API/Tests/Endpoint/Invoke-RemoveIntuneReusableSetting.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Invoke-RemoveIntuneReusableSetting" executed="True" result="Success" success="True" time="0.0479" asserts="0" description="Invoke-RemoveIntuneReusableSetting">
+            <results>
+              <test-case description="deletes a reusable setting when tenant and ID are provided" name="Invoke-RemoveIntuneReusableSetting.deletes a reusable setting when tenant and ID are provided" time="0.0213" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="returns BadRequest when tenantFilter is missing" name="Invoke-RemoveIntuneReusableSetting.returns BadRequest when tenantFilter is missing" time="0.0104" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="returns BadRequest when ID is missing" name="Invoke-RemoveIntuneReusableSetting.returns BadRequest when ID is missing" time="0.0109" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/home/runner/work/CIPP-API/CIPP-API/Tests/Endpoint/Invoke-RemoveIntuneReusableSettingTemplate.Tests.ps1" executed="True" result="Success" success="True" time="0.0895" asserts="0" description="/home/runner/work/CIPP-API/CIPP-API/Tests/Endpoint/Invoke-RemoveIntuneReusableSettingTemplate.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Invoke-RemoveIntuneReusableSettingTemplate" executed="True" result="Success" success="True" time="0.0646" asserts="0" description="Invoke-RemoveIntuneReusableSettingTemplate">
+            <results>
+              <test-case description="removes a reusable setting template when ID is provided" name="Invoke-RemoveIntuneReusableSettingTemplate.removes a reusable setting template when ID is provided" time="0.0485" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="returns InternalServerError when ID is missing" name="Invoke-RemoveIntuneReusableSettingTemplate.returns InternalServerError when ID is missing" time="0.0104" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/home/runner/work/CIPP-API/CIPP-API/Tests/Standards/Invoke-CIPPStandardReusableSettingsTemplate.Tests.ps1" executed="True" result="Success" success="True" time="0.7543" asserts="0" description="/home/runner/work/CIPP-API/CIPP-API/Tests/Standards/Invoke-CIPPStandardReusableSettingsTemplate.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Invoke-CIPPStandardReusableSettingsTemplate" executed="True" result="Success" success="True" time="0.7283" asserts="0" description="Invoke-CIPPStandardReusableSettingsTemplate">
+            <results>
+              <test-case description="sets compare fields and exits when license requirement fails" name="Invoke-CIPPStandardReusableSettingsTemplate.sets compare fields and exits when license requirement fails" time="0.1784" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="creates missing reusable settings when remediate is enabled" name="Invoke-CIPPStandardReusableSettingsTemplate.creates missing reusable settings when remediate is enabled" time="0.1811" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="updates existing reusable settings when a mismatch is found" name="Invoke-CIPPStandardReusableSettingsTemplate.updates existing reusable settings when a mismatch is found" time="0.1312" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="writes standards alerts when alerting is enabled and drift exists" name="Invoke-CIPPStandardReusableSettingsTemplate.writes standards alerts when alerting is enabled and drift exists" time="0.1405" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="logs compliance and reports true when no differences are found" name="Invoke-CIPPStandardReusableSettingsTemplate.logs compliance and reports true when no differences are found" time="0.0923" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/home/runner/work/CIPP-API/CIPP-API/Tests/Alerts/Get-CIPPAlertGlobalAdminAllowList.Tests.ps1" executed="True" result="Success" success="True" time="0.2421" asserts="0" description="/home/runner/work/CIPP-API/CIPP-API/Tests/Alerts/Get-CIPPAlertGlobalAdminAllowList.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Get-CIPPAlertGlobalAdminAllowList" executed="True" result="Success" success="True" time="0.2199" asserts="0" description="Get-CIPPAlertGlobalAdminAllowList">
+            <results>
+              <test-case description="emits per-admin alerts when AlertEachAdmin is true" name="Get-CIPPAlertGlobalAdminAllowList.emits per-admin alerts when AlertEachAdmin is true" time="0.0919" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="emits single aggregated alert when AlertEachAdmin is false (default)" name="Get-CIPPAlertGlobalAdminAllowList.emits single aggregated alert when AlertEachAdmin is false (default)" time="0.0276" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="emits single aggregated alert when AlertEachAdmin is explicitly false via input object" name="Get-CIPPAlertGlobalAdminAllowList.emits single aggregated alert when AlertEachAdmin is explicitly false via input object" time="0.0241" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="suppresses alert when UPN prefix is approved (comma separated list)" name="Get-CIPPAlertGlobalAdminAllowList.suppresses alert when UPN prefix is approved (comma separated list)" time="0.0178" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="accepts ApprovedGlobalAdmins property when provided as hashtable" name="Get-CIPPAlertGlobalAdminAllowList.accepts ApprovedGlobalAdmins property when provided as hashtable" time="0.0207" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="writes alert message when Graph call fails" name="Get-CIPPAlertGlobalAdminAllowList.writes alert message when Graph call fails" time="0.0335" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/home/runner/work/CIPP-API/CIPP-API/Tests/Alerts/Get-CIPPAlertIntunePolicyConflicts.Tests.ps1" executed="True" result="Success" success="True" time="0.3552" asserts="0" description="/home/runner/work/CIPP-API/CIPP-API/Tests/Alerts/Get-CIPPAlertIntunePolicyConflicts.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Get-CIPPAlertIntunePolicyConflicts" executed="True" result="Success" success="True" time="0.3185" asserts="0" description="Get-CIPPAlertIntunePolicyConflicts">
+            <results>
+              <test-case description="defaults to aggregated alerting with all mechanisms and statuses" name="Get-CIPPAlertIntunePolicyConflicts.defaults to aggregated alerting with all mechanisms and statuses" time="0.0662" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="emits per-issue alerts when AlertEachIssue is true" name="Get-CIPPAlertIntunePolicyConflicts.emits per-issue alerts when AlertEachIssue is true" time="0.0399" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="supports legacy Aggregate=false for per-issue alerts" name="Get-CIPPAlertIntunePolicyConflicts.supports legacy Aggregate=false for per-issue alerts" time="0.0435" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="honors IncludePolicies toggle" name="Get-CIPPAlertIntunePolicyConflicts.honors IncludePolicies toggle" time="0.0354" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="suppresses conflict-only alerts when AlertConflicts is false" name="Get-CIPPAlertIntunePolicyConflicts.suppresses conflict-only alerts when AlertConflicts is false" time="0.036" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="skips processing when license check fails" name="Get-CIPPAlertIntunePolicyConflicts.skips processing when license check fails" time="0.0391" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="writes alert message when Graph call fails" name="Get-CIPPAlertIntunePolicyConflicts.writes alert message when Graph call fails" time="0.0533" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>
