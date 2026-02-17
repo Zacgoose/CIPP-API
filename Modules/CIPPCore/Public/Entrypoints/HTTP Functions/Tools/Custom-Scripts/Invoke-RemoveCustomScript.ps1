@@ -9,6 +9,7 @@ function Invoke-RemoveCustomScript {
     param($Request, $TriggerMetadata)
 
     $APIName = $TriggerMetadata.FunctionName
+    $Headers = $Request.Headers
 
     try {
         $ScriptGuid = $Request.Query.ScriptGuid ?? $Request.Body.ScriptGuid

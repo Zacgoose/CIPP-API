@@ -9,6 +9,7 @@ function Invoke-AddCustomScript {
     param($Request, $TriggerMetadata)
 
     $APIName = $TriggerMetadata.FunctionName
+    $Headers = $Request.Headers
 
     try {
         # Validate required fields for restore vs add/update
@@ -63,6 +64,9 @@ function Invoke-AddCustomScript {
                 throw 'ScriptContent is required'
             }
 
+            # Validate script security constraints before saving
+            Test-CustomScriptSecurity -ScriptContent $ScriptContent
+
             # Validate script name format (alphanumeric, spaces, hyphens, underscores only)
             if ($ScriptName -notmatch '^[a-zA-Z0-9\s\-_]+$') {
                 throw 'ScriptName can only contain letters, numbers, spaces, hyphens, and underscores. Spaces are allowed but may affect command-line usage.'
@@ -74,7 +78,12 @@ function Invoke-AddCustomScript {
             if ($ScriptGuid) {
                 # Get existing script to determine version if the GUID is provided (update scenario)
                 $Filter = "PartitionKey eq 'CustomScript' and ScriptGuid eq '{0}'" -f $ScriptGuid
-                $Version = (Get-CIPPAzDataTableEntity @Table -Filter $Filter | Measure-Object -Property Version -Maximum).Maximum + 1
+                $ExistingVersions = Get-CIPPAzDataTableEntity @Table -Filter $Filter
+                if (-not $ExistingVersions) {
+                    throw "Script with GUID '$ScriptGuid' not found"
+                }
+
+                $Version = ($ExistingVersions | Measure-Object -Property Version -Maximum).Maximum + 1
             } else {
                 # Create GUID for script since it doesn't exist yet
                 $ScriptGuid = (New-Guid).ToString()

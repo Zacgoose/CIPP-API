@@ -25,8 +25,8 @@ function Invoke-ExecCustomScript {
 
         Write-LogMessage -API $APIName -tenant $TenantFilter -user $Request.Headers.'x-ms-client-principal-name' -message "Executing custom script with GUID: $ScriptGuid" -sev Info
 
-        # Execute script (lookup happens inside Exec-CippCustomScript)
-        $Result = Exec-CippCustomScript -ScriptGuid $ScriptGuid -TenantFilter $TenantFilter -Parameters $Parameters
+        # Execute script (lookup happens inside New-CippCustomScriptExecution)
+        $Result = New-CippCustomScriptExecution -ScriptGuid $ScriptGuid -TenantFilter $TenantFilter -Parameters $Parameters
 
         $Body = @{
             Results     = $Result
