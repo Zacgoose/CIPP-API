@@ -14,75 +14,16 @@ function Get-CIPPAlertCustomScript {
     )
 
     try {
-        # Parse InputValue to get ScriptGuid and optional parameters
-        $ScriptGuid = $null
+        $ScriptGuid = $InputValue.ScriptGuid.value
         $Parameters = @{}
 
-        if ($InputValue -is [hashtable]) {
-            # Handle autoComplete object structure (has value, label, etc.)
-            if ($InputValue.ScriptGuid -is [hashtable] -and $InputValue.ScriptGuid.value) {
-                $ScriptGuid = $InputValue.ScriptGuid.value
-            } elseif ($InputValue.ScriptGuid -is [pscustomobject] -and $InputValue.ScriptGuid.value) {
-                $ScriptGuid = $InputValue.ScriptGuid.value
-            } else {
-                $ScriptGuid = $InputValue.ScriptGuid
-            }
-
-            # Extract any additional parameters (skip ScriptGuid and Parameters)
-            foreach ($key in $InputValue.Keys) {
-                if ($key -ne 'ScriptGuid' -and $key -ne 'Parameters') {
-                    $Parameters[$key] = $InputValue[$key]
+        if (-not [string]::IsNullOrWhiteSpace($InputValue.Parameters)) {
+            $ParsedParams = $InputValue.Parameters | ConvertFrom-Json -ErrorAction Stop
+            if ($ParsedParams) {
+                foreach ($prop in $ParsedParams.PSObject.Properties) {
+                    $Parameters[$prop.Name] = $prop.Value
                 }
             }
-
-            # Handle Parameters field specifically (could be JSON string or empty)
-            if ($InputValue.Parameters -and -not [string]::IsNullOrWhiteSpace($InputValue.Parameters)) {
-                try {
-                    $ParsedParams = $InputValue.Parameters | ConvertFrom-Json -ErrorAction Stop
-                    if ($ParsedParams) {
-                        foreach ($prop in $ParsedParams.PSObject.Properties) {
-                            $Parameters[$prop.Name] = $prop.Value
-                        }
-                    }
-                } catch {
-                    Write-LogMessage -message "Failed to parse Parameters JSON: $($_.Exception.Message)" -API 'CustomScriptAlert' -tenant $TenantFilter -sev Warning
-                }
-            }
-        } elseif ($InputValue -is [pscustomobject]) {
-            # Handle autoComplete object structure (has value, label, etc.)
-            if ($InputValue.ScriptGuid -is [pscustomobject] -and $InputValue.ScriptGuid.value) {
-                $ScriptGuid = $InputValue.ScriptGuid.value
-            } else {
-                $ScriptGuid = $InputValue.ScriptGuid
-            }
-
-            # Extract any additional parameters from PSCustomObject
-            $Properties = $InputValue.PSObject.Properties | Where-Object { $_.Name -notin @('ScriptGuid', 'Parameters') }
-            foreach ($prop in $Properties) {
-                $Parameters[$prop.Name] = $prop.Value
-            }
-
-            # Handle Parameters field specifically
-            if ($InputValue.Parameters -and -not [string]::IsNullOrWhiteSpace($InputValue.Parameters)) {
-                try {
-                    $ParsedParams = $InputValue.Parameters | ConvertFrom-Json -ErrorAction Stop
-                    if ($ParsedParams) {
-                        foreach ($prop in $ParsedParams.PSObject.Properties) {
-                            $Parameters[$prop.Name] = $prop.Value
-                        }
-                    }
-                } catch {
-                    Write-LogMessage -message "Failed to parse Parameters JSON: $($_.Exception.Message)" -API 'CustomScriptAlert' -tenant $TenantFilter -sev Warning
-                }
-            }
-        } elseif ($InputValue -is [string]) {
-            # Simple string input is treated as ScriptGuid
-            $ScriptGuid = $InputValue
-        }
-
-        if ([string]::IsNullOrWhiteSpace($ScriptGuid)) {
-            Write-LogMessage -message 'ScriptGuid is required in InputValue for custom script alerts' -API 'CustomScriptAlert' -tenant $TenantFilter -sev Error
-            return
         }
 
         Write-LogMessage -message "Custom script alert - ScriptGuid: $ScriptGuid, Parameters: $($Parameters | ConvertTo-Json -Compress)" -API 'CustomScriptAlert' -tenant $TenantFilter -sev Debug
