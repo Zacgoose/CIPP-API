@@ -55,6 +55,11 @@ function Invoke-AddCustomScript {
             $Description = $Request.Body.Description
             $Category = $Request.Body.Category
             $Risk = $Request.Body.Risk
+            $Pillar = $Request.Body.Pillar
+            $ImplementationEffort = $Request.Body.ImplementationEffort
+            $UserImpact = $Request.Body.UserImpact
+            $Enabled = $Request.Body.Enabled
+            $AlertOnFailure = $Request.Body.AlertOnFailure
 
             if ([string]::IsNullOrWhiteSpace($ScriptName)) {
                 throw 'ScriptName is required'
@@ -62,6 +67,32 @@ function Invoke-AddCustomScript {
 
             if ([string]::IsNullOrWhiteSpace($ScriptContent)) {
                 throw 'ScriptContent is required'
+            }
+
+            if ([string]::IsNullOrWhiteSpace($Pillar)) {
+                throw 'Pillar is required'
+            }
+
+            if ([string]::IsNullOrWhiteSpace($UserImpact)) {
+                throw 'UserImpact is required'
+            }
+
+            if ([string]::IsNullOrWhiteSpace($ImplementationEffort)) {
+                throw 'ImplementationEffort is required'
+            }
+
+            $ValidPillars = @('Identity', 'Devices', 'Data')
+            if ($Pillar -notin $ValidPillars) {
+                throw "Pillar must be one of: $($ValidPillars -join ', ')"
+            }
+
+            $ValidImpactAndEffort = @('Low', 'Medium', 'High')
+            if ($UserImpact -notin $ValidImpactAndEffort) {
+                throw "UserImpact must be one of: $($ValidImpactAndEffort -join ', ')"
+            }
+
+            if ($ImplementationEffort -notin $ValidImpactAndEffort) {
+                throw "ImplementationEffort must be one of: $($ValidImpactAndEffort -join ', ')"
             }
 
             # Validate script security constraints before saving
@@ -102,6 +133,11 @@ function Invoke-AddCustomScript {
                 Description        = $Description
                 Category           = $Category
                 Risk               = $Risk
+                Pillar             = $Pillar
+                ImplementationEffort = $ImplementationEffort
+                UserImpact         = $UserImpact
+                Enabled            = $Enabled
+                AlertOnFailure     = $AlertOnFailure
                 CreatedBy          = if ($Headers) { ([System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($Headers.'x-ms-client-principal')) | ConvertFrom-Json).userDetails } else { 'Unknown' }
                 CreatedDate        = (Get-Date).ToUniversalTime().ToString('o')
             }
