@@ -134,8 +134,8 @@ function Invoke-ListTests {
         $DeviceResults = $TestResultsData.TestResults | Where-Object { $_.TestType -eq 'Devices' }
         $CustomResultsForCounts = $TestResultsData.TestResults | Where-Object { $_.TestType -eq 'Custom' }
 
-        # Build lookup of custom script descriptions (latest version per ScriptGuid)
-        $CustomDescriptionLookup = @{}
+        # Build lookup of custom script metadata (latest version per ScriptGuid)
+        $CustomScriptMetadataLookup = @{}
         $CustomResults = @($TestResultsData.TestResults | Where-Object { $_.TestType -eq 'Custom' })
         if ($CustomResults.Count -gt 0) {
             $CustomScriptsTable = Get-CippTable -tablename 'CustomPowershellScripts'
@@ -150,7 +150,11 @@ function Invoke-ListTests {
 
                 foreach ($Script in @($LatestCustomScripts)) {
                     if (-not [string]::IsNullOrWhiteSpace($Script.ScriptGuid)) {
-                        $CustomDescriptionLookup[$Script.ScriptGuid] = $Script.Description ?? ''
+                        $CustomScriptMetadataLookup[$Script.ScriptGuid] = [PSCustomObject]@{
+                            Description      = $Script.Description ?? ''
+                            ReturnType       = $Script.ReturnType ?? 'JSON'
+                            MarkdownTemplate = $Script.MarkdownTemplate ?? ''
+                        }
                     }
                 }
             }
@@ -174,8 +178,11 @@ function Invoke-ListTests {
 
             if ($TestResult.TestType -eq 'Custom') {
                 $ScriptGuid = ($TestResult.RowKey -replace '^CustomScript-', '')
-                if (-not [string]::IsNullOrWhiteSpace($ScriptGuid) -and $CustomDescriptionLookup.ContainsKey($ScriptGuid)) {
-                    $TestResult | Add-Member -NotePropertyName 'Description' -NotePropertyValue ($CustomDescriptionLookup[$ScriptGuid]) -Force
+                if (-not [string]::IsNullOrWhiteSpace($ScriptGuid) -and $CustomScriptMetadataLookup.ContainsKey($ScriptGuid)) {
+                    $CustomMetadata = $CustomScriptMetadataLookup[$ScriptGuid]
+                    $TestResult | Add-Member -NotePropertyName 'Description' -NotePropertyValue ($CustomMetadata.Description) -Force
+                    $TestResult | Add-Member -NotePropertyName 'ReturnType' -NotePropertyValue ($CustomMetadata.ReturnType) -Force
+                    $TestResult | Add-Member -NotePropertyName 'MarkdownTemplate' -NotePropertyValue ($CustomMetadata.MarkdownTemplate) -Force
                 }
             }
         }
