@@ -11,6 +11,8 @@ Function Invoke-ExecNotificationConfig {
     $config = @{
         email             = $Request.body.email
         webhook           = $Request.body.webhook
+        offboardingWebhook = $Request.body.offboardingWebhook
+        driftWebhook      = $Request.body.driftWebhook
         onepertenant      = $Request.body.onePerTenant
         logsToInclude     = $Request.body.logsToInclude
         sendtoIntegration = $Request.body.sendtoIntegration
