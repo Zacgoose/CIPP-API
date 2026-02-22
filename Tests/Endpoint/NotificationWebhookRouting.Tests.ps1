@@ -23,7 +23,15 @@ Describe 'Notification webhook routing' {
     }
 
     It 'stores scoped webhook settings in notification config' {
-        $result = Set-CIPPNotificationConfig -email 'ops@contoso.com' -webhook 'https://default.example/webhook' -offboardingWebhook 'https://default.example/offboarding' -driftWebhook 'https://default.example/drift' -onepertenant $true -logsToInclude @(@{ value = 'Warning' }) -sendtoIntegration $false -sev 'Alert'
+        $result = Set-CIPPNotificationConfig `
+            -email 'ops@contoso.com' `
+            -webhook 'https://default.example/webhook' `
+            -offboardingWebhook 'https://default.example/offboarding' `
+            -driftWebhook 'https://default.example/drift' `
+            -onepertenant $true `
+            -logsToInclude @(@{ value = 'Warning' }) `
+            -sendtoIntegration $false `
+            -sev 'Alert'
 
         $result | Should -Be 'Successfully set the configuration'
         $script:lastEntity.webhook | Should -Be 'https://default.example/webhook'
