@@ -51,7 +51,10 @@ function Invoke-CIPPStandardintuneDeviceRegLocalAdmins {
         $HasEnableGlobalAdmins = $Settings.PSObject.Properties.Name -contains 'enableGlobalAdmins'
     }
     if (-not $HasDisableRegisteringUsers -or -not $HasEnableGlobalAdmins) {
-        Write-LogMessage -API 'Standards' -tenant $Tenant -message 'Missing required local administrator configuration values: disableRegisteringUsers and enableGlobalAdmins.' -sev Error
+        $MissingKeys = @()
+        if (-not $HasDisableRegisteringUsers) { $MissingKeys += 'disableRegisteringUsers' }
+        if (-not $HasEnableGlobalAdmins) { $MissingKeys += 'enableGlobalAdmins' }
+        Write-LogMessage -API 'Standards' -tenant $Tenant -message "Missing required local administrator configuration value(s): $($MissingKeys -join ', ')." -sev Error
         return
     }
     $DisableRegisteringUsers = [bool]$Settings.disableRegisteringUsers
