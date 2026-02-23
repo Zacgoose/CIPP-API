@@ -11,7 +11,7 @@ function Invoke-CIPPStandardintuneDeviceRegLocalAdmins {
         (DocsDescription) Configures the Device Registration Policy local administrator behavior for registering users. When enabled, users who register devices are not granted local administrator rights.
     .NOTES
         CAT
-            Intune Standards
+            Entra (AAD) Standards
         TAG
         EXECUTIVETEXT
             Controls whether employees who enroll devices automatically receive local administrator access. Disabling registering-user admin rights follows least-privilege principles and reduces security risk from over-privileged endpoints.
@@ -32,11 +32,6 @@ function Invoke-CIPPStandardintuneDeviceRegLocalAdmins {
     #>
 
     param($Tenant, $Settings)
-    $TestResult = Test-CIPPStandardLicense -StandardName 'intuneDeviceRegLocalAdmins' -TenantFilter $Tenant -RequiredCapabilities @('INTUNE_A', 'MDM_Services', 'EMS', 'SCCM', 'MICROSOFTINTUNEPLAN1')
-
-    if ($TestResult -eq $false) {
-        return $true
-    }
 
     try {
         $PreviousSetting = New-GraphGetRequest -uri 'https://graph.microsoft.com/beta/policies/deviceRegistrationPolicy' -tenantid $Tenant
@@ -48,13 +43,8 @@ function Invoke-CIPPStandardintuneDeviceRegLocalAdmins {
 
     $CurrentOdataType = $PreviousSetting.azureADJoin.localAdmins.registeringUsers.'@odata.type'
     $CurrentEnableGlobalAdmins = [bool]$PreviousSetting.azureADJoin.localAdmins.enableGlobalAdmins
-    $CurrentDisableRegisteringUsers = $CurrentOdataType -eq '#microsoft.graph.noDeviceRegistrationMembership'
-
-    $DisableRegisteringUsersSetting = $Settings.disableRegisteringUsers.value ?? $Settings.disableRegisteringUsers
-    $EnableGlobalAdminsSetting = $Settings.enableGlobalAdmins.value ?? $Settings.enableGlobalAdmins
-
-    $DisableRegisteringUsers = if ($null -eq $DisableRegisteringUsersSetting) { $CurrentDisableRegisteringUsers } else { [bool]$DisableRegisteringUsersSetting }
-    $EnableGlobalAdmins = if ($null -eq $EnableGlobalAdminsSetting) { $CurrentEnableGlobalAdmins } else { [bool]$EnableGlobalAdminsSetting }
+    $DisableRegisteringUsers = [bool]$Settings.disableRegisteringUsers
+    $EnableGlobalAdmins = [bool]$Settings.enableGlobalAdmins
 
     $DesiredOdataType = if ($DisableRegisteringUsers) { '#microsoft.graph.noDeviceRegistrationMembership' } else { '#microsoft.graph.allDeviceRegistrationMembership' }
     $StateIsCorrect = ($CurrentOdataType -eq $DesiredOdataType) -and ($CurrentEnableGlobalAdmins -eq $EnableGlobalAdmins)
