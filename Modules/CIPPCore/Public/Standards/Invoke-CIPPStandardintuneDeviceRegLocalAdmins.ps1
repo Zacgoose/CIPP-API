@@ -7,8 +7,8 @@ function Invoke-CIPPStandardintuneDeviceRegLocalAdmins {
     .SYNOPSIS
         (Label) Configure local administrator rights for users joining devices
     .DESCRIPTION
-        (Helptext) Controls whether users who register Microsoft Entra joined devices are granted local administrator rights on those devices.
-        (DocsDescription) Configures the Device Registration Policy local administrator behavior for registering users. When enabled, users who register devices are not granted local administrator rights.
+        (Helptext) Controls whether users who register Microsoft Entra joined devices are granted local administrator rights on those devices and if Global Administrators are added as local admins.
+        (DocsDescription) Configures the Device Registration Policy local administrator behavior for registering users. When enabled, users who register devices are not granted local administrator rights, you can also configure if Global Administrators are added as local admins.
     .NOTES
         CAT
             Entra (AAD) Standards
