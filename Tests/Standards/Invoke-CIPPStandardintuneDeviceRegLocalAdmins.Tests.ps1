@@ -2,7 +2,6 @@ BeforeAll {
     $RepoRoot = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $PSCommandPath))
     $StandardPath = Join-Path $RepoRoot 'Modules/CIPPCore/Public/Standards/Invoke-CIPPStandardintuneDeviceRegLocalAdmins.ps1'
 
-    function Test-CIPPStandardLicense { param($StandardName, $TenantFilter, $RequiredCapabilities) }
     function New-GraphGETRequest { param($uri, $tenantid) }
     function New-GraphPOSTRequest { param($tenantid, $Uri, $Type, $Body, $ContentType) }
     function Write-LogMessage { param($API, $tenant, $message, $sev, $LogData) }
@@ -23,7 +22,6 @@ Describe 'Invoke-CIPPStandardintuneDeviceRegLocalAdmins' {
         $script:bpaFields = @()
         $script:lastBody = $null
 
-        Mock -CommandName Test-CIPPStandardLicense -MockWith { $true }
         Mock -CommandName New-GraphGETRequest -MockWith {
             [pscustomobject]@{
                 azureADJoin = @{
@@ -66,7 +64,6 @@ Describe 'Invoke-CIPPStandardintuneDeviceRegLocalAdmins' {
         Invoke-CIPPStandardintuneDeviceRegLocalAdmins -Tenant $tenant -Settings $settings
 
         Should -Invoke New-GraphPOSTRequest -ParameterFilter { $Type -eq 'PUT' -and $Uri -eq 'https://graph.microsoft.com/beta/policies/deviceRegistrationPolicy' } -Times 1
-        Should -Invoke Test-CIPPStandardLicense -Times 0
         $parsedBody = $lastBody | ConvertFrom-Json
         $parsedBody.azureADJoin.localAdmins.registeringUsers.'@odata.type' | Should -Be '#microsoft.graph.noDeviceRegistrationMembership'
         $parsedBody.azureADJoin.localAdmins.enableGlobalAdmins | Should -BeFalse
