@@ -43,20 +43,6 @@ function Invoke-CIPPStandardintuneDeviceRegLocalAdmins {
 
     $CurrentOdataType = $PreviousSetting.azureADJoin.localAdmins.registeringUsers.'@odata.type'
     $CurrentEnableGlobalAdmins = [bool]$PreviousSetting.azureADJoin.localAdmins.enableGlobalAdmins
-    if ($Settings -is [hashtable]) {
-        $HasDisableRegisteringUsers = $Settings.ContainsKey('disableRegisteringUsers')
-        $HasEnableGlobalAdmins = $Settings.ContainsKey('enableGlobalAdmins')
-    } else {
-        $HasDisableRegisteringUsers = $Settings.PSObject.Properties.Name -contains 'disableRegisteringUsers'
-        $HasEnableGlobalAdmins = $Settings.PSObject.Properties.Name -contains 'enableGlobalAdmins'
-    }
-    if (-not $HasDisableRegisteringUsers -or -not $HasEnableGlobalAdmins) {
-        $MissingKeys = @()
-        if (-not $HasDisableRegisteringUsers) { $MissingKeys += 'disableRegisteringUsers' }
-        if (-not $HasEnableGlobalAdmins) { $MissingKeys += 'enableGlobalAdmins' }
-        Write-LogMessage -API 'Standards' -tenant $Tenant -message "Missing required local administrator configuration value(s): $($MissingKeys -join ', ')." -sev Error
-        return
-    }
     $DisableRegisteringUsers = [bool]$Settings.disableRegisteringUsers
     $EnableGlobalAdmins = [bool]$Settings.enableGlobalAdmins
 
