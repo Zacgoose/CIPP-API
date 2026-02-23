@@ -28,6 +28,7 @@ Describe 'Invoke-CIPPStandardintuneDeviceRegLocalAdmins' {
             [pscustomobject]@{
                 azureADJoin = @{
                     localAdmins = @{
+                        enableGlobalAdmins = $true
                         registeringUsers = @{
                             '@odata.type' = '#microsoft.graph.allDeviceRegistrationMembership'
                         }
@@ -62,34 +63,49 @@ Describe 'Invoke-CIPPStandardintuneDeviceRegLocalAdmins' {
         Should -Invoke New-GraphGETRequest -Times 0
     }
 
-    It 'remediates by setting noDeviceRegistrationMembership when disabling registering user admins' {
-        $settings = @{ disableRegisteringUsers = $true; remediate = $true; alert = $false; report = $false }
+    It 'remediates by setting registering users and global admins based on label/value options' {
+        $settings = @{
+            disableRegisteringUsers = @{ label = 'Disable registering users as local administrators'; value = $true }
+            enableGlobalAdmins      = @{ label = 'Allow Global Administrators to be local administrators'; value = $false }
+            remediate               = $true
+            alert                   = $false
+            report                  = $false
+        }
 
         Invoke-CIPPStandardintuneDeviceRegLocalAdmins -Tenant $tenant -Settings $settings
 
         Should -Invoke New-GraphPOSTRequest -ParameterFilter { $Type -eq 'PUT' -and $Uri -eq 'https://graph.microsoft.com/beta/policies/deviceRegistrationPolicy' } -Times 1
         ($lastBody | ConvertFrom-Json).azureADJoin.localAdmins.registeringUsers.'@odata.type' | Should -Be '#microsoft.graph.noDeviceRegistrationMembership'
+        ($lastBody | ConvertFrom-Json).azureADJoin.localAdmins.enableGlobalAdmins | Should -BeFalse
     }
 
     It 'writes alert when current state does not match desired state' {
-        $settings = @{ disableRegisteringUsers = $true; remediate = $false; alert = $true; report = $false; standardId = 'std-123' }
+        $settings = @{ disableRegisteringUsers = $true; enableGlobalAdmins = $false; remediate = $false; alert = $true; report = $false; standardId = 'std-123' }
 
         Invoke-CIPPStandardintuneDeviceRegLocalAdmins -Tenant $tenant -Settings $settings
 
         $alerts | Should -HaveCount 1
         $alerts[0].Standard | Should -Be 'intuneDeviceRegLocalAdmins'
         $alerts[0].Id | Should -Be 'std-123'
-        $alerts[0].Object.current | Should -Be '#microsoft.graph.allDeviceRegistrationMembership'
+        $alerts[0].Object.current.registeringUsers | Should -Be '#microsoft.graph.allDeviceRegistrationMembership'
+        $alerts[0].Object.current.enableGlobalAdmins | Should -BeTrue
     }
 
     It 'writes report compare and BPA fields based on compliance state' {
-        $settings = @{ disableRegisteringUsers = $false; remediate = $false; alert = $false; report = $true }
+        $settings = @{
+            disableRegisteringUsers = @{ label = 'Disable registering users as local administrators'; value = $false }
+            enableGlobalAdmins      = @{ label = 'Allow Global Administrators to be local administrators'; value = $true }
+            remediate               = $false
+            alert                   = $false
+            report                  = $true
+        }
 
         Invoke-CIPPStandardintuneDeviceRegLocalAdmins -Tenant $tenant -Settings $settings
 
         $compareFields | Should -HaveCount 1
         $compareFields[0].Field | Should -Be 'standards.intuneDeviceRegLocalAdmins'
         $compareFields[0].Expected.registeringUsers.'@odata.type' | Should -Be '#microsoft.graph.allDeviceRegistrationMembership'
+        $compareFields[0].Expected.enableGlobalAdmins | Should -BeTrue
         $bpaFields | Should -HaveCount 1
         $bpaFields[0].Value | Should -BeTrue
     }
