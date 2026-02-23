@@ -40,12 +40,15 @@ function Invoke-CIPPStandardintuneDeviceRegLocalAdmins {
         Write-LogMessage -API 'Standards' -Tenant $Tenant -Message "Could not get the intuneDeviceRegLocalAdmins state for $Tenant. Error: $($ErrorMessage.NormalizedError)" -Sev Error -LogData $ErrorMessage
         return
     }
-
+    # Current M365 Config
     $CurrentOdataType = $PreviousSetting.azureADJoin.localAdmins.registeringUsers.'@odata.type'
     $CurrentEnableGlobalAdmins = [bool]$PreviousSetting.azureADJoin.localAdmins.enableGlobalAdmins
+    
+    # Standards Config
     $DisableRegisteringUsers = [bool]$Settings.disableRegisteringUsers
     $EnableGlobalAdmins = [bool]$Settings.enableGlobalAdmins
 
+    # State comparison
     $DesiredOdataType = if ($DisableRegisteringUsers) { '#microsoft.graph.noDeviceRegistrationMembership' } else { '#microsoft.graph.allDeviceRegistrationMembership' }
     $StateIsCorrect = ($CurrentOdataType -eq $DesiredOdataType) -and ($CurrentEnableGlobalAdmins -eq $EnableGlobalAdmins)
     $DesiredStateText = if ($DisableRegisteringUsers) { 'disabled' } else { 'enabled' }
