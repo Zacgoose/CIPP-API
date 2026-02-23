@@ -67,8 +67,9 @@ Describe 'Invoke-CIPPStandardintuneDeviceRegLocalAdmins' {
 
         Should -Invoke New-GraphPOSTRequest -ParameterFilter { $Type -eq 'PUT' -and $Uri -eq 'https://graph.microsoft.com/beta/policies/deviceRegistrationPolicy' } -Times 1
         Should -Invoke Test-CIPPStandardLicense -Times 0
-        ($lastBody | ConvertFrom-Json).azureADJoin.localAdmins.registeringUsers.'@odata.type' | Should -Be '#microsoft.graph.noDeviceRegistrationMembership'
-        ($lastBody | ConvertFrom-Json).azureADJoin.localAdmins.enableGlobalAdmins | Should -BeFalse
+        $parsedBody = $lastBody | ConvertFrom-Json
+        $parsedBody.azureADJoin.localAdmins.registeringUsers.'@odata.type' | Should -Be '#microsoft.graph.noDeviceRegistrationMembership'
+        $parsedBody.azureADJoin.localAdmins.enableGlobalAdmins | Should -BeFalse
     }
 
     It 'alerts when settings drift and reports expected values' {
@@ -91,5 +92,18 @@ Describe 'Invoke-CIPPStandardintuneDeviceRegLocalAdmins' {
         $compareFields[0].Expected.registeringUsers.'@odata.type' | Should -Be '#microsoft.graph.noDeviceRegistrationMembership'
         $bpaFields | Should -HaveCount 1
         $bpaFields[0].Value | Should -BeFalse
+    }
+
+    It 'returns without remediation when required input values are missing' {
+        $settings = @{
+            disableRegisteringUsers = $true
+            remediate               = $true
+            alert                   = $false
+            report                  = $false
+        }
+
+        Invoke-CIPPStandardintuneDeviceRegLocalAdmins -Tenant $tenant -Settings $settings
+
+        Should -Invoke New-GraphPOSTRequest -Times 0
     }
 }
