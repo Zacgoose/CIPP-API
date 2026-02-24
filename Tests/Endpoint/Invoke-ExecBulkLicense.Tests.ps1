@@ -44,7 +44,7 @@ Describe 'Invoke-ExecBulkLicense' {
     }
 
     It 'chunks user filter queries to avoid Graph OR clause limits' {
-        $RequestBody = for ($i = 1; $i -le 72; $i++) {
+        $BulkRequests = for ($i = 1; $i -le 72; $i++) {
             [pscustomobject]@{
                 tenantFilter      = 'contoso.onmicrosoft.com'
                 userIds           = "user$i"
@@ -60,7 +60,7 @@ Describe 'Invoke-ExecBulkLicense' {
         $Request = [pscustomobject]@{
             Params  = @{ CIPPEndpoint = 'ExecBulkLicense' }
             Headers = @{}
-            Body    = $RequestBody
+            Body    = $BulkRequests
         }
 
         $Response = Invoke-ExecBulkLicense -Request $Request -TriggerMetadata $null
