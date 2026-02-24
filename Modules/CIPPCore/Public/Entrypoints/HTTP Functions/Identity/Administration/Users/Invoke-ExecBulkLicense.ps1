@@ -28,14 +28,21 @@ function Invoke-ExecBulkLicense {
             $LicenseRequests = [System.Collections.Generic.List[object]]::new()
 
             # Get unique user IDs for this tenant
-            $UserIds = $TenantRequests.userIds | Select-Object -Unique
-
-            # Build OData filter for specific users only
-            $UserIdFilters = $UserIds | ForEach-Object { "id eq '$_'" }
-            $FilterQuery = $UserIdFilters -join ' or '
+            $UserIds = @($TenantRequests.userIds | Select-Object -Unique)
 
             # Fetch only the users we need with server-side filtering
-            $AllUsers = New-GraphGetRequest -uri "https://graph.microsoft.com/beta/users?`$filter=$FilterQuery&`$select=id,userPrincipalName,assignedLicenses&top=999" -tenantid $TenantFilter
+            $AllUsers = [System.Collections.Generic.List[object]]::new()
+            $MaxFilterClauses = 15
+            for ($i = 0; $i -lt $UserIds.Count; $i += $MaxFilterClauses) {
+                $BatchEndIndex = [Math]::Min($i + $MaxFilterClauses - 1, $UserIds.Count - 1)
+                $UserBatch = $UserIds[$i..$BatchEndIndex]
+                $UserIdFilters = $UserBatch | ForEach-Object { "id eq '$_'" }
+                $FilterQuery = $UserIdFilters -join ' or '
+                $BatchUsers = New-GraphGetRequest -uri "https://graph.microsoft.com/beta/users?`$filter=$FilterQuery&`$select=id,userPrincipalName,assignedLicenses&top=999" -tenantid $TenantFilter
+                foreach ($BatchUser in @($BatchUsers)) {
+                    $AllUsers.Add($BatchUser)
+                }
+            }
 
             # Create lookup for quick access
             $UserLookup = @{}
