@@ -31,7 +31,7 @@ function Invoke-ExecBulkLicense {
             $UserIds = $TenantRequests.userIds | Select-Object -Unique
 
             # Build OData filters in chunks to avoid Graph's OR clause limit
-            $MaxUserIdFilterClauses = 70
+            $MaxUserIdFilterClauses = 15
             $AllUsers = [System.Collections.Generic.List[object]]::new()
 
             for ($i = 0; $i -lt $UserIds.Count; $i += $MaxUserIdFilterClauses) {

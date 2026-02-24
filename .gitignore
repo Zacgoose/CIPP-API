@@ -3,7 +3,6 @@ local.settings.json
 tenants.cache.json
 chocoapps.cache
 *.log
-testResults.xml
 .vscode/
 Cache_*
 Logs
