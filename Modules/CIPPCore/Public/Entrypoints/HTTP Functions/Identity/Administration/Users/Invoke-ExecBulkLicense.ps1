@@ -51,6 +51,11 @@ function Invoke-ExecBulkLicense {
             # Fetch all user chunks in one Graph bulk request
             $UserLookupResults = New-GraphBulkRequest -tenantid $TenantFilter -Requests @($UserLookupRequests)
             foreach ($UserLookupResult in $UserLookupResults) {
+                if ($UserLookupResult.status -lt 200 -or $UserLookupResult.status -gt 299) {
+                    $LookupErrorMessage = $UserLookupResult.body.error.message
+                    if ([string]::IsNullOrEmpty($LookupErrorMessage)) { $LookupErrorMessage = 'Unknown Graph batch error' }
+                    throw "Failed to fetch users for chunk $($UserLookupResult.id): $LookupErrorMessage"
+                }
                 foreach ($ChunkUser in @($UserLookupResult.body.value)) {
                     $AllUsers.Add($ChunkUser)
                 }
