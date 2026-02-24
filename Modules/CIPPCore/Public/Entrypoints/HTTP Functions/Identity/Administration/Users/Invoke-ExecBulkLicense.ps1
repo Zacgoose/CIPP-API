@@ -32,6 +32,7 @@ function Invoke-ExecBulkLicense {
 
             # Build OData filters in chunks to avoid Graph's OR clause limit
             $MaxUserIdFilterClauses = 15
+            $UserLookupRequests = [System.Collections.Generic.List[object]]::new()
             $AllUsers = [System.Collections.Generic.List[object]]::new()
 
             for ($i = 0; $i -lt $UserIds.Count; $i += $MaxUserIdFilterClauses) {
@@ -40,9 +41,17 @@ function Invoke-ExecBulkLicense {
                 $UserIdFilters = $UserIdChunk | ForEach-Object { "id eq '$_'" }
                 $FilterQuery = $UserIdFilters -join ' or '
 
-                # Fetch only the users we need with server-side filtering
-                $ChunkUsers = New-GraphGetRequest -uri "https://graph.microsoft.com/beta/users?`$filter=$FilterQuery&`$select=id,userPrincipalName,assignedLicenses&top=999" -tenantid $TenantFilter
-                foreach ($ChunkUser in @($ChunkUsers)) {
+                $UserLookupRequests.Add(@{
+                        id     = "UserLookup$i"
+                        method = 'GET'
+                        url    = "/users?`$filter=$FilterQuery&`$select=id,userPrincipalName,assignedLicenses&`$top=999"
+                    })
+            }
+
+            # Fetch all user chunks in one Graph bulk request
+            $UserLookupResults = New-GraphBulkRequest -tenantid $TenantFilter -Requests @($UserLookupRequests)
+            foreach ($UserLookupResult in $UserLookupResults) {
+                foreach ($ChunkUser in @($UserLookupResult.body.value)) {
                     $AllUsers.Add($ChunkUser)
                 }
             }
