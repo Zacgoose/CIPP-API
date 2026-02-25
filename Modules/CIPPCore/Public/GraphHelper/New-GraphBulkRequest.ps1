@@ -66,8 +66,8 @@ function New-GraphBulkRequest {
             # Try to parse ErrorDetails.Message as JSON
             if ($_.ErrorDetails.Message) {
                 try {
-                    $ErrorJson = $_.ErrorDetails.Message | ConvertFrom-Json -ErrorAction Stop
-                    $Message = $ErrorJson.error.message
+                    $ErrorJson = $_.ErrorDetails.Message | ConvertFrom-Json -AsHashtable -ErrorAction Stop
+                    $Message = $ErrorJson.error.message ?? $ErrorJson.error.Message
                 } catch {
                     $Message = $_.ErrorDetails.Message
                 }
