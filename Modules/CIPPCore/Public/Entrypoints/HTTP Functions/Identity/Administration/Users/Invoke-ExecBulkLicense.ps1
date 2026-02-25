@@ -49,7 +49,12 @@ function Invoke-ExecBulkLicense {
             }
 
             # Fetch all user chunks in one Graph bulk request
-            $UserLookupResults = New-GraphBulkRequest -tenantid $TenantFilter -Requests @($UserLookupRequests)
+            try {
+                $UserLookupResults = New-GraphBulkRequest -tenantid $TenantFilter -Requests @($UserLookupRequests)
+            } catch {
+                $LookupError = Get-CippException -Exception $_
+                throw "Failed to lookup users before license assignment for tenant $TenantFilter. Error: $($LookupError.NormalizedError)"
+            }
             foreach ($UserLookupResult in $UserLookupResults) {
                 if ($UserLookupResult.status -lt 200 -or $UserLookupResult.status -gt 299) {
                     $LookupErrorMessage = $UserLookupResult.body.error.message
