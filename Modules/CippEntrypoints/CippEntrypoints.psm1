@@ -38,7 +38,16 @@ function Receive-CippHttpTrigger {
     }
 
     # Convert the request to a PSCustomObject because the httpContext is case sensitive since 7.3
-    $Request = $Request | ConvertTo-Json -Depth 100 | ConvertFrom-Json
+    $RequestJson = $Request | ConvertTo-Json -Depth 100
+    try {
+        $Request = $RequestJson | ConvertFrom-Json
+    } catch {
+        if ($_.Exception.Message -like '*contains keys with different casing*') {
+            $Request = $RequestJson | ConvertFrom-Json -AsHashtable
+        } else {
+            throw
+        }
+    }
     Set-Location (Get-Item $PSScriptRoot).Parent.Parent.FullName
 
     if ($Request.Params.CIPPEndpoint -eq '$batch') {
