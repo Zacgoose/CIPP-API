@@ -438,8 +438,13 @@ function Invoke-AddEditTransportRule {
             $ruleParams.Add('RedirectMessageTo', $RedirectMessageTo)
         }
         if ($null -ne $RouteMessageOutboundConnector) {
-            $routeMessageOutboundConnectorValue = if ($RouteMessageOutboundConnector.value) { $RouteMessageOutboundConnector.value } else { $RouteMessageOutboundConnector }
-            if ($routeMessageOutboundConnectorValue -ne '') {
+            $routeMessageOutboundConnectorValue = $RouteMessageOutboundConnector
+            if ($RouteMessageOutboundConnector -is [hashtable] -and $RouteMessageOutboundConnector.ContainsKey('value')) {
+                $routeMessageOutboundConnectorValue = $RouteMessageOutboundConnector['value']
+            } elseif ($RouteMessageOutboundConnector -is [PSCustomObject] -and $null -ne $RouteMessageOutboundConnector.PSObject.Properties['value']) {
+                $routeMessageOutboundConnectorValue = $RouteMessageOutboundConnector.value
+            }
+            if (-not [string]::IsNullOrWhiteSpace([string]$routeMessageOutboundConnectorValue)) {
                 $ruleParams.Add('RouteMessageOutboundConnector', $routeMessageOutboundConnectorValue)
             }
         }
