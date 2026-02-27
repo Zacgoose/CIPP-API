@@ -82,6 +82,7 @@ function Invoke-AddEditTransportRule {
     $DeleteMessage = $Request.Body.DeleteMessage
     $Quarantine = $Request.Body.Quarantine
     $RedirectMessageTo = $Request.Body.RedirectMessageTo
+    $RouteMessageOutboundConnector = $Request.Body.RouteMessageOutboundConnector
     $BlindCopyTo = $Request.Body.BlindCopyTo
     $CopyTo = $Request.Body.CopyTo
     $ModerateMessageByUser = $Request.Body.ModerateMessageByUser
@@ -435,6 +436,12 @@ function Invoke-AddEditTransportRule {
         if ($null -ne $Quarantine) { $ruleParams.Add('Quarantine', $Quarantine) }
         if ($null -ne $RedirectMessageTo -and $RedirectMessageTo.Count -gt 0) {
             $ruleParams.Add('RedirectMessageTo', $RedirectMessageTo)
+        }
+        if ($null -ne $RouteMessageOutboundConnector) {
+            $routeMessageOutboundConnectorValue = if ($RouteMessageOutboundConnector.value) { $RouteMessageOutboundConnector.value } else { $RouteMessageOutboundConnector }
+            if ($routeMessageOutboundConnectorValue -ne '') {
+                $ruleParams.Add('RouteMessageOutboundConnector', $routeMessageOutboundConnectorValue)
+            }
         }
         if ($null -ne $BlindCopyTo -and $BlindCopyTo.Count -gt 0) { $ruleParams.Add('BlindCopyTo', $BlindCopyTo) }
         if ($null -ne $CopyTo -and $CopyTo.Count -gt 0) { $ruleParams.Add('CopyTo', $CopyTo) }
