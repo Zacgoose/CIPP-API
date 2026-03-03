@@ -13,7 +13,7 @@ function Invoke-ListAvailableTests {
 
     try {
         # Get all test folders
-        $TestFolders = Get-ChildItem 'Modules\CIPPCore\Public\Tests' -Directory
+        $TestFolders = Get-ChildItem 'Modules\CIPPTests\Public\Tests' -Directory
 
         # Build identity tests array
         $IdentityTests = foreach ($TestFolder in $TestFolders) {

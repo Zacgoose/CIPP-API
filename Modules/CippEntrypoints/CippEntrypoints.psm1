@@ -173,6 +173,21 @@ function Receive-CippOrchestrationTrigger {
     #>
     param($Context)
     Write-Debug "CIPP_ACTION=$($Item.Command ?? $Item.FunctionName)"
+    
+    # Lazy import of CIPP modules to reduce cold start time of HTTP triggered functions
+    $Modules = @('CIPPAlerts', 'CippStandards', 'CippTests')
+    $ModulesPath = (Get-Item $PSScriptRoot).Parent.FullName
+    foreach ($Module in $Modules) {
+        if (-not (Get-Module -Name $Module)) {
+            try {
+                Import-Module -Name (Join-Path $ModulesPath $Module) -ErrorAction Stop
+            } catch {
+                Write-LogMessage -message "Failed to import module for CippOrchestration - $Module" -LogData (Get-CippException -Exception $_) -Sev 'debug'
+                Write-Error $_.Exception.Message
+            }
+        }
+    }
+
     try {
         if (Test-Json -Json $Context.Input) {
             $OrchestratorInput = $Context.Input | ConvertFrom-Json
@@ -289,6 +304,21 @@ function Receive-CippActivityTrigger {
     param($Item)
     Write-Debug "CIPP_ACTION=$($Item.Command ?? $Item.FunctionName)"
     Write-Warning "Hey Boo, the activity function is running. Here's some info: $($Item | ConvertTo-Json -Depth 10 -Compress)"
+
+    # Lazy import of CIPP modules to reduce cold start time of HTTP triggered functions
+    $Modules = @('CIPPAlerts', 'CippStandards', 'CippTests')
+    $ModulesPath = (Get-Item $PSScriptRoot).Parent.FullName
+    foreach ($Module in $Modules) {
+        if (-not (Get-Module -Name $Module)) {
+            try {
+                Import-Module -Name (Join-Path $ModulesPath $Module) -ErrorAction Stop
+            } catch {
+                Write-LogMessage -message "Failed to import module for CippOrchestration - $Module" -LogData (Get-CippException -Exception $_) -Sev 'debug'
+                Write-Error $_.Exception.Message
+            }
+        }
+    }
+
     try {
         $Output = $null
         $metric = @{
@@ -421,6 +451,20 @@ function Receive-CIPPTimerTrigger {
     $Table = Get-CIPPTable -tablename CIPPTimers
     $Statuses = Get-CIPPAzDataTableEntity @Table
     $FunctionName = $env:WEBSITE_SITE_NAME
+
+    # Lazy import of CIPP modules to reduce cold start time of HTTP triggered functions
+    $Modules = @('CIPPAlerts', 'CippStandards', 'CippTests')
+    $ModulesPath = (Get-Item $PSScriptRoot).Parent.FullName
+    foreach ($Module in $Modules) {
+        if (-not (Get-Module -Name $Module)) {
+            try {
+                Import-Module -Name (Join-Path $ModulesPath $Module) -ErrorAction Stop
+            } catch {
+                Write-LogMessage -message "Failed to import module for CippOrchestration - $Module" -LogData (Get-CippException -Exception $_) -Sev 'debug'
+                Write-Error $_.Exception.Message
+            }
+        }
+    }
 
     foreach ($Function in $Functions) {
         Write-Information "CIPPTimer: $($Function.Command) - $($Function.Cron)"
