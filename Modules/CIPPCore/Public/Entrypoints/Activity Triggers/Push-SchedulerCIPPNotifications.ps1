@@ -109,7 +109,8 @@ function Push-SchedulerCIPPNotifications {
         if (![string]::IsNullOrEmpty($config.webhook)) {
             if ($Currentlog) {
                 $JSONContent = $Currentlog | ConvertTo-Json -Compress
-                Send-CIPPAlert -Type 'webhook' -JSONContent $JSONContent -TenantFilter $Tenant -APIName 'Alerts'
+                $WebhookTitle = "CIPP Alert: Alerts found starting at $((Get-Date).AddMinutes(-15))"
+                Send-CIPPAlert -Type 'webhook' -Title $WebhookTitle -JSONContent $JSONContent -TenantFilter $Tenant -APIName 'Push-SchedulerCIPPNotifications' -WebhookSource $MyInvocation.MyCommand.Name
                 $UpdateLogs = $CurrentLog | ForEach-Object { $_.sentAsAlert = $true; $_ }
                 if ($UpdateLogs) { Add-CIPPAzDataTableEntity @Table -Entity $UpdateLogs -Force }
             }
@@ -118,7 +119,8 @@ function Push-SchedulerCIPPNotifications {
                 $Data = $CurrentStandardsLogs
                 $JSONContent = New-CIPPAlertTemplate -Data $Data -Format 'json' -InputObject 'table' -CIPPURL $CIPPURL
                 $CurrentStandardsLogs | ConvertTo-Json -Compress
-                Send-CIPPAlert -Type 'webhook' -JSONContent $JSONContent -TenantFilter $Tenant -APIName 'Alerts'
+                $WebhookTitle = "Standards are out of sync for $Tenant"
+                Send-CIPPAlert -Type 'webhook' -Title $WebhookTitle -JSONContent $JSONContent -TenantFilter $Tenant -APIName 'Push-SchedulerCIPPNotifications' -WebhookSource $MyInvocation.MyCommand.Name
                 $updateStandards = $CurrentStandardsLogs | ForEach-Object {
                     if ($_.PSObject.Properties.Name -contains 'sentAsAlert') {
                         $_.sentAsAlert = $true

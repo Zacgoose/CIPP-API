@@ -14,6 +14,7 @@ Function Invoke-ExecNotificationConfig {
         onepertenant      = $Request.body.onePerTenant
         logsToInclude     = $Request.body.logsToInclude
         sendtoIntegration = $Request.body.sendtoIntegration
+        useStandardizedSchema = $Request.body.useStandardizedSchema
         sev               = $sev
     }
     $Results = Set-cippNotificationConfig @Config

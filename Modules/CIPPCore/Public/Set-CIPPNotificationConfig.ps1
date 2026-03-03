@@ -6,6 +6,7 @@ function Set-CIPPNotificationConfig {
         $onepertenant,
         $logsToInclude,
         $sendtoIntegration,
+        $useStandardizedSchema,
         $sev,
         $APIName = 'Set Notification Config'
     )
@@ -22,6 +23,7 @@ function Set-CIPPNotificationConfig {
             'webhook'           = "$($webhook)"
             'onePerTenant'      = [boolean]$onePerTenant
             'sendtoIntegration' = [boolean]$sendtoIntegration
+            'useStandardizedSchema' = [boolean]$useStandardizedSchema
             'includeTenantId'   = $true
             'PartitionKey'      = 'CippNotifications'
             'RowKey'            = 'CippNotifications'

@@ -10,6 +10,7 @@ function Send-CIPPAlert {
         $altEmail,
         $altWebhook,
         $APIName = 'Send Alert',
+        $WebhookSource,
         $Headers,
         $TableName,
         $RowKey = [string][guid]::NewGuid()
@@ -142,11 +143,34 @@ function Send-CIPPAlert {
                             Invoke-RestMethod -Uri $webhook -Method POST -ContentType 'Application/json' -Body $SlackBody
                         }
                         default {
+                            $WebhookBody = $ReplacedContent
+                            if ([boolean]$Config.useStandardizedSchema) {
+                                $WebhookData = $JSONContent
+                                $ResolvedWebhookSource = $WebhookSource
+                                if ([string]::IsNullOrWhiteSpace($ResolvedWebhookSource)) {
+                                    $ResolvedWebhookSource = $APIName
+                                }
+                                if ($JSONContent -is [string]) {
+                                    try {
+                                        $WebhookData = $JSONContent | ConvertFrom-Json -Depth 20
+                                    } catch {
+                                        Write-Information 'Webhook payload is not valid JSON; using raw string in Data field.'
+                                    }
+                                }
+                                $CommandSource = $null
+                                if ($WebhookData -is [pscustomobject] -and $WebhookData.TaskInfo) {
+                                    $CommandSource = [string]$WebhookData.TaskInfo.Command
+                                }
+                                if ([string]::IsNullOrWhiteSpace($WebhookSource) -and -not [string]::IsNullOrWhiteSpace($CommandSource)) {
+                                    $ResolvedWebhookSource = $CommandSource
+                                }
+                                $WebhookBody = New-CIPPWebhookRootSchema -Title $Title -Tenant $TenantFilter -Source $ResolvedWebhookSource -Data $WebhookData | ConvertTo-Json -Depth 20 -Compress
+                            }
                             $RestMethod = @{
                                 Uri         = $webhook
                                 Method      = 'POST'
                                 ContentType = 'application/json'
-                                Body        = $ReplacedContent
+                                Body        = $WebhookBody
                             }
                             if ($Headers) {
                                 $RestMethod['Headers'] = $Headers

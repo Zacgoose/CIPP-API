@@ -25,6 +25,9 @@ Function Invoke-ListNotificationConfig {
     } else {
         $config.Severity = $config.Severity -split ','
     }
+    if ($null -eq $config.useStandardizedSchema) {
+        $config.useStandardizedSchema = $false
+    }
     $body = [PSCustomObject]$Config
 
     return [HttpResponseContext]@{

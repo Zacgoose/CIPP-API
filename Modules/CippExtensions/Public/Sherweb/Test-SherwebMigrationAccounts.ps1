@@ -37,7 +37,7 @@ function Test-SherwebMigrationAccounts {
             $JSONContent = New-CIPPAlertTemplate -Data $LicencesToMigrate -Format 'json' -InputObject 'sherwebmig'
             Send-CIPPAlert -Type 'email' -Title $Subject -HTMLContent $HTMLContent.htmlcontent -TenantFilter $tenant -APIName 'Alerts'
             Send-CIPPAlert -Type 'psa' -Title $Subject -HTMLContent $HTMLContent.htmlcontent -TenantFilter $standardsTenant -APIName 'Alerts'
-            Send-CIPPAlert -Type 'webhook' -JSONContent $JSONContent -TenantFilter $Tenant -APIName 'Alerts'
+            Send-CIPPAlert -Type 'webhook' -Title $Subject -JSONContent $JSONContent -TenantFilter $Tenant -APIName 'Test-SherwebMigrationAccounts'
         }
         '*buy*' {
             try {
@@ -55,7 +55,7 @@ function Test-SherwebMigrationAccounts {
                 $JSONContent = New-CIPPAlertTemplate -Data $LicencesToMigrate -Format 'json' -InputObject 'sherwebmigBuyFail'
                 Send-CIPPAlert -Type 'email' -Title $Subject -HTMLContent $HTMLContent.htmlcontent -TenantFilter $tenant -APIName 'Alerts'
                 Send-CIPPAlert -Type 'psa' -Title $Subject -HTMLContent $HTMLContent.htmlcontent -TenantFilter $standardsTenant -APIName 'Alerts'
-                Send-CIPPAlert -Type 'webhook' -JSONContent $JSONContent -TenantFilter $Tenant -APIName 'Alerts'
+                Send-CIPPAlert -Type 'webhook' -Title $Subject -JSONContent $JSONContent -TenantFilter $Tenant -APIName 'Test-SherwebMigrationAccounts'
             }
 
         }
@@ -84,7 +84,7 @@ function Test-SherwebMigrationAccounts {
                 $JSONContent = New-CIPPAlertTemplate -Data $LicencesToMigrate -Format 'json' -InputObject 'sherwebmigfailpax'
                 Send-CIPPAlert -Type 'email' -Title $Subject -HTMLContent $HTMLContent.htmlcontent -TenantFilter $tenant -APIName 'Alerts'
                 Send-CIPPAlert -Type 'psa' -Title $Subject -HTMLContent $HTMLContent.htmlcontent -TenantFilter $standardsTenant -APIName 'Alerts'
-                Send-CIPPAlert -Type 'webhook' -JSONContent $JSONContent -TenantFilter $Tenant -APIName 'Alerts'
+                Send-CIPPAlert -Type 'webhook' -Title $Subject -JSONContent $JSONContent -TenantFilter $Tenant -APIName 'Test-SherwebMigrationAccounts'
             }
         }
 
