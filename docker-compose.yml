@@ -1,20 +1,22 @@
 services:
-  azurite:
-    image: mcr.microsoft.com/azure-storage/azurite
-    container_name: azurite
-    ports:
-      - "10000:10000"
-      - "10001:10001"
-      - "10002:10002"
-    networks:
-      - func-network
-    environment:
-      - AZURITE_ACCOUNTS=devstoreaccount1:Eby8vdM02xNoBnZf6KgBVU4=
-
   cippapi:
     build:
       context: .
       dockerfile: Dockerfile
+    volumes:
+      - ./:/home/site/wwwroot
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /home/site/wwwroot
+          ignore:
+            - .git/
+            - .vscode/
+            - .venv/
+            - __pycache__/
+            - .env
+            - .env.*
     environment:
       - FUNCTIONS_WORKER_RUNTIME=${FUNCTIONS_WORKER_RUNTIME}
       - FUNCTIONS_WORKER_RUNTIME_VERSION=${FUNCTIONS_WORKER_RUNTIME_VERSION}
@@ -26,8 +28,22 @@ services:
       - AzureWebJobs.Domain_OrchestrationStarterTimer.Disabled=true
       - WEBSITE_HOSTNAME=cippapi
       - NonLocalHostAzurite=${NonLocalHostAzurite}
-    depends_on:
-      - azurite
+      - ExternalDurablePowerShellSDK=true
+      - AzureFunctionsJobHost__Logging__Console__IsEnabled=true
+      - AzureFunctionsJobHost__Logging__LogLevel__Default=Error
+      - AzureFunctionsJobHost__Logging__LogLevel__Host.Function=Information
+      - AzureFunctionsJobHost__Logging__LogLevel__Function=Information
+      - AzureFunctionsJobHost__Logging__LogLevel__Microsoft.Azure.WebJobs.Script.WebHost.Middleware=Information
+      - AzureFunctionsJobHost__Logging__LogLevel__Host=Error
+      - AzureFunctionsJobHost__Logging__LogLevel__Azure=Error
+      - AzureFunctionsJobHost__Logging__LogLevel__Azure.Core=Error
+      - AzureFunctionsJobHost__Logging__LogLevel__Azure.Storage=Error
+      - AzureFunctionsJobHost__Logging__LogLevel__System=Error
+      - AzureFunctionsJobHost__Logging__LogLevel__Microsoft=Error
+      - AzureFunctionsJobHost__Logging__LogLevel__DurableTask=Error
+      - WEBSITES_INCLUDE_CLOUD_CERTS=true
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - func-network
     deploy:
