@@ -14,7 +14,9 @@ function Push-CippDriftManagement {
         if ($Drift.newDeviationsCount -gt 0) {
             $Settings = $Drift.driftSettings
             $email = $Settings.driftAlertEmail
-            $webhook = $Settings.driftAlertWebhook
+            $NotificationConfigTable = Get-CippTable -tablename SchedulerConfig
+            $NotificationConfig = Get-CIPPAzDataTableEntity @NotificationConfigTable -Filter "PartitionKey eq 'CippNotifications' and RowKey eq 'CippNotifications'"
+            $webhook = if ($NotificationConfig.driftWebhook) { $NotificationConfig.driftWebhook } else { $Settings.driftAlertWebhook }
             $CippConfigTable = Get-CippTable -tablename Config
             $CippConfig = Get-CIPPAzDataTableEntity @CippConfigTable -Filter "PartitionKey eq 'InstanceProperties' and RowKey eq 'CIPPURL'"
             $CIPPURL = 'https://{0}' -f $CippConfig.Value

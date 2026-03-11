@@ -5792,6 +5792,22 @@
             "in": "body"
           },
           {
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "name": "offboardingWebhook",
+            "in": "body"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "name": "driftWebhook",
+            "in": "body"
+          },
+          {
             "required": true,
             "schema": {
               "type": "string"

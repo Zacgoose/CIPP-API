@@ -3,6 +3,8 @@ function Set-CIPPNotificationConfig {
     param (
         $email,
         $webhook,
+        $offboardingWebhook,
+        $driftWebhook,
         $onepertenant,
         $logsToInclude,
         $sendtoIntegration,
@@ -20,6 +22,8 @@ function Set-CIPPNotificationConfig {
             'Severity'          = [string]$sev
             'email'             = "$($email)"
             'webhook'           = "$($webhook)"
+            'offboardingWebhook' = "$($offboardingWebhook)"
+            'driftWebhook'      = "$($driftWebhook)"
             'onePerTenant'      = [boolean]$onePerTenant
             'sendtoIntegration' = [boolean]$sendtoIntegration
             'includeTenantId'   = $true

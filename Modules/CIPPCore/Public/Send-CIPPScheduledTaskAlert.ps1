@@ -80,6 +80,12 @@ function Send-CIPPScheduledTaskAlert {
                 Send-CIPPAlert -Type 'email' -Title $title -HTMLContent $HTML -TenantFilter $TenantFilter
             }
             '*webhook*' {
+                $altWebhook = $TaskInfo.PostExecution.WebhookPath
+                if (-not $altWebhook -and $TaskType -eq 'Offboarding') {
+                    $NotificationConfigTable = Get-CippTable -tablename SchedulerConfig
+                    $NotificationConfig = Get-CIPPAzDataTableEntity @NotificationConfigTable -Filter "PartitionKey eq 'CippNotifications' and RowKey eq 'CippNotifications'"
+                    $altWebhook = $NotificationConfig.offboardingWebhook
+                }
                 $Webhook = [PSCustomObject]@{
                     'tenantId'     = $TenantInfo.customerId
                     'Tenant'       = $TenantFilter
@@ -87,7 +93,7 @@ function Send-CIPPScheduledTaskAlert {
                     'Results'      = $Results
                     'AlertComment' = $TaskInfo.AlertComment
                 }
-                Send-CIPPAlert -Type 'webhook' -Title $title -TenantFilter $TenantFilter -JSONContent $($Webhook | ConvertTo-Json -Depth 20)
+                Send-CIPPAlert -Type 'webhook' -Title $title -TenantFilter $TenantFilter -JSONContent $($Webhook | ConvertTo-Json -Depth 20) -altWebhook $altWebhook
             }
         }
 
