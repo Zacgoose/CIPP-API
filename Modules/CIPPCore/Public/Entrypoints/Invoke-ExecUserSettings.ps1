@@ -10,15 +10,16 @@ function Invoke-ExecUserSettings {
         $object = $Request.Body.currentSettings | Select-Object * -ExcludeProperty CurrentTenant, pageSizes, sidebarShow, sidebarUnfoldable, _persist | ConvertTo-Json -Compress -Depth 10
         $User = $Request.Body.user
         if ($User -isnot [string]) {
-            $User = @(
-                $User.userDetails
-                $User.userPrincipalName
-                $User.upn
-                $User.value
-                $User.username
-                $User.name
-                $User.email
-            ) | Where-Object { $_ -is [string] -and -not [string]::IsNullOrWhiteSpace($_) } | Select-Object -First 1
+            $UserPropertyOrder = @('userDetails', 'userPrincipalName', 'upn', 'value', 'username', 'name', 'email')
+            $ResolvedUser = $null
+            foreach ($Property in $UserPropertyOrder) {
+                $Candidate = $User.$Property
+                if ($Candidate -is [string] -and -not [string]::IsNullOrWhiteSpace($Candidate)) {
+                    $ResolvedUser = $Candidate
+                    break
+                }
+            }
+            $User = $ResolvedUser
         }
 
         if ([string]::IsNullOrWhiteSpace($User)) {
