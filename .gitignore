@@ -12,6 +12,7 @@ SendNotifications/config.json
 Output/
 node_modules/.yarn-integrity
 yarn.lock
+testResults.xml
 
 # Cursor IDE
 .cursor/rules
