@@ -128,15 +128,68 @@ function Test-CIPPAccessPermissions {
         $ApplicationToken = Get-GraphToken -returnRefresh $true -SkipCache $true -AsApp $true
         $ApplicationTokenDetails = Read-JwtAccessDetails -Token $ApplicationToken.access_token -erroraction SilentlyContinue | Select-Object
 
-        $LastUpdate = [DateTime]::SpecifyKind($GraphPermissions.Timestamp.ToString('yyyy-MM-ddTHH:mm:ssZ'), [DateTimeKind]::Utc)
+        $LastUpdate = [DateTime]::SpecifyKind([DateTime]$GraphPermissions.Timestamp, [DateTimeKind]::Utc)
         $CpvTable = Get-CippTable -tablename 'cpvtenants'
         $CpvRefresh = Get-CippAzDataTableEntity @CpvTable -Filter "PartitionKey eq 'Tenant'"
-        $TenantList = Get-Tenants -IncludeErrors | Where-Object { $_.customerId -ne $env:TenantID -and $_.Excluded -eq $false }
+        $AccessChecksTable = Get-CippTable -TableName AccessChecks
+        $TenantAccessCheckRows = Get-CIPPAzDataTableEntity @AccessChecksTable -Filter "PartitionKey eq 'TenantAccessChecks'"
+        $TenantAccessChecksByTenant = @{}
+        foreach ($TenantAccessCheckRow in @($TenantAccessCheckRows)) {
+            if ($TenantAccessCheckRow.RowKey) {
+                $TenantAccessChecksByTenant[$TenantAccessCheckRow.RowKey] = $TenantAccessCheckRow
+            }
+        }
+
+        $SAMRolesTable = Get-CippTable -TableName SAMRoles
+        $SAMRoles = Get-CIPPAzDataTableEntity @SAMRolesTable | Select-Object -First 1
+        $SAMRolesTimestamp = $null
+        try {
+            $SAMRolesTimestamp = [DateTime]::SpecifyKind($SAMRoles.Timestamp.DateTime, [DateTimeKind]::Utc)
+        } catch {
+            $SAMRolesTimestamp = $null
+        }
+
+        $TenantList = Get-Tenants -IncludeAll | Where-Object { $_.customerId -ne $env:TenantID -and $_.Excluded -eq $false }
         $CPVRefreshList = [System.Collections.Generic.List[object]]::new()
         $CPVSuccess = $true
         foreach ($Tenant in $TenantList) {
-            $LastRefresh = ($CpvRefresh | Where-Object { $_.RowKey -eq $Tenant.customerId }).Timestamp.DateTime
-            if ($LastRefresh -lt $LastUpdate) {
+            $CPVRow = $CpvRefresh | Where-Object -Property Tenant -EQ $Tenant.customerId | Select-Object -First 1
+            $LastRefresh = $null
+            $CPVTimestamp = $null
+
+            if ($CPVRow) {
+                try {
+                    $CPVTimestamp = [DateTime]::SpecifyKind($CPVRow.Timestamp.DateTime, [DateTimeKind]::Utc)
+                    $LastRefresh = $CPVTimestamp
+                } catch {
+                    $CPVTimestamp = $null
+                    $LastRefresh = $CPVRow.Timestamp.DateTime
+                }
+            }
+
+            $RetryDays = if (!$CPVRow -or !$CPVRow.LastStatus -or $CPVRow.LastStatus -eq 'Failed') { -1 } else { -7 }
+            $NeedsRetry = !$CPVTimestamp -or $CPVTimestamp -le (Get-Date).AddDays($RetryDays).ToUniversalTime()
+            $SAMRolesChangedForTenant = $false
+            if ($SAMRolesTimestamp -and $CPVTimestamp -and $SAMRolesTimestamp -gt $CPVTimestamp) {
+                $SAMRolesChangedForTenant = ($SAMRoles.Tenants -contains $Tenant.defaultDomainName -or $SAMRoles.Tenants.value -contains $Tenant.defaultDomainName -or $SAMRoles.Tenants -contains 'AllTenants' -or $SAMRoles.Tenants.value -contains 'AllTenants')
+            }
+
+            $NeedsCPVRefresh = !$CPVRow -or $env:ApplicationID -notin $CPVRow.applicationId -or !$CPVTimestamp -or $LastUpdate -gt $CPVTimestamp -or $NeedsRetry -or !$Tenant.defaultDomainName -or $SAMRolesChangedForTenant
+
+            if (!$NeedsCPVRefresh -and $Tenant.defaultDomainName -ne 'PartnerTenant') {
+                try {
+                    $TenantAccessCheckRow = $TenantAccessChecksByTenant[$Tenant.customerId]
+                    if ($TenantAccessCheckRow -and $TenantAccessCheckRow.Data) {
+                        $TenantAccessData = $TenantAccessCheckRow.Data | ConvertFrom-Json -ErrorAction Stop
+                        if ($TenantAccessData.PSObject.Properties.Name -contains 'CPVPermissionsStatus' -and $TenantAccessData.CPVPermissionsStatus -eq $false) {
+                            $NeedsCPVRefresh = $true
+                        }
+                    }
+                } catch {
+                }
+            }
+
+            if ($NeedsCPVRefresh) {
                 $CPVSuccess = $false
                 $CPVRefreshList.Add([PSCustomObject]@{
                         CustomerId        = $Tenant.customerId

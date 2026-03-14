@@ -53,6 +53,41 @@ function Invoke-GetCippAlerts {
                 type  = 'error'
             })
     }
+    if ($role -like '*admin*') {
+        $AccessCheckTable = Get-CippTable -TableName AccessChecks
+
+        try {
+            $AccessPermissionsCache = Get-CIPPAzDataTableEntity @AccessCheckTable -Filter "PartitionKey eq 'AccessCheck' and RowKey eq 'AccessPermissions'" | Sort-Object Timestamp -Descending | Select-Object -First 1
+            $AccessPermissions = $AccessPermissionsCache.Data | ConvertFrom-Json -ErrorAction Stop
+        } catch {
+            $AccessPermissions = $null
+        }
+
+        if ($AccessPermissions -and ($AccessPermissions.Success -eq $false -or @($AccessPermissions.ErrorMessages).Count -gt 0 -or @($AccessPermissions.MissingPermissions).Count -gt 0)) {
+            $Alerts.Add(@{
+                    title = 'SAM Permission Issues Detected'
+                    Alert = 'Your environment has service account or permission issues. Open Access Checks in Admin Settings and run the Permissions check.'
+                    link  = '/cipp/settings/permissions'
+                    type  = 'warning'
+                })
+        }
+
+        try {
+            $GDAPRelationshipsCache = Get-CIPPAzDataTableEntity @AccessCheckTable -Filter "PartitionKey eq 'AccessCheck' and RowKey eq 'GDAPRelationships'" | Sort-Object Timestamp -Descending | Select-Object -First 1
+            $GDAPRelationships = $GDAPRelationshipsCache.Data | ConvertFrom-Json -ErrorAction Stop
+        } catch {
+            $GDAPRelationships = $null
+        }
+
+        if ($GDAPRelationships -and @($GDAPRelationships.GDAPIssues).Count -gt 0) {
+            $Alerts.Add(@{
+                    title = 'GDAP Relationship Issues Detected'
+                    Alert = 'Your environment has GDAP role or relationship issues. Open Access Checks in Admin Settings and run the GDAP check.'
+                    link  = '/cipp/settings/permissions'
+                    type  = 'warning'
+                })
+        }
+    }
     if (!(![string]::IsNullOrEmpty($env:WEBSITE_RUN_FROM_PACKAGE) -or ![string]::IsNullOrEmpty($env:DEPLOYMENT_STORAGE_CONNECTION_STRING)) -and $env:AzureWebJobsStorage -ne 'UseDevelopmentStorage=true' -and $env:NonLocalHostAzurite -ne 'true') {
         $Alerts.Add(
             @{

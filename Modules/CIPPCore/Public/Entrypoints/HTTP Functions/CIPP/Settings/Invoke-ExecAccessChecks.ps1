@@ -38,8 +38,17 @@ function Invoke-ExecAccessChecks {
             }
         }
         'Tenants' {
+            $RequestedTenantId = $Request.Body.TenantId ?? $Request.Body.tenantId ?? $Request.Query.TenantId ?? $Request.Query.tenantId
+            $RequestedTenantFilter = $Request.Body.tenantFilter ?? $Request.Query.tenantFilter
+            if (!$RequestedTenantId -and $RequestedTenantFilter -and $RequestedTenantFilter -ne 'AllTenants') {
+                try {
+                    $RequestedTenant = Get-Tenants -TenantFilter $RequestedTenantFilter -IncludeErrors
+                    $RequestedTenantId = $RequestedTenant.customerId
+                } catch {}
+            }
+
             $AccessChecks = Get-CIPPAzDataTableEntity @Table -Filter "PartitionKey eq 'TenantAccessChecks'"
-            if (!$Request.Body.TenantId) {
+            if (!$RequestedTenantId) {
                 try {
                     $Tenants = Get-Tenants -IncludeErrors | Where-Object { $_.customerId -ne $env:TenantID }
                     $Results = foreach ($Tenant in $Tenants) {
@@ -58,6 +67,10 @@ function Invoke-ExecAccessChecks {
                             OrgManagementRoles        = @()
                             OrgManagementRolesMissing = @()
                             OrgManagementRepairNeeded = $false
+                            CPVPermissionsStatus      = $null
+                            CPVPermissionsTest        = ''
+                            CPVMissingApplicationPermissions = @()
+                            CPVMissingDelegatedPermissions   = @()
                         }
                         if ($TenantCheck) {
                             $Data = @($TenantCheck.Data | ConvertFrom-Json -ErrorAction Stop)
@@ -71,6 +84,10 @@ function Invoke-ExecAccessChecks {
                             $TenantResult.OrgManagementRoles = $Data.OrgManagementRoles ? @($Data.OrgManagementRoles) : @()
                             $TenantResult.OrgManagementRolesMissing = $Data.OrgManagementRolesMissing ? @($Data.OrgManagementRolesMissing) : @()
                             $TenantResult.OrgManagementRepairNeeded = $Data.OrgManagementRolesMissing.Count -gt 0
+                            $TenantResult.CPVPermissionsStatus = $Data.CPVPermissionsStatus
+                            $TenantResult.CPVPermissionsTest = $Data.CPVPermissionsTest
+                            $TenantResult.CPVMissingApplicationPermissions = $Data.CPVMissingApplicationPermissions ? @($Data.CPVMissingApplicationPermissions) : @()
+                            $TenantResult.CPVMissingDelegatedPermissions = $Data.CPVMissingDelegatedPermissions ? @($Data.CPVMissingDelegatedPermissions) : @()
                         }
                         $TenantResult
                     }
@@ -91,12 +108,12 @@ function Invoke-ExecAccessChecks {
                 }
             }
 
-            if ($Request.Query.SkipCache -eq 'true' -or $Request.Query.SkipCache -eq $true -or $LastRun -lt $4HoursAgo) {
+            if ((!$RequestedTenantId) -and ($Request.Query.SkipCache -eq 'true' -or $Request.Query.SkipCache -eq $true)) {
                 $Message = Test-CIPPAccessTenant -Headers $Request.Headers
             }
 
-            if ($Request.Body.TenantId) {
-                $Tenant = Get-Tenants -TenantFilter $Request.Body.TenantId
+            if ($RequestedTenantId) {
+                $Tenant = Get-Tenants -TenantFilter $RequestedTenantId
                 $null = Test-CIPPAccessTenant -Tenant $Tenant.customerId -Headers $Request.Headers
                 $Results = "Refreshing tenant $($Tenant.displayName)"
             }
