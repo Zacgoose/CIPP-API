@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="4" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-03-18" time="17:30:05">
+  <environment clr-version="8.0.21" user-domain="" user="runner" os-version="6.14.0-1017-azure" platform="Linux" cwd="/home/runner/work/CIPP-API/CIPP-API" nunit-version="2.5.8.0" machine-name="runnervm46oaq" />
+  <culture-info current-culture="" current-uiculture="" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="1.0793" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="/home/runner/work/CIPP-API/CIPP-API/Tests/Endpoint/Invoke-ExecOnboardTenant.Tests.ps1" executed="True" result="Success" success="True" time="0.9052" asserts="0" description="/home/runner/work/CIPP-API/CIPP-API/Tests/Endpoint/Invoke-ExecOnboardTenant.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Invoke-ExecOnboardTenant" executed="True" result="Success" success="True" time="0.5123" asserts="0" description="Invoke-ExecOnboardTenant">
+            <results>
+              <test-case description="returns existing onboarding record without restarting orchestration when not retrying" name="Invoke-ExecOnboardTenant.returns existing onboarding record without restarting orchestration when not retrying" time="0.3773" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="requeues onboarding when retry is explicitly requested" name="Invoke-ExecOnboardTenant.requeues onboarding when retry is explicitly requested" time="0.1008" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="/home/runner/work/CIPP-API/CIPP-API/Tests/Endpoint/Start-CIPPOrchestrator.Tests.ps1" executed="True" result="Success" success="True" time="0.1741" asserts="0" description="/home/runner/work/CIPP-API/CIPP-API/Tests/Endpoint/Start-CIPPOrchestrator.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Start-CIPPOrchestrator" executed="True" result="Success" success="True" time="0.152" asserts="0" description="Start-CIPPOrchestrator">
+            <results>
+              <test-case description="stores and queues input when called without CallerIsQueueTrigger" name="Start-CIPPOrchestrator.stores and queues input when called without CallerIsQueueTrigger" time="0.0954" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="starts orchestration directly when explicitly called by queue trigger" name="Start-CIPPOrchestrator.starts orchestration directly when explicitly called by queue trigger" time="0.0523" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

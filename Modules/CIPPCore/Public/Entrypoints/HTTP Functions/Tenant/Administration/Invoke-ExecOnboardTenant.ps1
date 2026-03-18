@@ -79,10 +79,11 @@ function Invoke-ExecOnboardTenant {
                         StandardsExcludeAllTenants = $Request.Body.standardsExcludeAllTenants
                     }
 
-                    $QueueResult = Add-CippQueueMessage -Cmdlet 'Push-ExecOnboardTenantQueue' -Parameters @{ Item = $Item }
-                    if (-not $QueueResult) {
-                        throw "Failed to queue onboarding job $Id"
+                    $InputObject = @{
+                        OrchestratorName = 'OnboardingOrchestrator'
+                        Batch            = @($Item)
                     }
+                    $null = Start-CIPPOrchestrator -InputObject $InputObject
                     Write-LogMessage -headers $Headers -API $APIName -message "Onboarding job $Id queued" -Sev 'Info'
                 }
 
