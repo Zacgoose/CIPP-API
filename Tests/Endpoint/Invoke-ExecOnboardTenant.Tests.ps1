@@ -21,7 +21,7 @@ BeforeAll {
     function Get-CIPPTable { param($TableName) @{} }
     function Get-CIPPAzDataTableEntity { param($Filter) }
     function Add-CIPPAzDataTableEntity { param($Entity, [switch]$Force) }
-    function Start-CIPPOrchestrator { param($InputObject) 'instance-id' }
+    function Add-CippQueueMessage { param($Cmdlet, $Parameters) $true }
     function Write-LogMessage { param($headers, $API, $message, $Sev, $LogData) }
     function Get-NormalizedError { param($message) $message }
 
@@ -31,8 +31,10 @@ BeforeAll {
 Describe 'Invoke-ExecOnboardTenant' {
     BeforeEach {
         $script:lastFilter = $null
-        $script:startCount = 0
+        $script:queueCount = 0
         $script:addCount = 0
+        $script:queuedCmdlet = $null
+        $script:queuedItemId = $null
     }
 
     It 'returns existing onboarding record without restarting orchestration when not retrying' {
@@ -48,7 +50,13 @@ Describe 'Invoke-ExecOnboardTenant' {
                 Logs            = '[{"Date":"2026-03-18T00:00:00Z","Log":"Started"}]'
             }
         }
-        Mock -CommandName Start-CIPPOrchestrator -MockWith { $script:startCount++; 'instance-id' }
+        Mock -CommandName Add-CippQueueMessage -MockWith {
+            param($Cmdlet, $Parameters)
+            $script:queueCount++
+            $script:queuedCmdlet = $Cmdlet
+            $script:queuedItemId = $Parameters.Item.id
+            $true
+        }
         Mock -CommandName Add-CIPPAzDataTableEntity -MockWith { $script:addCount++ }
 
         $request = [pscustomobject]@{
@@ -66,7 +74,7 @@ Describe 'Invoke-ExecOnboardTenant' {
         $response.Body.Status | Should -Be 'running'
         $response.Body.OnboardingSteps[0].Status | Should -Be 'succeeded'
         $script:lastFilter | Should -Be "RowKey eq 'rel-123'"
-        $script:startCount | Should -Be 0
+        $script:queueCount | Should -Be 0
         $script:addCount | Should -Be 0
     }
 
@@ -83,7 +91,13 @@ Describe 'Invoke-ExecOnboardTenant' {
                 Logs            = ''
             }
         }
-        Mock -CommandName Start-CIPPOrchestrator -MockWith { $script:startCount++; 'instance-id' }
+        Mock -CommandName Add-CippQueueMessage -MockWith {
+            param($Cmdlet, $Parameters)
+            $script:queueCount++
+            $script:queuedCmdlet = $Cmdlet
+            $script:queuedItemId = $Parameters.Item.id
+            $true
+        }
         Mock -CommandName Add-CIPPAzDataTableEntity -MockWith { $script:addCount++ }
 
         $request = [pscustomobject]@{
@@ -99,7 +113,9 @@ Describe 'Invoke-ExecOnboardTenant' {
 
         $response.StatusCode | Should -Be ([System.Net.HttpStatusCode]::OK)
         $script:lastFilter | Should -Be "RowKey eq 'rel-456'"
-        $script:startCount | Should -Be 1
+        $script:queueCount | Should -Be 1
+        $script:queuedCmdlet | Should -Be 'Push-ExecOnboardTenantQueue'
+        $script:queuedItemId | Should -Be 'rel-456'
         $script:addCount | Should -Be 1
         $response.Body.Status | Should -Be 'queued'
     }
