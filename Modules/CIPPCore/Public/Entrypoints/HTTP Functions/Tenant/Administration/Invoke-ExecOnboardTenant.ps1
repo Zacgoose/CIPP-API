@@ -28,8 +28,7 @@ function Invoke-ExecOnboardTenant {
                     $StatusCode = [HttpStatusCode]::NotFound
                 }
             } else {
-                $TenMinutesAgo = (Get-Date).AddMinutes(-10).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ')
-                $TenantOnboarding = Get-CIPPAzDataTableEntity @OnboardTable -Filter "RowKey eq '$Id' and Timestamp ge datetime'$TenMinutesAgo'"
+                $TenantOnboarding = Get-CIPPAzDataTableEntity @OnboardTable -Filter "RowKey eq '$Id'"
                 if (!$TenantOnboarding -or [bool]$Request.Body.Retry) {
                     $OnboardingSteps = [PSCustomObject]@{
                         'Step1' = @{
