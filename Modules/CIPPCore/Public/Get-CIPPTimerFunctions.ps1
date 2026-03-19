@@ -95,15 +95,28 @@ function Get-CIPPTimerFunctions {
                 }
             }
 
-            $Now = Get-Date
+            $Now = (Get-Date).ToUniversalTime()
             if ($ListAllTasks.IsPresent) {
                 $NextOccurrence = [datetime]$Cron.GetNextOccurrence($Now)
             } else {
-                $NextOccurrences = $Cron.GetNextOccurrences($Now.AddMinutes(-15), $Now.AddMinutes(15))
                 if (!$Status -or $Status.LastOccurrence -eq 'Never') {
-                    $NextOccurrence = $NextOccurrences | Where-Object { $_ -le (Get-Date) } | Select-Object -First 1
+                    $NextOccurrence = [datetime]$Cron.GetNextOccurrence($Now.AddMinutes(-15))
                 } else {
-                    $NextOccurrence = $NextOccurrences | Where-Object { $_ -gt $Status.LastOccurrence.DateTime.ToLocalTime() -and $_ -le (Get-Date) } | Select-Object -First 1
+                    try {
+                        $LastOccurrenceValue = if ($Status.LastOccurrence.PSObject.Properties.Name -contains 'DateTime') {
+                            [datetime]$Status.LastOccurrence.DateTime
+                        } else {
+                            [datetime]$Status.LastOccurrence
+                        }
+                        $LastOccurrence = $LastOccurrenceValue.ToUniversalTime()
+                    } catch {
+                        $LastOccurrence = $Now.AddMinutes(-15)
+                    }
+                    $NextOccurrence = [datetime]$Cron.GetNextOccurrence($LastOccurrence)
+                }
+
+                if ($NextOccurrence -and $NextOccurrence -gt $Now) {
+                    $NextOccurrence = $null
                 }
             }
 
