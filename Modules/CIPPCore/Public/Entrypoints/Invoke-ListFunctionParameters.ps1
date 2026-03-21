@@ -20,6 +20,26 @@ function Invoke-ListFunctionParameters {
     $IgnoreList = 'entryPoint', 'internal'
     $CommonParameters = @('Verbose', 'Debug', 'ErrorAction', 'WarningAction', 'InformationAction', 'ErrorVariable', 'WarningVariable', 'InformationVariable', 'OutVariable', 'OutBuffer', 'PipelineVariable', 'TenantFilter', 'APIName', 'Headers', 'ProgressAction', 'WhatIf', 'Confirm', 'Headers', 'NoAuthCheck')
     $TemporaryBlacklist = 'Get-CIPPAuthentication', 'Invoke-CippWebhookProcessing', 'Invoke-ListFunctionParameters', 'New-CIPPAPIConfig', 'New-CIPPGraphSubscription'
+
+    if (-not $global:CIPPFunctionParameters) {
+        $CIPPCoreModule = Get-Module -Name CIPPCore
+        if ($CIPPCoreModule) {
+            $ParametersFileJson = Join-Path $CIPPCoreModule.ModuleBase 'lib' 'data' 'function-parameters.json'
+
+            if (Test-Path $ParametersFileJson) {
+                try {
+                    $jsonData = Get-Content -Path $ParametersFileJson -Raw | ConvertFrom-Json -AsHashtable
+                    $global:CIPPFunctionParameters = [System.Collections.Hashtable]::new([StringComparer]::OrdinalIgnoreCase)
+                    foreach ($key in $jsonData.Keys) {
+                        $global:CIPPFunctionParameters[$key] = $jsonData[$key]
+                    }
+                } catch {
+                    Write-Warning "Failed to load function parameters from JSON: $($_.Exception.Message)"
+                }
+            }
+        }
+    }
+
     try {
         if ($Module -eq 'ExchangeOnlineManagement') {
             $ExoRequest = @{
@@ -35,16 +55,33 @@ function Invoke-ListFunctionParameters {
         } else {
             $Functions = Get-Command @CommandQuery | Where-Object { $_.Visibility -eq 'Public' }
         }
+        $HasParameterCache = $global:CIPPFunctionParameters -and $global:CIPPFunctionParameters.Count -gt 0
         $Results = foreach ($Function in $Functions) {
             if ($Function -in $TemporaryBlacklist) { continue }
-            $GetHelp = @{
-                Name = $Function
+
+            $Help = $null
+            $ParamsHelp = $null
+
+            if ($Module -ne 'ExchangeOnlineManagement' -and $HasParameterCache -and $Function.Name -and $global:CIPPFunctionParameters.ContainsKey($Function.Name)) {
+                $CachedFunction = $global:CIPPFunctionParameters[$Function.Name]
+                $Help = [PSCustomObject]@{
+                    Functionality = $CachedFunction['Functionality']
+                    Synopsis      = $CachedFunction['Synopsis']
+                }
+                $ParamsHelp = @($CachedFunction['Parameters']) | Select-Object Name, @{n = 'description'; exp = { $_['Description'] } }
+            } elseif ($Module -ne 'ExchangeOnlineManagement' -and $HasParameterCache) {
+                continue
+            } else {
+                $GetHelp = @{
+                    Name = $Function
+                }
+                if ($Module -eq 'ExchangeOnlineManagement') {
+                    $GetHelp.Path = 'ExchangeOnlineHelp'
+                }
+                $Help = Get-Help @GetHelp
+                $ParamsHelp = ($Help | Select-Object -ExpandProperty parameters).parameter | Select-Object name, @{n = 'description'; exp = { $_.description.Text } }
             }
-            if ($Module -eq 'ExchangeOnlineManagement') {
-                $GetHelp.Path = 'ExchangeOnlineHelp'
-            }
-            $Help = Get-Help @GetHelp
-            $ParamsHelp = ($Help | Select-Object -ExpandProperty parameters).parameter | Select-Object name, @{n = 'description'; exp = { $_.description.Text } }
+
             if ($Help.Functionality -in $IgnoreList) { continue }
             if ($Help.Functionality -match 'Entrypoint') { continue }
             $Parameters = foreach ($Key in $Function.Parameters.Keys) {
@@ -55,7 +92,7 @@ function Invoke-ListFunctionParameters {
                         Name        = $Key
                         Type        = $Param.ParameterType.FullName
                         Description = $ParamHelp.description
-                        Required    = $Param.Attributes.Mandatory
+                        Required    = [bool]$Param.Attributes.Mandatory
                     }
                 }
             }

@@ -22,7 +22,8 @@ function Set-CIPPFeatureFlag {
 
     try {
         # Get feature flags from JSON to validate
-        $FeatureFlagsPath = Join-Path -Path $PSScriptRoot -ChildPath '../lib/data/FeatureFlags.json'
+        $ModuleBase = Get-Module -Name CIPPCore | Select-Object -ExpandProperty ModuleBase
+        $FeatureFlagsPath = Join-Path $ModuleBase 'lib/data/FeatureFlags.json'
         $FeatureFlags = Get-Content -Path $FeatureFlagsPath -Raw | ConvertFrom-Json
 
         # Find the requested feature flag in JSON

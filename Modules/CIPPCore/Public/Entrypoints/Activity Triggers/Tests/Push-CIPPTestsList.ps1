@@ -19,7 +19,7 @@ function Push-CIPPTestsList {
         Write-Information "Building test list for tenant: $TenantFilter"
 
         # Get all test functions
-        $AllTests = Get-Command -Name 'Invoke-CippTest*' -Module CIPPCore | Select-Object -ExpandProperty Name | ForEach-Object {
+        $AllTests = Get-Command -Name 'Invoke-CippTest*' -Module CIPPTests | Select-Object -ExpandProperty Name | ForEach-Object {
             $_ -replace '^Invoke-CippTest', ''
         }
 

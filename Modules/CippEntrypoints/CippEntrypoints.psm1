@@ -1,5 +1,22 @@
 using namespace System.Net
 
+# Used to lazy load the extra CIPP modules that are not needed for HTTP triggers so coldstarts are faster.
+function Initialize-CIPPModules {
+    $Modules = @('CIPPAlerts', 'CIPPStandards', 'CIPPTests', 'CIPPDB')
+    foreach ($Module in $Modules) {
+        if (-not (Get-Module -Name $Module)) {
+            try {
+                Import-Module $Module -Force -ErrorAction Stop
+                Write-Debug "Successfully imported module: $Module"
+            } catch {
+                Write-Warning "Failed to import module: $Module. Error: $_"
+            }
+        } else {
+            Write-Debug "Module already available: $Module"
+        }
+    }
+}
+
 function Receive-CippHttpTrigger {
     <#
     .SYNOPSIS
@@ -175,11 +192,21 @@ function Receive-CippQueueTrigger {
     #>
     param($QueueItem, $TriggerMetadata)
 
+    Initialize-CIPPModules
+
     Write-Information '####### Starting CIPP Queue Trigger'
     $QueueItem = $QueueItem | ConvertTo-Json -Depth 10 | ConvertFrom-Json
     Set-Location (Get-Item $PSScriptRoot).Parent.Parent.FullName
 
     if (Get-Command -Name $QueueItem.Cmdlet -Module CIPPCore -ErrorAction SilentlyContinue) {
+        Write-Information "Executing command: $($QueueItem.Cmdlet) with parameters: $($QueueItem.Parameters | ConvertTo-Json -Depth 10 -Compress)"
+    } elseif (Get-Command -Name $QueueItem.Cmdlet -Module CIPPStandards -ErrorAction SilentlyContinue) {
+        Write-Information "Executing command: $($QueueItem.Cmdlet) with parameters: $($QueueItem.Parameters | ConvertTo-Json -Depth 10 -Compress)"
+    } elseif (Get-Command -Name $QueueItem.Cmdlet -Module CIPPAlerts -ErrorAction SilentlyContinue) {
+        Write-Information "Executing command: $($QueueItem.Cmdlet) with parameters: $($QueueItem.Parameters | ConvertTo-Json -Depth 10 -Compress)"
+    } elseif (Get-Command -Name $QueueItem.Cmdlet -Module CIPPTests -ErrorAction SilentlyContinue) {
+        Write-Information "Executing command: $($QueueItem.Cmdlet) with parameters: $($QueueItem.Parameters | ConvertTo-Json -Depth 10 -Compress)"
+    } elseif (Get-Command -Name $QueueItem.Cmdlet -Module CIPPDB -ErrorAction SilentlyContinue) {
         Write-Information "Executing command: $($QueueItem.Cmdlet) with parameters: $($QueueItem.Parameters | ConvertTo-Json -Depth 10 -Compress)"
     } else {
         Write-Warning "Command not found: $($QueueItem.Cmdlet). Skipping execution."
@@ -214,6 +241,9 @@ function Receive-CippOrchestrationTrigger {
         Entrypoint
     #>
     param($Context)
+
+    Initialize-CIPPModules
+
     Write-Debug "CIPP_ACTION=$($Item.Command ?? $Item.FunctionName)"
     try {
         if (Test-Json -Json $Context.Input) {
@@ -356,6 +386,9 @@ function Receive-CippActivityTrigger {
         Entrypoint
     #>
     param($Item)
+
+    Initialize-CIPPModules
+
     Write-Debug "CIPP_ACTION=$($Item.Command ?? $Item.FunctionName)"
     Write-Warning "Hey Boo, the activity function is running. Here's some info: $($Item | ConvertTo-Json -Depth 10 -Compress)"
     try {
@@ -484,6 +517,8 @@ function Receive-CIPPTimerTrigger {
         Entrypoint
     #>
     param($Timer)
+
+    Initialize-CIPPModules
 
     $UtcNow = (Get-Date).ToUniversalTime()
 

@@ -15,7 +15,7 @@ function Push-CIPPTest {
     try {
         $FunctionName = "Invoke-CippTest$TestId"
 
-        if (-not (Get-Command $FunctionName -ErrorAction SilentlyContinue)) {
+        if (-not (Get-Command $FunctionName -Module CIPPTests -ErrorAction SilentlyContinue)) {
             Write-LogMessage -API 'Tests' -tenant $TenantFilter -message "Test function not found: $FunctionName" -sev Error
             return @{ testRun = $false }
         }

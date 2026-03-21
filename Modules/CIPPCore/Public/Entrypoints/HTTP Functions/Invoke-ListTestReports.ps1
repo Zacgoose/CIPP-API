@@ -17,7 +17,7 @@ function Invoke-ListTestReports {
 
     try {
         # Get reports from JSON files in test folders
-        $FileReports = Get-ChildItem 'Modules\CIPPCore\Public\Tests\*\report.json' -ErrorAction SilentlyContinue | ForEach-Object {
+        $FileReports = Get-ChildItem 'Modules\CIPPTests\Public\Tests\*\report.json' -ErrorAction SilentlyContinue | ForEach-Object {
             try {
                 $ReportContent = Get-Content $_.FullName -Raw | ConvertFrom-Json
                 $FolderName = $_.Directory.Name

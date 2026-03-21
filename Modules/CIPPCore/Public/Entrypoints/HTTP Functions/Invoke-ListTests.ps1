@@ -30,7 +30,7 @@ function Invoke-ListTests {
         $DevicesTests = @()
 
         if ($ReportId) {
-            $ReportJsonFiles = Get-ChildItem 'Modules\CIPPCore\Public\Tests\*\report.json' -ErrorAction SilentlyContinue
+            $ReportJsonFiles = Get-ChildItem 'Modules\CIPPTests\Public\Tests\*\report.json' -ErrorAction SilentlyContinue
             $ReportFound = $false
 
             $MatchingReport = $ReportJsonFiles | Where-Object { $_.Directory.Name.ToLower() -eq $ReportId.ToLower() } | Select-Object -First 1
@@ -97,7 +97,7 @@ function Invoke-ListTests {
 
         # Add descriptions from markdown files to each test result
         foreach ($TestResult in $TestResultsData.TestResults) {
-            $MdFile = Get-ChildItem -Path 'Modules\CIPPCore\Public\Tests' -Filter "*$($TestResult.RowKey).md" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+            $MdFile = Get-ChildItem -Path 'Modules\CIPPTests\Public\Tests' -Filter "*$($TestResult.RowKey).md" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
             if ($MdFile) {
                 try {
                     $MdContent = Get-Content $MdFile.FullName -Raw -ErrorAction SilentlyContinue

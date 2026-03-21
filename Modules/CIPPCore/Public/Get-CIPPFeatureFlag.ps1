@@ -18,7 +18,8 @@ function Get-CIPPFeatureFlag {
 
     try {
         # Get feature flags from JSON
-        $FeatureFlagsPath = Join-Path -Path $PSScriptRoot -ChildPath '../lib/data/FeatureFlags.json'
+        $ModuleBase = Get-Module -Name CIPPCore | Select-Object -ExpandProperty ModuleBase
+        $FeatureFlagsPath = Join-Path $ModuleBase 'lib/data/FeatureFlags.json'
         $FeatureFlags = Get-Content -Path $FeatureFlagsPath -Raw | ConvertFrom-Json
 
         # Get all table flags once

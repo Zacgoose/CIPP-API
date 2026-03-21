@@ -1,6 +1,6 @@
 @{
     # Script module or binary module file associated with this manifest.
-    RootModule        = '.\CIPPCore.psm1'
+    RootModule        = '.\CIPPDB.psm1'
 
     # Version number of this module.
     ModuleVersion     = '1.0'
@@ -9,7 +9,7 @@
     # CompatiblePSEditions = @()
 
     # ID used to uniquely identify this module
-    GUID              = '2476a019-6cac-4672-993d-ad935d756513'
+    GUID              = '067ffdb9-b93f-46a1-8652-615c6bd9265e'
 
     # Author of this module
     Author            = 'Kelvin Tegelaar - Kelvin@cyberdrain.com'
@@ -45,7 +45,7 @@
     # RequiredModules = @()
 
     # Assemblies that must be loaded prior to importing this module
-    RequiredAssemblies = @('lib\NCrontab.Advanced.dll')
+    # RequiredAssemblies = @()
 
     # Script files (.ps1) that are run in the caller's environment prior to importing this module.
     # ScriptsToProcess = @()
