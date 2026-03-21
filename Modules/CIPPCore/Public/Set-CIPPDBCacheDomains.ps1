@@ -19,7 +19,20 @@ function Set-CIPPDBCacheDomains {
     try {
         Write-LogMessage -API 'CIPPDBCache' -tenant $TenantFilter -message 'Caching domains' -sev Debug
         $Domains = New-GraphGetRequest -uri 'https://graph.microsoft.com/beta/domains' -tenantid $TenantFilter
-        Add-CIPPDbItem -TenantFilter $TenantFilter -Type 'Domains' -Data @($Domains)
+
+        # Normalize cache partition key to defaultDomainName so readers can query consistently.
+        $CacheTenantFilter = $TenantFilter
+        try {
+            $Tenant = Get-Tenants -TenantFilter $TenantFilter -IncludeAll
+            if ($Tenant -and $Tenant.defaultDomainName) {
+                $CacheTenantFilter = $Tenant.defaultDomainName
+            }
+        } catch {
+            # Fallback to provided tenant filter if tenant lookup fails
+            $CacheTenantFilter = $TenantFilter
+        }
+
+        Add-CIPPDbItem -TenantFilter $CacheTenantFilter -Type 'Domains' -Data @($Domains)
         $Domains = $null
 
         Write-LogMessage -API 'CIPPDBCache' -tenant $TenantFilter -message 'Cached domains successfully' -sev Debug

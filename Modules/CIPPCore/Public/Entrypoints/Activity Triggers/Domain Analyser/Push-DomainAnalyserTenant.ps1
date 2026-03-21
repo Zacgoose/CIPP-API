@@ -22,6 +22,9 @@ function Push-DomainAnalyserTenant {
         try {
             # Get domains from cached database instead of making Graph API calls
             $Domains = New-CIPPDbRequest -TenantFilter $Tenant.defaultDomainName -Type 'Domains'
+            if (-not $Domains -and $Tenant.customerId) {
+                $Domains = New-CIPPDbRequest -TenantFilter $Tenant.customerId -Type 'Domains'
+            }
 
             if (-not $Domains) {
                 Write-LogMessage -API 'DomainAnalyser' -tenant $Tenant.defaultDomainName -tenantid $Tenant.customerId -message 'No cached domain data found. Domain analysis will be skipped until data collection completes.' -sev Info

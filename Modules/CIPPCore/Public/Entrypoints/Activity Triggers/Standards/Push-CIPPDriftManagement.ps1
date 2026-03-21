@@ -38,41 +38,45 @@ function Push-CippDriftManagement {
 
             # Check if notifications are disabled (default to false if not set)
             if (-not $Settings.driftAlertDisableEmail) {
-                # Send email alert if configured
-                $CIPPAlert = @{
-                    Type         = 'email'
-                    Title        = $GenerateEmail.title
-                    HTMLContent  = $GenerateEmail.htmlcontent
-                    TenantFilter = $Item.Tenant
+                if ($Settings.driftAlertDisableNoLicenseAlerts -and ((ConvertTo-Json -InputObject $Data -Depth 5 -Compress) -match 'License Missing:')) {
+                    Write-Information "Skipping drift alerts for tenant $($Item.Tenant) because no-license alerts are disabled and alert data contains license-missing entries."
+                } else {
+                    # Send email alert if configured
+                    $CIPPAlert = @{
+                        Type         = 'email'
+                        Title        = $GenerateEmail.title
+                        HTMLContent  = $GenerateEmail.htmlcontent
+                        TenantFilter = $Item.Tenant
+                    }
+                    Write-Information "Sending email alert for tenant $($Item.Tenant)"
+                    Send-CIPPAlert @CIPPAlert -altEmail $email
+
+                    # Send webhook alert if configured
+                    $WebhookData = @{
+                        Title      = $GenerateEmail.title
+                        ActionUrl  = $GenerateEmail.ButtonUrl
+                        ActionText = $GenerateEmail.ButtonText
+                        AlertData  = $Data
+                        Tenant     = $Item.Tenant
+                    } | ConvertTo-Json -Depth 5 -Compress
+                    $CippAlert = @{
+                        Type         = 'webhook'
+                        Title        = $GenerateEmail.title
+                        JSONContent  = $WebhookData
+                        TenantFilter = $Item.Tenant
+                    }
+                    Write-Information "Sending webhook alert for tenant $($Item.Tenant)"
+                    Send-CIPPAlert @CippAlert -altWebhook $webhook
+
+                    # Send PSA alert
+                    $CIPPAlert = @{
+                        Type         = 'psa'
+                        Title        = $GenerateEmail.title
+                        HTMLContent  = $GenerateEmail.htmlcontent
+                        TenantFilter = $Item.Tenant
+                    }
+                    Send-CIPPAlert @CIPPAlert
                 }
-                Write-Information "Sending email alert for tenant $($Item.Tenant)"
-                Send-CIPPAlert @CIPPAlert -altEmail $email
-                
-                # Send webhook alert if configured
-                $WebhookData = @{
-                    Title      = $GenerateEmail.title
-                    ActionUrl  = $GenerateEmail.ButtonUrl
-                    ActionText = $GenerateEmail.ButtonText
-                    AlertData  = $Data
-                    Tenant     = $Item.Tenant
-                } | ConvertTo-Json -Depth 5 -Compress
-                $CippAlert = @{
-                    Type         = 'webhook'
-                    Title        = $GenerateEmail.title
-                    JSONContent  = $WebhookData
-                    TenantFilter = $Item.Tenant
-                }
-                Write-Information "Sending webhook alert for tenant $($Item.Tenant)"
-                Send-CIPPAlert @CippAlert -altWebhook $webhook
-                
-                # Send PSA alert
-                $CIPPAlert = @{
-                    Type         = 'psa'
-                    Title        = $GenerateEmail.title
-                    HTMLContent  = $GenerateEmail.htmlcontent
-                    TenantFilter = $Item.Tenant
-                }
-                Send-CIPPAlert @CIPPAlert
             } else {
                 Write-Information "All notifications disabled for tenant $($Item.Tenant)"
             }

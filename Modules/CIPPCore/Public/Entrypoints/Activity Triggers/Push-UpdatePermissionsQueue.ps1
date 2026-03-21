@@ -30,8 +30,8 @@ function Push-UpdatePermissionsQueue {
 
         # Check for permission failures (excluding service principal creation failures)
         $AllResults = @($AppResults) + @($DelegatedResults)
-        $PermissionFailures = $AllResults | Where-Object { 
-            $_ -like '*Failed*' -and 
+        $PermissionFailures = $AllResults | Where-Object {
+            $_ -like '*Failed*' -and
             $_ -notlike '*Failed to create service principal*'
         }
 
@@ -68,6 +68,15 @@ function Push-UpdatePermissionsQueue {
             $UpdatedTenant = Get-Tenants -TenantFilter $Item.customerId -TriggerRefresh
             if ($UpdatedTenant.defaultDomainName) {
                 Write-Information "Updated tenant domains $($UpdatedTenant.defaultDomainName)"
+            }
+        }
+
+        if ($Item.RunAccessCheck -eq $true -and $Item.defaultDomainName -ne 'PartnerTenant') {
+            try {
+                Write-Information "Running post-update access check for $($Item.displayName)"
+                $null = Test-CIPPAccessTenant -Tenant $Item.customerId
+            } catch {
+                Write-Warning "Post-update access check failed for $($Item.displayName): $($_.Exception.Message)"
             }
         }
     } catch {

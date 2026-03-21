@@ -47,6 +47,29 @@ function Test-CIPPAccessTenant {
         $TenantParams.TenantFilter = $Tenant
         $Tenant = Get-Tenants @TenantParams
 
+        $RequiredAppRoleIds = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+        $RequiredAppRoleNames = @{}
+        $RequiredDelegatedScopes = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+        try {
+            $SamPermissions = Get-CippSamPermissions -SavedOnly
+            foreach ($ResourceAppId in @($SamPermissions.Permissions.PSObject.Properties.Name)) {
+                foreach ($AppPermission in @($SamPermissions.Permissions.$ResourceAppId.applicationPermissions)) {
+                    if ($AppPermission.id -and [string]$AppPermission.id -match '^[a-f0-9]{8}-([a-f0-9]{4}-){3}[a-f0-9]{12}$') {
+                        $null = $RequiredAppRoleIds.Add([string]$AppPermission.id)
+                        if (!$RequiredAppRoleNames.ContainsKey([string]$AppPermission.id)) {
+                            $RequiredAppRoleNames[[string]$AppPermission.id] = [string]($AppPermission.value ?? $AppPermission.id)
+                        }
+                    }
+                }
+                foreach ($DelegatedPermission in @($SamPermissions.Permissions.$ResourceAppId.delegatedPermissions)) {
+                    if ($DelegatedPermission.value) {
+                        $null = $RequiredDelegatedScopes.Add([string]$DelegatedPermission.value)
+                    }
+                }
+            }
+        } catch {
+        }
+
         $GraphStatus = $false
         $ExchangeStatus = $false
 
@@ -60,6 +83,10 @@ function Test-CIPPAccessTenant {
             MissingRoles              = ''
             OrgManagementRoles        = @()
             OrgManagementRolesMissing = @()
+            CPVPermissionsStatus      = $null
+            CPVPermissionsTest        = 'CPV permission drift check not run'
+            CPVMissingApplicationPermissions = @()
+            CPVMissingDelegatedPermissions   = @()
             LastRun                   = (Get-Date).ToUniversalTime()
         }
 
@@ -162,6 +189,74 @@ function Test-CIPPAccessTenant {
         $Results.ExchangeTest = $ExchangeTest
         $Results.GDAPRoles = @($GDAPRoles)
         $Results.MissingRoles = @($MissingRoles)
+
+        if ($Tenant.defaultDomainName -ne 'PartnerTenant') {
+            try {
+                $TenantSp = New-GraphGetRequest -uri ("https://graph.microsoft.com/beta/servicePrincipals(appId='{0}')?`$select=id,appId,displayName" -f $env:ApplicationID) -tenantid $Tenant.customerId -AsApp $true -NoAuthCheck $true
+                if (!$TenantSp -or !$TenantSp.id) {
+                    $Results.CPVPermissionsStatus = $false
+                    $Results.CPVPermissionsTest = 'CIPP-SAM service principal is missing in tenant'
+                } else {
+                    $AppRoleAssignmentsResponse = New-GraphGetRequest -uri ("https://graph.microsoft.com/beta/servicePrincipals/{0}/appRoleAssignments?`$top=999" -f $TenantSp.id) -tenantid $Tenant.customerId -AsApp $true -NoAuthCheck $true
+                    $AppRoleAssignments = @($AppRoleAssignmentsResponse)
+                    $AssignedRoleIds = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+                    foreach ($Assignment in $AppRoleAssignments) {
+                        if ($Assignment.appRoleId) {
+                            $null = $AssignedRoleIds.Add([string]$Assignment.appRoleId)
+                        }
+                    }
+
+                    $MissingAppRoleDetected = $false
+                    $MissingAppRoleList = [System.Collections.Generic.List[string]]::new()
+                    foreach ($RequiredRoleId in $RequiredAppRoleIds) {
+                        if (!$AssignedRoleIds.Contains([string]$RequiredRoleId)) {
+                            $MissingAppRoleDetected = $true
+                            $MissingRoleName = $RequiredAppRoleNames[[string]$RequiredRoleId]
+                            $MissingAppRoleList.Add([string]($MissingRoleName ?? $RequiredRoleId)) | Out-Null
+                        }
+                    }
+
+                    $OAuth2PermissionGrantsResponse = New-GraphGetRequest -uri ("https://graph.microsoft.com/beta/oauth2PermissionGrants?`$filter=clientId eq '{0}' and consentType eq 'AllPrincipals'&`$top=999" -f $TenantSp.id) -tenantid $Tenant.customerId -AsApp $true -NoAuthCheck $true
+                    $OAuth2PermissionGrants = @($OAuth2PermissionGrantsResponse)
+
+                    $GrantedScopes = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+                    foreach ($Grant in $OAuth2PermissionGrants) {
+                        foreach ($Scope in @($Grant.scope -split ' ' | Where-Object { $_ })) {
+                            $null = $GrantedScopes.Add([string]$Scope)
+                        }
+                    }
+
+                    $MissingDelegatedScopeDetected = $false
+                    $MissingDelegatedScopeList = [System.Collections.Generic.List[string]]::new()
+                    foreach ($RequiredScope in $RequiredDelegatedScopes) {
+                        if (!$GrantedScopes.Contains([string]$RequiredScope)) {
+                            $MissingDelegatedScopeDetected = $true
+                            $MissingDelegatedScopeList.Add([string]$RequiredScope) | Out-Null
+                        }
+                    }
+
+                    $Results.CPVMissingApplicationPermissions = @($MissingAppRoleList)
+                    $Results.CPVMissingDelegatedPermissions = @($MissingDelegatedScopeList)
+
+                    if ($MissingAppRoleDetected -or $MissingDelegatedScopeDetected) {
+                        $Results.CPVPermissionsStatus = $false
+                        if ($MissingAppRoleDetected -and $MissingDelegatedScopeDetected) {
+                            $Results.CPVPermissionsTest = 'Missing one or more required application and delegated permissions'
+                        } elseif ($MissingAppRoleDetected) {
+                            $Results.CPVPermissionsTest = 'Missing one or more required application permissions'
+                        } else {
+                            $Results.CPVPermissionsTest = 'Missing one or more required delegated permissions'
+                        }
+                    } else {
+                        $Results.CPVPermissionsStatus = $true
+                        $Results.CPVPermissionsTest = 'CIPP-SAM permissions are valid'
+                    }
+                }
+            } catch {
+                $Results.CPVPermissionsStatus = $false
+                $Results.CPVPermissionsTest = "CPV permission drift check failed: $($_.Exception.Message)"
+            }
+        }
 
         $Headers = $Headers.UserDetails
         $Entity = @{
