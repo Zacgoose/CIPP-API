@@ -118,9 +118,7 @@ function Invoke-CIPPRestMethod {
                 $EffectiveContentType = if ($ContentType) { $ContentType } else { 'application/json' }
                 $EffectiveMediaType = ($EffectiveContentType -split ';', 2)[0].Trim()
                 $Request.Content = [System.Net.Http.StringContent]::new($BodyText, [System.Text.Encoding]::UTF8, $EffectiveMediaType)
-                if ($ContentType) {
-                    $Request.Content.Headers.ContentType = [System.Net.Http.Headers.MediaTypeHeaderValue]::Parse($EffectiveContentType)
-                }
+                $Request.Content.Headers.ContentType = [System.Net.Http.Headers.MediaTypeHeaderValue]::Parse($EffectiveContentType)
             }
         }
 
