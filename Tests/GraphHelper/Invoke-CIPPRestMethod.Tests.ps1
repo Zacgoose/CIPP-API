@@ -29,4 +29,11 @@ Describe 'Invoke-CIPPRestMethod' {
             $ResponseHeadersVariable -eq 'responseHeaders' -and $StatusCodeVariable -eq 'responseStatus'
         }
     }
+
+    It 'uses HttpClient mode by default instead of Invoke-RestMethod' {
+        Mock Invoke-RestMethod { throw 'Should not be called' }
+
+        { Invoke-CIPPRestMethod -Uri 'mailto:test@example.com' } | Should -Throw
+        Should -Invoke Invoke-RestMethod -Times 0
+    }
 }

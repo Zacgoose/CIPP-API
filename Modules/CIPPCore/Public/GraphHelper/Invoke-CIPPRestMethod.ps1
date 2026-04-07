@@ -9,7 +9,7 @@ function Invoke-CIPPRestMethod {
         [Alias('Url')]
         [uri]$Uri,
 
-        [ValidateSet('GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS', 'TRACE')]
+        [ValidateSet('GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS')]
         [string]$Method = 'GET',
 
         [object]$Body,
@@ -56,19 +56,40 @@ function Invoke-CIPPRestMethod {
         $RestMethodParams['StatusCodeVariable'] = $StatusCodeVariable
     }
 
+    if ($TimeoutSec -gt 0) {
+        $RestMethodParams['TimeoutSec'] = $TimeoutSec
+    }
+
     if ($UseLegacyInvokeRestMethod) {
         return Invoke-RestMethod @RestMethodParams
     }
 
     if (-not $script:CIPPHttpClient) {
-        $Handler = [System.Net.Http.SocketsHttpHandler]::new()
-        $Handler.AutomaticDecompression = [System.Net.DecompressionMethods]::All
-        $script:CIPPHttpClient = [System.Net.Http.HttpClient]::new($Handler)
+        if (-not $script:CIPPHttpClientLock) {
+            $script:CIPPHttpClientLock = [System.Threading.SemaphoreSlim]::new(1, 1)
+        }
+
+        $null = $script:CIPPHttpClientLock.Wait()
+        try {
+            if (-not $script:CIPPHttpClient) {
+                $Handler = [System.Net.Http.SocketsHttpHandler]::new()
+                $Handler.AutomaticDecompression = [System.Net.DecompressionMethods]::All
+                $script:CIPPHttpClient = [System.Net.Http.HttpClient]::new($Handler)
+                $script:CIPPHttpClient.Timeout = [System.Threading.Timeout]::InfiniteTimeSpan
+            }
+        } finally {
+            $null = $script:CIPPHttpClientLock.Release()
+        }
     }
 
     $Request = [System.Net.Http.HttpRequestMessage]::new([System.Net.Http.HttpMethod]::new($Method), $Uri)
     $Response = $null
-    $Timeout = [System.Threading.CancellationTokenSource]::new([TimeSpan]::FromSeconds([Math]::Max(1, $TimeoutSec)))
+    $TimeoutCancellation = $null
+    $CancellationToken = [System.Threading.CancellationToken]::None
+    if ($TimeoutSec -gt 0) {
+        $TimeoutCancellation = [System.Threading.CancellationTokenSource]::new([TimeSpan]::FromSeconds($TimeoutSec))
+        $CancellationToken = $TimeoutCancellation.Token
+    }
 
     try {
         $DeferredContentHeaders = @{}
@@ -97,7 +118,7 @@ function Invoke-CIPPRestMethod {
             $null = $Request.Content.Headers.TryAddWithoutValidation($Key, $DeferredContentHeaders[$Key])
         }
 
-        $Response = $script:CIPPHttpClient.SendAsync($Request, $Timeout.Token).GetAwaiter().GetResult()
+        $Response = $script:CIPPHttpClient.SendAsync($Request, $CancellationToken).GetAwaiter().GetResult()
         $StatusCode = [int]$Response.StatusCode
         $Content = if ($Response.Content) { $Response.Content.ReadAsStringAsync().GetAwaiter().GetResult() } else { $null }
 
@@ -119,15 +140,16 @@ function Invoke-CIPPRestMethod {
         }
 
         if (-not $SkipHttpErrorCheck -and -not $Response.IsSuccessStatusCode) {
-            throw "Response status code does not indicate success: $StatusCode. Response body: $Content"
+            throw "Response status code does not indicate success: $StatusCode"
         }
 
         if ([string]::IsNullOrWhiteSpace($Content)) {
             return $null
         }
 
+        $TrimmedContent = $Content.TrimStart()
         $MediaType = if ($Response.Content.Headers.ContentType) { $Response.Content.Headers.ContentType.MediaType } else { '' }
-        if ($MediaType -like 'application/json*' -or $Content.TrimStart().StartsWith('{') -or $Content.TrimStart().StartsWith('[')) {
+        if ($MediaType -like 'application/json*' -or $TrimmedContent.StartsWith('{') -or $TrimmedContent.StartsWith('[')) {
             try {
                 return $Content | ConvertFrom-Json
             } catch {
@@ -141,6 +163,8 @@ function Invoke-CIPPRestMethod {
             $Response.Dispose()
         }
         $Request.Dispose()
-        $Timeout.Dispose()
+        if ($TimeoutCancellation) {
+            $TimeoutCancellation.Dispose()
+        }
     }
 }
