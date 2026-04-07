@@ -102,7 +102,8 @@ function Invoke-CIPPRestMethod {
 
         if ($PSBoundParameters.ContainsKey('Body')) {
             $RequestBody = $Body
-            $UseFormUrlEncoding = ($RequestBody -is [System.Collections.IDictionary]) -and (-not $ContentType -or $ContentType -like 'application/x-www-form-urlencoded*')
+            $IsFormContentType = -not $ContentType -or $ContentType -like 'application/x-www-form-urlencoded*'
+            $UseFormUrlEncoding = ($RequestBody -is [System.Collections.IDictionary]) -and $IsFormContentType
             if ($UseFormUrlEncoding) {
                 $FormPairs = [System.Collections.Generic.List[System.Collections.Generic.KeyValuePair[string, string]]]::new()
                 foreach ($Entry in $RequestBody.GetEnumerator()) {
