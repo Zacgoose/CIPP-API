@@ -116,7 +116,11 @@ function Invoke-CIPPRestMethod {
                 }
                 $BodyText = if ($null -eq $RequestBody) { '' } else { [string]$RequestBody }
                 $EffectiveContentType = if ($ContentType) { $ContentType } else { 'application/json' }
-                $Request.Content = [System.Net.Http.StringContent]::new($BodyText, [System.Text.Encoding]::UTF8, $EffectiveContentType)
+                $EffectiveMediaType = ($EffectiveContentType -split ';', 2)[0].Trim()
+                $Request.Content = [System.Net.Http.StringContent]::new($BodyText, [System.Text.Encoding]::UTF8, $EffectiveMediaType)
+                if ($ContentType) {
+                    $Request.Content.Headers.ContentType = [System.Net.Http.Headers.MediaTypeHeaderValue]::Parse($EffectiveContentType)
+                }
             }
         }
 

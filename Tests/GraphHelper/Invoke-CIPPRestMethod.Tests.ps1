@@ -63,4 +63,19 @@ Describe 'Invoke-CIPPRestMethod' {
         $Observed.Body | Should -Match '(^|&)client_id=test-client-id(&|$)'
         $Observed.Body | Should -Match '(^|&)grant_type=refresh_token(&|$)'
     }
+
+    It 'accepts JSON content type values that include charset parameters in HttpClient mode' {
+        $Observed = @{}
+        $script:CIPPHttpClient = [pscustomobject]@{}
+        $script:CIPPHttpClient | Add-Member -MemberType ScriptMethod -Name SendAsync -Value {
+            param($Request, $CancellationToken)
+            $Observed.ContentType = $Request.Content.Headers.ContentType.ToString()
+            $Response = [System.Net.Http.HttpResponseMessage]::new([System.Net.HttpStatusCode]::OK)
+            $Response.Content = [System.Net.Http.StringContent]::new('{"ok":true}', [System.Text.Encoding]::UTF8, 'application/json')
+            return [System.Threading.Tasks.Task[System.Net.Http.HttpResponseMessage]]::FromResult($Response)
+        }
+
+        { Invoke-CIPPRestMethod -Uri 'https://example.com/test' -Method 'POST' -Body '{}' -ContentType 'application/json; charset=utf-8' } | Should -Not -Throw
+        $Observed.ContentType | Should -Be 'application/json; charset=utf-8'
+    }
 }
