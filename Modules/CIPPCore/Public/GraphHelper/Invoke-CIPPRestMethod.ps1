@@ -102,12 +102,21 @@ function Invoke-CIPPRestMethod {
 
         if ($PSBoundParameters.ContainsKey('Body')) {
             $RequestBody = $Body
-            if ($RequestBody -isnot [string] -and $ContentType -and $ContentType -like 'application/json*') {
-                $RequestBody = $RequestBody | ConvertTo-Json -Depth 20 -Compress
+            $UseFormUrlEncoding = ($RequestBody -is [System.Collections.IDictionary]) -and (-not $ContentType -or $ContentType -like 'application/x-www-form-urlencoded*')
+            if ($UseFormUrlEncoding) {
+                $FormPairs = [System.Collections.Generic.List[System.Collections.Generic.KeyValuePair[string, string]]]::new()
+                foreach ($Entry in $RequestBody.GetEnumerator()) {
+                    $FormPairs.Add([System.Collections.Generic.KeyValuePair[string, string]]::new([string]$Entry.Key, [string]$Entry.Value))
+                }
+                $Request.Content = [System.Net.Http.FormUrlEncodedContent]::new($FormPairs)
+            } else {
+                if ($RequestBody -isnot [string] -and $ContentType -and $ContentType -like 'application/json*') {
+                    $RequestBody = $RequestBody | ConvertTo-Json -Depth 20 -Compress
+                }
+                $BodyText = if ($null -eq $RequestBody) { '' } else { [string]$RequestBody }
+                $EffectiveContentType = if ($ContentType) { $ContentType } else { 'application/json' }
+                $Request.Content = [System.Net.Http.StringContent]::new($BodyText, [System.Text.Encoding]::UTF8, $EffectiveContentType)
             }
-            $BodyText = if ($null -eq $RequestBody) { '' } else { [string]$RequestBody }
-            $EffectiveContentType = if ($ContentType) { $ContentType } else { 'application/json' }
-            $Request.Content = [System.Net.Http.StringContent]::new($BodyText, [System.Text.Encoding]::UTF8, $EffectiveContentType)
         }
 
         foreach ($Key in $DeferredContentHeaders.Keys) {
