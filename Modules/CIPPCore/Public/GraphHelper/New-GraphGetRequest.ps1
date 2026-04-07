@@ -88,7 +88,7 @@ function New-GraphGetRequest {
                         $Data = Invoke-WebRequest @GraphRequest
                     } else {
                         $GraphRequest.ResponseHeadersVariable = 'ResponseHeaders'
-                        $Data = (Invoke-RestMethod @GraphRequest)
+                        $Data = (Invoke-CIPPRestMethod @GraphRequest)
                         $script:LastGraphResponseHeaders = $ResponseHeaders
                     }
 

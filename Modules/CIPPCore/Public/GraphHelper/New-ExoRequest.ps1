@@ -121,7 +121,7 @@ function New-ExoRequest {
             $Headers.CommandName = '*'
             $URL = "$Resource/adminapi/v1.0/$($tenant.customerId)/EXOModuleFile?Version=$ModuleVersion"
             Write-Verbose "GET [ $URL ]"
-            return (Invoke-RestMethod -Uri $URL -Headers $Headers).value.exportedCmdlets -split ',' | Where-Object { $_ } | Sort-Object
+            return (Invoke-CIPPRestMethod -Uri $URL -Headers $Headers).value.exportedCmdlets -split ',' | Where-Object { $_ } | Sort-Object
         }
 
         if ($PSCmdlet.ParameterSetName -eq 'ExoRequest') {
@@ -140,7 +140,7 @@ function New-ExoRequest {
                         ContentType = 'application/json; charset=utf-8'
                     }
 
-                    $Return = Invoke-RestMethod @ExoRequestParams -ResponseHeadersVariable ResponseHeaders
+                    $Return = Invoke-CIPPRestMethod @ExoRequestParams -ResponseHeadersVariable ResponseHeaders
                     $URL = $Return.'@odata.nextLink'
                     $Return
                 } until ($null -eq $URL)
