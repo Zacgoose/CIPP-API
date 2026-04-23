@@ -44,7 +44,12 @@ function Push-CIPPDBCacheApplyBatch {
         # Group tasks by tenant; one sub-orchestrator per TenantFilter
         $TasksByTenant = $AllTasks | Group-Object -Property TenantFilter
         $ChildOrchestrators = foreach ($Group in $TasksByTenant) {
-            $TenantKey = if ([string]::IsNullOrWhiteSpace($Group.Name)) { 'Unknown' } else { $Group.Name }
+            if ([string]::IsNullOrWhiteSpace($Group.Name)) {
+                Write-Warning "DBCache apply batch: $($Group.Count) task(s) had no TenantFilter and were grouped under 'Unknown'"
+                $TenantKey = 'Unknown'
+            } else {
+                $TenantKey = $Group.Name
+            }
             [PSCustomObject]@{
                 OrchestratorName = "CIPPDBCacheExecute-$TenantKey"
                 Batch            = @($Group.Group)

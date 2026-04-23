@@ -268,7 +268,7 @@ function Receive-CippOrchestrationTrigger {
 
             $SubTasks = foreach ($ChildInput in $ChildInputs) {
                 try {
-                    $ChildInputJson = $ChildInput | ConvertTo-Json -Depth 20 -Compress
+                    $ChildInputJson = $ChildInput | ConvertTo-Json -Depth 10 -Compress
                     Invoke-DurableSubOrchestrator -FunctionName 'CIPPOrchestrator' -Input $ChildInputJson -NoWait -ErrorAction Stop
                 } catch {
                     Write-Warning "Failed to start sub-orchestrator '$($ChildInput.OrchestratorName)': $($_.Exception.Message)"
@@ -282,6 +282,8 @@ function Receive-CippOrchestrationTrigger {
                 Write-Information "Waiting for ($($SubTasks.Count)) sub-orchestration(s) to complete..."
                 foreach ($Task in $SubTasks) {
                     try {
+                        # Wait-ActivityFunction is an alias for Wait-DurableTask in the SDK 2.2.0
+                        # and works for both activity and sub-orchestrator invocation tasks.
                         $SubResult = Wait-ActivityFunction -Task $Task
                         if ($null -ne $SubResult) {
                             $ResultsList.Add($SubResult)
