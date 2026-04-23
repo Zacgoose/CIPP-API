@@ -259,38 +259,21 @@ function Receive-CippOrchestrationTrigger {
 
         $RetryOptions = New-DurableRetryOptions @DurableRetryOptions
 
-        # Coordinator mode: spawn one sub-orchestrator per child input (typically per-tenant)
-        # and wait for all to complete before running PostExecution.
-        # ChildOrchestrators is mutually exclusive with Batch/QueueFunction on the same input.
-        if ($OrchestratorInput.ChildOrchestrators -and ($OrchestratorInput.ChildOrchestrators | Measure-Object).Count -gt 0) {
+        if ($OrchestratorInput.ChildOrchestrators) {
             $ChildInputs = @($OrchestratorInput.ChildOrchestrators)
             Write-Information "Coordinator mode: starting $($ChildInputs.Count) sub-orchestration(s)"
 
             $SubTasks = foreach ($ChildInput in $ChildInputs) {
-                try {
-                    $ChildInputJson = $ChildInput | ConvertTo-Json -Depth 10 -Compress
-                    Invoke-DurableSubOrchestrator -FunctionName 'CIPPOrchestrator' -Input $ChildInputJson -NoWait -ErrorAction Stop
-                } catch {
-                    Write-Warning "Failed to start sub-orchestrator '$($ChildInput.OrchestratorName)': $($_.Exception.Message)"
-                }
+                $ChildInputJson = $ChildInput | ConvertTo-Json -Depth 10 -Compress
+                Invoke-DurableSubOrchestrator -FunctionName 'CIPPOrchestrator' -Input $ChildInputJson -NoWait -ErrorAction Stop
             }
 
-            $SubTasks = @($SubTasks | Where-Object { $null -ne $_ })
-
             $ResultsList = [System.Collections.Generic.List[object]]::new()
-            if ($SubTasks.Count -gt 0) {
-                Write-Information "Waiting for ($($SubTasks.Count)) sub-orchestration(s) to complete..."
-                foreach ($Task in $SubTasks) {
-                    try {
-                        # Wait-ActivityFunction is an alias for Wait-DurableTask in the SDK 2.2.0
-                        # and works for both activity and sub-orchestrator invocation tasks.
-                        $SubResult = Wait-ActivityFunction -Task $Task
-                        if ($null -ne $SubResult) {
-                            $ResultsList.Add($SubResult)
-                        }
-                    } catch {
-                        Write-Warning "Sub-orchestrator failed: $($_.Exception.Message)"
-                    }
+            Write-Information "Waiting for ($($SubTasks.Count)) sub-orchestration(s) to complete..."
+            foreach ($Task in $SubTasks) {
+                $SubResult = Wait-ActivityFunction -Task $Task
+                if ($null -ne $SubResult) {
+                    $ResultsList.Add($SubResult)
                 }
             }
             $Results = $ResultsList
@@ -351,9 +334,7 @@ function Receive-CippOrchestrationTrigger {
             $Results = @()
         }
 
-        $HasCoordinatorChildren = [bool]($OrchestratorInput.ChildOrchestrators -and ($OrchestratorInput.ChildOrchestrators | Measure-Object).Count -gt 0)
-
-        if (($Results -or $HasCoordinatorChildren) -and $OrchestratorInput.PostExecution) {
+        if (($Results -or $OrchestratorInput.ChildOrchestrators) -and $OrchestratorInput.PostExecution) {
             Write-Information "Running post execution function $($OrchestratorInput.PostExecution.FunctionName)"
             $PostExecParams = @{
                 FunctionName = $OrchestratorInput.PostExecution.FunctionName
