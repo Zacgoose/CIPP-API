@@ -1,12 +1,21 @@
 function Push-CIPPDBCacheApplyBatch {
     <#
     .SYNOPSIS
-        Aggregate cache tasks from all tenants and start a flat execution orchestrator (Phase 2)
+        Aggregate cache tasks from all tenants and start a coordinator orchestrator (Phase 2)
 
     .DESCRIPTION
         PostExecution function for the DBCache pipeline. Receives aggregated results from the
-        per-tenant CIPPDBCacheData list activities, flattens them into a single batch, and starts
-        one orchestrator to execute all cache collection tasks across all tenants in parallel.
+        per-tenant CIPPDBCacheData list activities, groups the tasks by TenantFilter, and starts
+        a coordinator orchestrator that spawns one sub-orchestration per tenant to execute that
+        tenant's cache tasks.
+
+        This replaces the previous flat Phase-2 orchestrator (which fanned out every task in a
+        single orchestrator and caused DTFx history/instance/control-queue write storms at scale).
+        Each tenant's sub-orchestrator now owns its own small history partition; the coordinator
+        only tracks N sub-orchestration starts + completions + a single PostExecution.
+
+        The TestRun PostExecution is attached to the coordinator, so it runs exactly once after
+        all per-tenant sub-orchestrators complete.
 
     .FUNCTIONALITY
         Entrypoint
@@ -29,19 +38,31 @@ function Push-CIPPDBCacheApplyBatch {
 
         if ($AllTasks.Count -eq 0) {
             Write-Information 'No cache tasks to execute across all tenants'
-            return @{ Success = $true; TaskCount = 0 }
+            return @{ Success = $true; TaskCount = 0; ChildCount = 0 }
         }
 
-        Write-Information "Aggregated $($AllTasks.Count) cache tasks from all tenants"
+        # Group tasks by tenant; one sub-orchestrator per TenantFilter
+        $TasksByTenant = $AllTasks | Group-Object -Property TenantFilter
+        $ChildOrchestrators = foreach ($Group in $TasksByTenant) {
+            $TenantKey = if ([string]::IsNullOrWhiteSpace($Group.Name)) { 'Unknown' } else { $Group.Name }
+            [PSCustomObject]@{
+                OrchestratorName = "CIPPDBCacheExecute-$TenantKey"
+                Batch            = @($Group.Group)
+                SkipLog          = $true
+            }
+        }
+        $ChildOrchestrators = @($ChildOrchestrators)
 
-        # Start a single flat orchestrator to execute all cache tasks
+        Write-Information "Aggregated $($AllTasks.Count) cache tasks across $($ChildOrchestrators.Count) tenant sub-orchestrator(s)"
+
+        # Build coordinator input
         $InputObject = [PSCustomObject]@{
-            OrchestratorName = 'CIPPDBCacheExecute'
-            Batch            = @($AllTasks)
-            SkipLog          = $true
+            OrchestratorName   = 'CIPPDBCacheCoordinator'
+            ChildOrchestrators = $ChildOrchestrators
+            SkipLog            = $true
         }
 
-        # Add test run post-execution if flagged
+        # Add test run post-execution if flagged — runs once after all sub-orchestrators complete
         if ($Item.Parameters -and $Item.Parameters.TestRun -eq $true -and $Item.Parameters.TenantFilter) {
             $InputObject | Add-Member -NotePropertyName PostExecution -NotePropertyValue @{
                 FunctionName = 'CIPPDBTestsRun'
@@ -52,11 +73,12 @@ function Push-CIPPDBCacheApplyBatch {
         }
 
         $InstanceId = Start-CIPPOrchestrator -InputObject $InputObject
-        Write-Information "Started flat cache execution orchestrator with ID = '$InstanceId' for $($AllTasks.Count) tasks"
+        Write-Information "Started cache coordinator orchestrator ID = '$InstanceId' for $($ChildOrchestrators.Count) tenant(s) / $($AllTasks.Count) total task(s)"
 
         return @{
             Success    = $true
             TaskCount  = $AllTasks.Count
+            ChildCount = $ChildOrchestrators.Count
             InstanceId = $InstanceId
         }
 

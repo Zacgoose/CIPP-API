@@ -258,16 +258,54 @@ function Receive-CippOrchestrationTrigger {
         Write-Information "Durable Mode: $DurableMode"
 
         $RetryOptions = New-DurableRetryOptions @DurableRetryOptions
-        if (!$OrchestratorInput.Batch -or ($OrchestratorInput.Batch | Measure-Object).Count -eq 0 -and $OrchestratorInput.QueueFunction) {
-            $Batch = (Invoke-ActivityFunction -FunctionName 'CIPPActivityFunction' -Input $OrchestratorInput.QueueFunction -ErrorAction Stop) | Where-Object { $null -ne $_.FunctionName }
-        } elseif ($OrchestratorInput.Batch) {
-            $Batch = $OrchestratorInput.Batch | Where-Object { $null -ne $_.FunctionName }
-        } else {
-            Write-Information 'No batch or queue function provided to orchestrator input'
-            $Batch = @()
-        }
 
-        $Batch = @($Batch | Where-Object { $null -ne $_.FunctionName })
+        # Coordinator mode: spawn one sub-orchestrator per child input (typically per-tenant)
+        # and wait for all to complete before running PostExecution.
+        # ChildOrchestrators is mutually exclusive with Batch/QueueFunction on the same input.
+        if ($OrchestratorInput.ChildOrchestrators -and ($OrchestratorInput.ChildOrchestrators | Measure-Object).Count -gt 0) {
+            $ChildInputs = @($OrchestratorInput.ChildOrchestrators)
+            Write-Information "Coordinator mode: starting $($ChildInputs.Count) sub-orchestration(s)"
+
+            $SubTasks = foreach ($ChildInput in $ChildInputs) {
+                try {
+                    $ChildInputJson = $ChildInput | ConvertTo-Json -Depth 20 -Compress
+                    Invoke-DurableSubOrchestrator -FunctionName 'CIPPOrchestrator' -Input $ChildInputJson -NoWait -ErrorAction Stop
+                } catch {
+                    Write-Warning "Failed to start sub-orchestrator '$($ChildInput.OrchestratorName)': $($_.Exception.Message)"
+                }
+            }
+
+            $SubTasks = @($SubTasks | Where-Object { $null -ne $_ })
+
+            $ResultsList = [System.Collections.Generic.List[object]]::new()
+            if ($SubTasks.Count -gt 0) {
+                Write-Information "Waiting for ($($SubTasks.Count)) sub-orchestration(s) to complete..."
+                foreach ($Task in $SubTasks) {
+                    try {
+                        $SubResult = Wait-ActivityFunction -Task $Task
+                        if ($null -ne $SubResult) {
+                            $ResultsList.Add($SubResult)
+                        }
+                    } catch {
+                        Write-Warning "Sub-orchestrator failed: $($_.Exception.Message)"
+                    }
+                }
+            }
+            $Results = $ResultsList
+            $Batch = @()
+        } else {
+            if (!$OrchestratorInput.Batch -or ($OrchestratorInput.Batch | Measure-Object).Count -eq 0 -and $OrchestratorInput.QueueFunction) {
+                $Batch = (Invoke-ActivityFunction -FunctionName 'CIPPActivityFunction' -Input $OrchestratorInput.QueueFunction -ErrorAction Stop) | Where-Object { $null -ne $_.FunctionName }
+            } elseif ($OrchestratorInput.Batch) {
+                $Batch = $OrchestratorInput.Batch | Where-Object { $null -ne $_.FunctionName }
+            } else {
+                Write-Information 'No batch or queue function provided to orchestrator input'
+                $Batch = @()
+            }
+
+            $Batch = @($Batch | Where-Object { $null -ne $_.FunctionName })
+            $Results = $null
+        }
 
         if (($Batch | Measure-Object).Count -gt 0) {
             Write-Information "Batch Count: $($Batch.Count)"
@@ -306,12 +344,14 @@ function Receive-CippOrchestrationTrigger {
             } else {
                 $Results = $Output
             }
-        } else {
+        } elseif ($null -eq $Results) {
             Write-Information 'No activities to execute in batch'
             $Results = @()
         }
 
-        if ($Results -and $OrchestratorInput.PostExecution) {
+        $HasCoordinatorChildren = [bool]($OrchestratorInput.ChildOrchestrators -and ($OrchestratorInput.ChildOrchestrators | Measure-Object).Count -gt 0)
+
+        if (($Results -or $HasCoordinatorChildren) -and $OrchestratorInput.PostExecution) {
             Write-Information "Running post execution function $($OrchestratorInput.PostExecution.FunctionName)"
             $PostExecParams = @{
                 FunctionName = $OrchestratorInput.PostExecution.FunctionName

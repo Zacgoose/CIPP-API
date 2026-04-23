@@ -37,6 +37,46 @@ function Start-CIPPOrchestrator {
     # ─── CIPPNG runtime: push batch directly to OrchestratorService ───
     if ($env:CIPPNG -eq 'true' -and $InputObject) {
         $OrchestratorName = $InputObject.OrchestratorName ?? 'UnnamedOrchestrator'
+
+        # Coordinator mode fallback for NG runtime: queue each child orchestration individually.
+        # The NG bridge does not yet expose a coordinator/wait-all primitive, so if a coordinator-level
+        # PostExecution is set, it is attached to the LAST child as a best-effort. Dependent work should
+        # live inside a single child orchestrator rather than relying on cross-child post-exec ordering.
+        if ($InputObject.ChildOrchestrators) {
+            $Children = @($InputObject.ChildOrchestrators)
+            $ChildCount = $Children.Count
+            Write-Information "CIPP-NG: Queueing coordinator '$OrchestratorName' with $ChildCount child orchestration(s)"
+            if ($InputObject.PostExecution -and $ChildCount -gt 1) {
+                Write-Warning "CIPP-NG fallback: PostExecution '$($InputObject.PostExecution.FunctionName)' will be attached to the last child orchestration only. It will run after that child completes, not after all children."
+            }
+            for ($i = 0; $i -lt $ChildCount; $i++) {
+                $Child = $Children[$i]
+                $ChildName = if ($Child.OrchestratorName) { $Child.OrchestratorName } else { "$OrchestratorName-Child-$i" }
+                $ChildBatchJson = ConvertTo-Json -InputObject @($Child.Batch) -Depth 10 -Compress
+                $ChildPostExecName = $null
+                $ChildPostExecParams = $null
+                if ($Child.PostExecution) {
+                    $ChildPostExecName = $Child.PostExecution.FunctionName
+                    if ($Child.PostExecution.Parameters) {
+                        $ChildPostExecParams = $Child.PostExecution.Parameters | ConvertTo-Json -Depth 10 -Compress
+                    }
+                } elseif ($i -eq ($ChildCount - 1) -and $InputObject.PostExecution) {
+                    $ChildPostExecName = $InputObject.PostExecution.FunctionName
+                    if ($InputObject.PostExecution.Parameters) {
+                        $ChildPostExecParams = $InputObject.PostExecution.Parameters | ConvertTo-Json -Depth 10 -Compress
+                    }
+                }
+                [CIPPASP.Services.OrchestratorBridge]::QueueOrchestration(
+                    $ChildName,
+                    $ChildBatchJson,
+                    4,
+                    $ChildPostExecName,
+                    $ChildPostExecParams
+                )
+            }
+            return "CIPPNG-Coordinator-$OrchestratorName"
+        }
+
         $BatchJson = ConvertTo-Json -InputObject @($InputObject.Batch) -Depth 10 -Compress
 
         $PostExecFunctionName = $null
@@ -73,7 +113,10 @@ function Start-CIPPOrchestrator {
 
     if ($InputObject -and -not $OrchestratorTriggerDisabled) {
         Write-Information 'Running in processor context - starting orchestration directly'
-        if ($InputObject.Batch) {
+        if ($InputObject.ChildOrchestrators) {
+            # Coordinator mode: offload each child's Batch separately so the coordinator input stays small.
+            Convert-CippOrchestratorChildBatches -ChildOrchestrators $InputObject.ChildOrchestrators -BatchTable $BatchTable
+        } elseif ($InputObject.Batch) {
             # Store batch items separately to enable querying and tracking
             $BatchGuid = (New-Guid).Guid.ToString()
             foreach ($BatchItem in $InputObject.Batch) {
@@ -142,7 +185,10 @@ function Start-CIPPOrchestrator {
             # Store the input object in table storage
             $Guid = (New-Guid).Guid.ToString()
 
-            if ($InputObject.Batch) {
+            if ($InputObject.ChildOrchestrators) {
+                # Coordinator mode: offload each child's Batch separately so the coordinator input stays small.
+                Convert-CippOrchestratorChildBatches -ChildOrchestrators $InputObject.ChildOrchestrators -BatchTable $BatchTable
+            } elseif ($InputObject.Batch) {
                 # Store batch items separately to enable querying and tracking
                 foreach ($BatchItem in $InputObject.Batch) {
                     $BatchEntity = @{

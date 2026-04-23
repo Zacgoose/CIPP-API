@@ -1,12 +1,18 @@
 function Push-CIPPTestsApplyBatch {
     <#
     .SYNOPSIS
-        Aggregate test tasks from all tenants and start a flat execution orchestrator (Phase 2)
+        Aggregate test tasks from all tenants and start a coordinator orchestrator (Phase 2)
 
     .DESCRIPTION
         PostExecution function for the Tests pipeline. Receives aggregated results from the
-        per-tenant CIPPTestsList activities, flattens them into a single batch, and starts
-        one orchestrator to execute all test tasks across all tenants in parallel.
+        per-tenant CIPPTestsList activities, groups the tasks by TenantFilter, and starts a
+        coordinator orchestrator that spawns one sub-orchestration per tenant to execute that
+        tenant's test tasks.
+
+        This replaces the previous flat Phase-2 orchestrator (which fanned out every task in a
+        single orchestrator and caused DTFx history/instance/control-queue write storms at scale).
+        Each tenant's sub-orchestrator now owns its own small history partition; the coordinator
+        only tracks N sub-orchestration starts + completions.
 
     .FUNCTIONALITY
         Entrypoint
@@ -29,24 +35,37 @@ function Push-CIPPTestsApplyBatch {
 
         if ($AllTasks.Count -eq 0) {
             Write-Information 'No test tasks to execute across all tenants'
-            return @{ Success = $true; TaskCount = 0 }
+            return @{ Success = $true; TaskCount = 0; ChildCount = 0 }
         }
 
-        Write-Information "Aggregated $($AllTasks.Count) test tasks from all tenants"
+        # Group tasks by tenant; one sub-orchestrator per TenantFilter
+        $TasksByTenant = $AllTasks | Group-Object -Property TenantFilter
+        $ChildOrchestrators = foreach ($Group in $TasksByTenant) {
+            $TenantKey = if ([string]::IsNullOrWhiteSpace($Group.Name)) { 'Unknown' } else { $Group.Name }
+            [PSCustomObject]@{
+                OrchestratorName = "CIPPTestsExecute-$TenantKey"
+                Batch            = @($Group.Group)
+                SkipLog          = $true
+            }
+        }
+        $ChildOrchestrators = @($ChildOrchestrators)
 
-        # Start a single flat orchestrator to execute all test tasks
+        Write-Information "Aggregated $($AllTasks.Count) test tasks across $($ChildOrchestrators.Count) tenant sub-orchestrator(s)"
+
+        # Build coordinator input (no coordinator-level PostExecution for this pipeline)
         $InputObject = [PSCustomObject]@{
-            OrchestratorName = 'CIPPTestsExecute'
-            Batch            = @($AllTasks)
-            SkipLog          = $true
+            OrchestratorName   = 'CIPPTestsCoordinator'
+            ChildOrchestrators = $ChildOrchestrators
+            SkipLog            = $true
         }
 
         $InstanceId = Start-CIPPOrchestrator -InputObject $InputObject
-        Write-Information "Started flat tests execution orchestrator with ID = '$InstanceId' for $($AllTasks.Count) tasks"
+        Write-Information "Started tests coordinator orchestrator ID = '$InstanceId' for $($ChildOrchestrators.Count) tenant(s) / $($AllTasks.Count) total task(s)"
 
         return @{
             Success    = $true
             TaskCount  = $AllTasks.Count
+            ChildCount = $ChildOrchestrators.Count
             InstanceId = $InstanceId
         }
 
