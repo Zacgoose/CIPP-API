@@ -43,15 +43,19 @@ function Push-CIPPDBCacheApplyBatch {
 
         # Group tasks by tenant; one sub-orchestrator per TenantFilter
         $TasksByTenant = $AllTasks | Group-Object -Property TenantFilter
+
+        # Every cache task must carry a TenantFilter — that's a hard invariant of the pipeline.
+        # If Group-Object produces a group with no name, Phase 1 emitted a malformed task and we
+        # refuse to silently bucket it; fail the aggregator so the upstream bug surfaces.
+        $MissingTenant = @($TasksByTenant | Where-Object { [string]::IsNullOrWhiteSpace($_.Name) })
+        if ($MissingTenant.Count -gt 0) {
+            $OrphanCount = ($MissingTenant | Measure-Object -Property Count -Sum).Sum
+            throw "DBCache apply batch: $OrphanCount task(s) were missing TenantFilter — every cache task must have one. Check Push-CIPPDBCacheData."
+        }
+
         $ChildOrchestrators = foreach ($Group in $TasksByTenant) {
-            if ([string]::IsNullOrWhiteSpace($Group.Name)) {
-                Write-Warning "DBCache apply batch: $($Group.Count) task(s) had no TenantFilter and were grouped under 'Unknown'"
-                $TenantKey = 'Unknown'
-            } else {
-                $TenantKey = $Group.Name
-            }
             [PSCustomObject]@{
-                OrchestratorName = "CIPPDBCacheExecute-$TenantKey"
+                OrchestratorName = "CIPPDBCacheExecute-$($Group.Name)"
                 Batch            = @($Group.Group)
                 SkipLog          = $true
             }
