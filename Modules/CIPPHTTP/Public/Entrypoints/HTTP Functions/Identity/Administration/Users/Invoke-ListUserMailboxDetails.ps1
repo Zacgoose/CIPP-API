@@ -83,7 +83,17 @@ function Invoke-ListUserMailboxDetails {
                 $ArchiveEnabled = $false
             }
 
-            $AutoExpandingArchiveEnabled = [bool]$MailboxDetailedRequest.AutoExpandingArchiveEnabled
+            # Check org-level first; if enabled org-wide, report that. Otherwise use mailbox-specific value.
+            if ($OrgConfig.AutoExpandingArchiveEnabled) {
+                $AutoExpandingArchiveEnabled = $true
+                $AutoExpandingArchiveScope = 'Organization'
+            } elseif ($MailboxDetailedRequest.AutoExpandingArchiveEnabled) {
+                $AutoExpandingArchiveEnabled = $true
+                $AutoExpandingArchiveScope = 'Mailbox'
+            } else {
+                $AutoExpandingArchiveEnabled = $false
+                $AutoExpandingArchiveScope = 'None'
+            }
         } catch {
             $ArchiveEnabled = $false
             $ArchiveSizeRequest = @{
@@ -255,6 +265,7 @@ function Invoke-ListUserMailboxDetails {
         BlockedForSpam           = $BlockedForSpam
         ArchiveMailBox           = $ArchiveEnabled
         AutoExpandingArchive     = $AutoExpandingArchiveEnabled
+        AutoExpandingArchiveScope = $AutoExpandingArchiveScope
         RecipientTypeDetails     = $MailboxDetailedRequest.RecipientTypeDetails
         Mailbox                  = $MailboxDetailedRequest
         RetentionPolicy          = $MailboxDetailedRequest.RetentionPolicy
