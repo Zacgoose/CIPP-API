@@ -83,12 +83,7 @@ function Invoke-ListUserMailboxDetails {
                 $ArchiveEnabled = $false
             }
 
-            # Get organization config of auto-expanding archive if it's disabled on user level
-            if (-not $MailboxDetailedRequest.AutoExpandingArchiveEnabled -and $ArchiveEnabled) {
-                $AutoExpandingArchiveEnabled = $OrgConfig.AutoExpandingArchiveEnabled
-            } else {
-                $AutoExpandingArchiveEnabled = $MailboxDetailedRequest.AutoExpandingArchiveEnabled
-            }
+            $AutoExpandingArchiveEnabled = [bool]$MailboxDetailedRequest.AutoExpandingArchiveEnabled
         } catch {
             $ArchiveEnabled = $false
             $ArchiveSizeRequest = @{
