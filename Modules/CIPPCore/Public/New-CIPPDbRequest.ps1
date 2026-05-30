@@ -39,7 +39,7 @@ function New-CIPPDbRequest {
 
         $Table = Get-CippTable -tablename 'CippReportingDB'
 
-        $Tenant = Get-Tenants -TenantFilter $TenantFilter | Select-Object -ExpandProperty defaultDomainName
+        $Tenant = (Get-Tenants -TenantFilter $TenantFilter).defaultDomainName
         if (-not $Tenant) {
             if ($TenantFilter -eq $env:TenantID) {
                 return $false

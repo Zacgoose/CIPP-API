@@ -45,8 +45,15 @@ function Push-ExecCIPPDBCache {
         # Build the full function name
         $FullFunctionName = "Set-CIPPDBCache$Name"
 
-        # Check if function exists
-        $Function = Get-Command -Name $FullFunctionName -ErrorAction SilentlyContinue
+        # Cache the resolved command per process so back-to-back HTTP-driven refreshes
+        # don't repeat the module command-table walk.
+        if (-not $script:CIPPDBCacheFunctionLookup) {
+            $script:CIPPDBCacheFunctionLookup = [System.Collections.Generic.Dictionary[string, object]]::new([System.StringComparer]::OrdinalIgnoreCase)
+        }
+        if (-not $script:CIPPDBCacheFunctionLookup.ContainsKey($FullFunctionName)) {
+            $script:CIPPDBCacheFunctionLookup[$FullFunctionName] = Get-Command -Name $FullFunctionName -ErrorAction SilentlyContinue
+        }
+        $Function = $script:CIPPDBCacheFunctionLookup[$FullFunctionName]
         if (-not $Function) {
             throw "Function $FullFunctionName does not exist"
         }

@@ -12,6 +12,13 @@ function Push-CIPPTest {
 
     Write-Information "Running test $TestId for tenant $TenantFilter"
 
+    # Per-process cache of resolved test function commands so that a flat orchestrator
+    # firing thousands of activities doesn't repeat the module command-table walk
+    # for every task.
+    if (-not $script:CIPPTestFunctionLookup) {
+        $script:CIPPTestFunctionLookup = [System.Collections.Generic.Dictionary[string, object]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    }
+
     try {
         if ($TestId -like 'CustomScript-*') {
             $ScriptGuid = $TestId -replace '^CustomScript-', ''
@@ -23,13 +30,17 @@ function Push-CIPPTest {
 
         $FunctionName = "Invoke-CippTest$TestId"
 
-        if (-not (Get-Command $FunctionName -Module CIPPTests -ErrorAction SilentlyContinue)) {
+        if (-not $script:CIPPTestFunctionLookup.ContainsKey($FunctionName)) {
+            $script:CIPPTestFunctionLookup[$FunctionName] = Get-Command $FunctionName -Module CIPPTests -ErrorAction SilentlyContinue
+        }
+        $TestCommand = $script:CIPPTestFunctionLookup[$FunctionName]
+        if (-not $TestCommand) {
             Write-LogMessage -API 'Tests' -tenant $TenantFilter -message "Test function not found: $FunctionName" -sev Error
             return @{ testRun = $false }
         }
 
         Write-Information "Executing $FunctionName for $TenantFilter"
-        & $FunctionName -Tenant $TenantFilter
+        & $TestCommand -Tenant $TenantFilter
         Write-Host "Returning true, test has run for $tenantFilter"
         return @{ testRun = $true }
 
