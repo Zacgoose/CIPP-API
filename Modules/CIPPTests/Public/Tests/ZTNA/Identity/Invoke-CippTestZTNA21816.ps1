@@ -123,53 +123,53 @@ function Invoke-CippTestZTNA21816 {
 
         if (-not $HasPIMUsage) {
             $Passed = $false
-            $ResultMarkdown = 'No eligible Global Administrator assignments found. PIM usage cannot be confirmed.'
+            $ResultMarkdown = [System.Text.StringBuilder]::new('No eligible Global Administrator assignments found. PIM usage cannot be confirmed.')
         } elseif ($HasNonPIMPrivileged) {
             $Passed = $false
-            $ResultMarkdown = 'Found Microsoft Entra privileged role assignments that are not managed with PIM.'
+            $ResultMarkdown = [System.Text.StringBuilder]::new('Found Microsoft Entra privileged role assignments that are not managed with PIM.')
         } elseif ($PermanentGACount -gt 2) {
             $Passed = $false
             $CustomStatus = 'Investigate'
-            $ResultMarkdown = 'Three or more accounts are permanently assigned the Global Administrator role. Review to determine whether these are emergency access accounts.'
+            $ResultMarkdown = [System.Text.StringBuilder]::new('Three or more accounts are permanently assigned the Global Administrator role. Review to determine whether these are emergency access accounts.')
         } else {
             $Passed = $true
-            $ResultMarkdown = 'All Microsoft Entra privileged role assignments are managed with PIM with the exception of up to two standing Global Administrator accounts.'
+            $ResultMarkdown = [System.Text.StringBuilder]::new('All Microsoft Entra privileged role assignments are managed with PIM with the exception of up to two standing Global Administrator accounts.')
         }
 
-        $ResultMarkdown += "`n`n## Assessment summary`n`n"
-        $ResultMarkdown += "| Metric | Count |`n"
-        $ResultMarkdown += "| :----- | :---- |`n"
-        $ResultMarkdown += "| Privileged roles found | $($PrivilegedRoles.Count) |`n"
-        $ResultMarkdown += "| Eligible Global Administrators | $EligibleGAUsers |`n"
-        $ResultMarkdown += "| Non-PIM privileged users | $($NonPIMPrivilegedUsers.Count) |`n"
-        $ResultMarkdown += "| Non-PIM privileged groups | $($NonPIMPrivilegedGroups.Count) |`n"
-        $ResultMarkdown += "| Permanent Global Administrator users | $($PermanentGAUserList.Count) |`n"
+        $null = $ResultMarkdown.Append("`n`n## Assessment summary`n`n")
+        $null = $ResultMarkdown.Append("| Metric | Count |`n")
+        $null = $ResultMarkdown.Append("| :----- | :---- |`n")
+        $null = $ResultMarkdown.Append("| Privileged roles found | $($PrivilegedRoles.Count) |`n")
+        $null = $ResultMarkdown.Append("| Eligible Global Administrators | $EligibleGAUsers |`n")
+        $null = $ResultMarkdown.Append("| Non-PIM privileged users | $($NonPIMPrivilegedUsers.Count) |`n")
+        $null = $ResultMarkdown.Append("| Non-PIM privileged groups | $($NonPIMPrivilegedGroups.Count) |`n")
+        $null = $ResultMarkdown.Append("| Permanent Global Administrator users | $($PermanentGAUserList.Count) |`n")
 
         if ($NonPIMPrivilegedUsers.Count -gt 0 -or $NonPIMPrivilegedGroups.Count -gt 0) {
-            $ResultMarkdown += "`n## Non-PIM managed privileged role assignments`n`n"
-            $ResultMarkdown += "| Display name | User principal name | Role name | Assignment type |`n"
-            $ResultMarkdown += "| :----------- | :------------------ | :-------- | :-------------- |`n"
+            $null = $ResultMarkdown.Append("`n## Non-PIM managed privileged role assignments`n`n")
+            $null = $ResultMarkdown.Append("| Display name | User principal name | Role name | Assignment type |`n")
+            $null = $ResultMarkdown.Append("| :----------- | :------------------ | :-------- | :-------------- |`n")
 
             foreach ($User in $NonPIMPrivilegedUsers) {
                 $UserLink = "https://entra.microsoft.com/#view/Microsoft_AAD_UsersAndTenants/UserProfileMenuBlade/~/AdministrativeRole/userId/$($User.id)/hidePreviewBanner~/true"
-                $ResultMarkdown += "| [$($User.displayName)]($UserLink) | $($User.userPrincipalName) | $($User.roleName) | $($User.assignmentType) |`n"
+                $null = $ResultMarkdown.Append("| [$($User.displayName)]($UserLink) | $($User.userPrincipalName) | $($User.roleName) | $($User.assignmentType) |`n")
             }
 
             foreach ($Group in $NonPIMPrivilegedGroups) {
                 $GroupLink = "https://entra.microsoft.com/#view/Microsoft_AAD_IAM/GroupDetailsMenuBlade/~/RolesAndAdministrators/groupId/$($Group.id)/menuId/"
-                $ResultMarkdown += "| [$($Group.displayName)]($GroupLink) | N/A (Group) | $($Group.roleName) | $($Group.assignmentType) |`n"
+                $null = $ResultMarkdown.Append("| [$($Group.displayName)]($GroupLink) | N/A (Group) | $($Group.roleName) | $($Group.assignmentType) |`n")
             }
         }
 
         if ($PermanentGAUserList.Count -gt 0) {
-            $ResultMarkdown += "`n## Permanent Global Administrator assignments`n`n"
-            $ResultMarkdown += "| Display name | User principal name | Assignment type | On-Premises synced |`n"
-            $ResultMarkdown += "| :----------- | :------------------ | :-------------- | :----------------- |`n"
+            $null = $ResultMarkdown.Append("`n## Permanent Global Administrator assignments`n`n")
+            $null = $ResultMarkdown.Append("| Display name | User principal name | Assignment type | On-Premises synced |`n")
+            $null = $ResultMarkdown.Append("| :----------- | :------------------ | :-------------- | :----------------- |`n")
 
             foreach ($User in $PermanentGAUserList) {
                 $SyncStatus = if ($null -ne $User.onPremisesSyncEnabled) { $User.onPremisesSyncEnabled } else { 'N/A' }
                 $UserLink = "https://entra.microsoft.com/#view/Microsoft_AAD_UsersAndTenants/UserProfileMenuBlade/~/AdministrativeRole/userId/$($User.id)/hidePreviewBanner~/true"
-                $ResultMarkdown += "| [$($User.displayName)]($UserLink) | $($User.userPrincipalName) | $($User.assignmentType) | $SyncStatus |`n"
+                $null = $ResultMarkdown.Append("| [$($User.displayName)]($UserLink) | $($User.userPrincipalName) | $($User.assignmentType) | $SyncStatus |`n")
             }
         }
 
