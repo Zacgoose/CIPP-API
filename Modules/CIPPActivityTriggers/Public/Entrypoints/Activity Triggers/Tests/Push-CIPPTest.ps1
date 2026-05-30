@@ -17,6 +17,7 @@ function Push-CIPPTest {
     # for every task.
     if (-not $script:CIPPTestFunctionLookup) {
         $script:CIPPTestFunctionLookup = [System.Collections.Generic.Dictionary[string, object]]::new([System.StringComparer]::OrdinalIgnoreCase)
+        Write-Information "[CacheInit] CIPPTestFunctionLookup initialized in PID $PID"
     }
 
     try {
@@ -30,7 +31,10 @@ function Push-CIPPTest {
 
         $FunctionName = "Invoke-CippTest$TestId"
 
-        if (-not $script:CIPPTestFunctionLookup.ContainsKey($FunctionName)) {
+        if ($script:CIPPTestFunctionLookup.ContainsKey($FunctionName)) {
+            Write-Information "[CacheHit] CIPPTestFunctionLookup PID=$PID Key=$FunctionName Size=$($script:CIPPTestFunctionLookup.Count)"
+        } else {
+            Write-Information "[CacheMiss] CIPPTestFunctionLookup PID=$PID Key=$FunctionName Size=$($script:CIPPTestFunctionLookup.Count) - resolving via Get-Command"
             $script:CIPPTestFunctionLookup[$FunctionName] = Get-Command $FunctionName -Module CIPPTests -ErrorAction SilentlyContinue
         }
         $TestCommand = $script:CIPPTestFunctionLookup[$FunctionName]

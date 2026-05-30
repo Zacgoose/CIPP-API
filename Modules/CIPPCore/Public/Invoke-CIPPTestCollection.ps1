@@ -58,10 +58,14 @@ function Invoke-CIPPTestCollection {
     # once per worker process and its exported function set does not change at runtime.
     if (-not $script:CIPPTestSuiteFunctionCache) {
         $script:CIPPTestSuiteFunctionCache = [System.Collections.Generic.Dictionary[string, object]]::new([System.StringComparer]::OrdinalIgnoreCase)
+        Write-Information "[CacheInit] CIPPTestSuiteFunctionCache initialized in PID $PID"
     }
     if (-not $script:CIPPTestCustomFunctionResolved) {
+        Write-Information "[CacheMiss] CIPPTestCustomFunction PID=$PID - resolving Invoke-CippTestCustomScripts via Get-Command"
         $script:CIPPTestCustomFunction = Get-Command -Name 'Invoke-CippTestCustomScripts' -ErrorAction SilentlyContinue
         $script:CIPPTestCustomFunctionResolved = $true
+    } else {
+        Write-Information "[CacheHit] CIPPTestCustomFunction PID=$PID Resolved=$([bool]$script:CIPPTestCustomFunction)"
     }
 
     $SuiteStopwatch = [System.Diagnostics.Stopwatch]::StartNew()
@@ -176,7 +180,10 @@ function Invoke-CIPPTestCollection {
     # Cache the function list per suite so repeated activity invocations in the same
     # process don't pay the module command-table walk again (item 7).
     $Pattern = $SuitePatterns[$SuiteName]
-    if (-not $script:CIPPTestSuiteFunctionCache.ContainsKey($SuiteName)) {
+    if ($script:CIPPTestSuiteFunctionCache.ContainsKey($SuiteName)) {
+        Write-Information "[CacheHit] CIPPTestSuiteFunctionCache PID=$PID Suite=$SuiteName Size=$($script:CIPPTestSuiteFunctionCache.Count)"
+    } else {
+        Write-Information "[CacheMiss] CIPPTestSuiteFunctionCache PID=$PID Suite=$SuiteName Size=$($script:CIPPTestSuiteFunctionCache.Count) - resolving pattern '$Pattern' via Get-Command"
         $script:CIPPTestSuiteFunctionCache[$SuiteName] = @(Get-Command -Name $Pattern -Module CIPPTests -ErrorAction SilentlyContinue)
     }
     $TestFunctions = $script:CIPPTestSuiteFunctionCache[$SuiteName]

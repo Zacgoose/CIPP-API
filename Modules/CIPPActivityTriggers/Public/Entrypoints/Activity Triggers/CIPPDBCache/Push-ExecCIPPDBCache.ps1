@@ -49,8 +49,12 @@ function Push-ExecCIPPDBCache {
         # don't repeat the module command-table walk.
         if (-not $script:CIPPDBCacheFunctionLookup) {
             $script:CIPPDBCacheFunctionLookup = [System.Collections.Generic.Dictionary[string, object]]::new([System.StringComparer]::OrdinalIgnoreCase)
+            Write-Information "[CacheInit] CIPPDBCacheFunctionLookup initialized in PID $PID"
         }
-        if (-not $script:CIPPDBCacheFunctionLookup.ContainsKey($FullFunctionName)) {
+        if ($script:CIPPDBCacheFunctionLookup.ContainsKey($FullFunctionName)) {
+            Write-Information "[CacheHit] CIPPDBCacheFunctionLookup PID=$PID Key=$FullFunctionName Size=$($script:CIPPDBCacheFunctionLookup.Count)"
+        } else {
+            Write-Information "[CacheMiss] CIPPDBCacheFunctionLookup PID=$PID Key=$FullFunctionName Size=$($script:CIPPDBCacheFunctionLookup.Count) - resolving via Get-Command"
             $script:CIPPDBCacheFunctionLookup[$FullFunctionName] = Get-Command -Name $FullFunctionName -ErrorAction SilentlyContinue
         }
         $Function = $script:CIPPDBCacheFunctionLookup[$FullFunctionName]
