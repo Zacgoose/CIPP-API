@@ -20,10 +20,9 @@ function Invoke-CippTestCIS_1_1_1 {
             return
         }
 
-        $PrivilegedRoleIds = ($Roles | Where-Object { $_.isPrivileged -eq $true }).id
-        $PrivilegedAssignments = $RoleAssignments | Where-Object { $_.roleDefinitionId -in $PrivilegedRoleIds }
-        $PrivilegedUserIds = $PrivilegedAssignments.principalId | Select-Object -Unique
-        $PrivilegedUsers = $Users | Where-Object { $_.id -in $PrivilegedUserIds }
+        $PrivilegedRoleIds = [System.Collections.Generic.HashSet[string]]::new([string[]]$Roles.Where({ $_.isPrivileged -eq $true }).id)
+        $PrivilegedUserIds = [System.Collections.Generic.HashSet[string]]::new([string[]]($RoleAssignments.Where({ $PrivilegedRoleIds.Contains($_.roleDefinitionId) }).principalId | Select-Object -Unique))
+        $PrivilegedUsers = $Users.Where({ $PrivilegedUserIds.Contains($_.id) })
 
         if (-not $PrivilegedUsers) {
             Add-CippTestResult -TenantFilter $Tenant -TestId 'CIS_1_1_1' -TestType 'Identity' -Status 'Passed' -ResultMarkdown 'No privileged users found.' -Risk 'High' -Name 'Administrative accounts are cloud-only' -UserImpact 'Medium' -ImplementationEffort 'Medium' -Category 'Privileged Access'

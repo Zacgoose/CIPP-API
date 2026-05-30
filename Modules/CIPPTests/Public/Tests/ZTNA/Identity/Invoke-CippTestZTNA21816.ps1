@@ -24,18 +24,32 @@ function Invoke-CippTestZTNA21816 {
         $Users = Get-CIPPTestData -TenantFilter $Tenant -Type 'Users'
         $Groups = Get-CIPPTestData -TenantFilter $Tenant -Type 'Groups'
 
-        $EligibleGAs = $RoleEligibilitySchedules | Where-Object { $_.roleDefinitionId -eq $GlobalAdminRoleId }
+        $EligibleGAs = $RoleEligibilitySchedules.Where({ $_.roleDefinitionId -eq $GlobalAdminRoleId })
         $EligibleGAUsers = 0
 
+        # Build id-keyed lookups once to avoid O(N*M) Where-Object scans
+        $UsersById = @{}
+        foreach ($U in $Users) { $UsersById[$U.id] = $U }
+        $GroupsById = @{}
+        foreach ($G in $Groups) { $GroupsById[$G.id] = $G }
+        # Composite-key lookup: principalId|roleDefinitionId
+        $AssignmentByPrincipalRole = @{}
+        foreach ($A in $RoleAssignmentScheduleInstances) {
+            $key = '{0}|{1}' -f $A.principalId, $A.roleDefinitionId
+            if (-not $AssignmentByPrincipalRole.ContainsKey($key)) {
+                $AssignmentByPrincipalRole[$key] = $A
+            }
+        }
+
         foreach ($EligibleGA in $EligibleGAs) {
-            $Principal = $Users | Where-Object { $_.id -eq $EligibleGA.principalId } | Select-Object -First 1
+            $Principal = $UsersById[$EligibleGA.principalId]
             if ($Principal) {
                 $EligibleGAUsers++
             } else {
-                $GroupPrincipal = $Groups | Where-Object { $_.id -eq $EligibleGA.principalId } | Select-Object -First 1
-                if ($GroupPrincipal) {
-                    $GroupMembers = $Users | Where-Object { $_.id -in $GroupPrincipal.members }
-                    $EligibleGAUsers = $EligibleGAUsers + $GroupMembers.Count
+                $GroupPrincipal = $GroupsById[$EligibleGA.principalId]
+                if ($GroupPrincipal -and $GroupPrincipal.members) {
+                    $MemberSet = [System.Collections.Generic.HashSet[string]]::new([string[]]$GroupPrincipal.members)
+                    foreach ($U in $Users) { if ($MemberSet.Contains($U.id)) { $EligibleGAUsers++ } }
                 }
             }
         }
@@ -46,9 +60,7 @@ function Invoke-CippTestZTNA21816 {
             $RoleMembers = Get-CippDbRoleMembers -TenantFilter $Tenant -RoleTemplateId $Role.RoletemplateId
 
             foreach ($Member in $RoleMembers) {
-                $Assignment = $RoleAssignmentScheduleInstances | Where-Object {
-                    $_.principalId -eq $Member.id -and $_.roleDefinitionId -eq $Role.RoletemplateId
-                } | Select-Object -First 1
+                $Assignment = $AssignmentByPrincipalRole['{0}|{1}' -f $Member.id, $Role.RoletemplateId]
 
                 if (-not $Assignment -or ($Assignment.assignmentType -eq 'Assigned' -and $null -eq $Assignment.endDateTime)) {
                     $MemberInfo = [PSCustomObject]@{
@@ -72,9 +84,7 @@ function Invoke-CippTestZTNA21816 {
         $GAMembers = Get-CippDbRoleMembers -TenantFilter $Tenant -RoleTemplateId $GlobalAdminRoleId
 
         foreach ($Member in $GAMembers) {
-            $Assignment = $RoleAssignmentScheduleInstances | Where-Object {
-                $_.principalId -eq $Member.id -and $_.roleDefinitionId -eq $GlobalAdminRoleId
-            } | Select-Object -First 1
+            $Assignment = $AssignmentByPrincipalRole['{0}|{1}' -f $Member.id, $GlobalAdminRoleId]
 
             if (-not $Assignment -or ($Assignment.assignmentType -eq 'Assigned' -and $null -eq $Assignment.endDateTime)) {
                 $MemberInfo = [PSCustomObject]@{
@@ -88,7 +98,7 @@ function Invoke-CippTestZTNA21816 {
                 }
 
                 if ($Member.'@odata.type' -eq '#microsoft.graph.user') {
-                    $UserDetail = $Users | Where-Object { $_.id -eq $Member.id } | Select-Object -First 1
+                    $UserDetail = $UsersById[$Member.id]
                     if ($UserDetail) {
                         $MemberInfo.onPremisesSyncEnabled = $UserDetail.onPremisesSyncEnabled
                     }
@@ -96,10 +106,11 @@ function Invoke-CippTestZTNA21816 {
                 } elseif ($Member.'@odata.type' -eq '#microsoft.graph.group') {
                     $PermanentGAGroupList.Add($MemberInfo)
 
-                    $Group = $Groups | Where-Object { $_.id -eq $Member.id } | Select-Object -First 1
-                    if ($Group) {
-                        $GroupMembers = $Users | Where-Object { $_.id -in $Group.members }
-                        foreach ($GroupMember in $GroupMembers) {
+                    $Group = $GroupsById[$Member.id]
+                    if ($Group -and $Group.members) {
+                        $MemberSet = [System.Collections.Generic.HashSet[string]]::new([string[]]$Group.members)
+                        foreach ($GroupMember in $Users) {
+                            if (-not $MemberSet.Contains($GroupMember.id)) { continue }
                             $GroupMemberInfo = [PSCustomObject]@{
                                 displayName           = $GroupMember.displayName
                                 userPrincipalName     = $GroupMember.userPrincipalName
